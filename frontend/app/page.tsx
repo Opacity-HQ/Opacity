@@ -1,4 +1,43 @@
 import Image from "next/image";
+
+const gameCards = [
+  {
+    title: "Sound Match",
+    description:
+      "Helps children practice connecting sounds with letters, strengthening sound–letter associations.",
+    accent: "bg-[#F7FCEC]",
+    icon: "./sound.svg",
+  },
+  {
+    title: "Letter Detective",
+    description:
+      "Helps children distinguish commonly confused letters such as b/d, improving visual recognition and processing.",
+    accent: "bg-[#f9f6fe]",
+    icon: "./letter.svg",
+  },
+  {
+    title: "Word Builder",
+    description:
+      "Gives children practice building and decoding words, supporting spelling-related skills.",
+    accent: "bg-[#fefcea]",
+    icon: "./block.svg",
+  },
+  {
+    title: "Memory Quest",
+    description:
+      "Exercises the ability to remember letters, words, and sequences, supporting short-term recall.",
+    accent: "bg-[#f9f0f0]",
+    icon: "./memory.svg",
+  },
+  {
+    title: "Rapid match",
+    description:
+      "Practices quickly recognizing objects, letters, and symbols, while measuring response speed.",
+    accent: "bg-[#F5f8fe]",
+    icon: "./rapid.svg",
+  },
+];
+
 export default function Home() {
   return (
     <div className="flex flex-row border-black">
@@ -9,6 +48,7 @@ export default function Home() {
             alt="Opacity Logo"
             width={30}
             height={30}
+            loading="eager"
           />
           <span className="font-pixel text-[26px] ml-2 text-[#1d1d1d]">opacity</span>
         </div>
@@ -55,7 +95,83 @@ export default function Home() {
             </div>
           </button>
         </div>
-        <div className="dashed-line w-full mt-[50px]"></div>
+
+        <div className="dashed-line w-full mt-[40px]"></div>
+
+        <div className="flex flex-col items-start justify-center w-full pl-[20px] pr-[15px]">
+          <span className="font-pixel text-[40px] text-[#1d1d1d] mt-[20px] ">Games</span>
+          <span className="font-open-sauce text-[20px] text-[#5e5e5e]">
+            Five games. Five key skills. 
+          </span>
+          <span className="font-open-sauce text-[20px] text-[#5e5e5e] leading-[15px]"> 
+            One personalized learning journey
+          </span>
+          <div className="flex flex-col items-start justify-center w-full mt-[30px] dashed-border bg-[#fefefe] p-[15px] rounded-[20px]">
+            <div className="flex flex-row items-center justify-start w-full">
+              <Image
+                src="./skull.svg"
+                alt="skull Icon"
+                width={20}
+                height={20}    
+                className=""/>
+              <span className="font-pixel text-[20px] text-[#5e5e5e] ml-[10px]">disclaimer</span>
+            </div>
+            <p className="font-open-sauce text-[14px] text-[#5e5e5e] leading-[18px] mt-[5px]">
+                This platform is designed for early screening and personalized learning support. It is not a diagnostic tool and does not replace evaluation by a qualified professional.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[20px] items-center justify-center w-full pl-[20px] pr-[15px] mb-[30px] mt-[20px]">
+          {gameCards.map((game) => (
+            <div
+              key={`${game.title}-${game.accent}`}
+              className="flex flex-col items-start justify-between w-full bg-[#fefefe] rounded-[15px] border-[2px] border-[#efefef] h-[200px]"
+            >
+              <div className="flex flex-col">
+                <div className={`flex flex-row items-center justify-start w-full rounded-t-[15px] ${game.accent} px-[13px] py-[8px]`}>
+                  <Image
+                    src={game.icon}
+                    alt={`${game.title} Icon`}
+                    width={20}
+                    height={20}
+                  />
+                  <span className="font-pixel text-[20px] text-black ml-[10px]">{game.title}</span>
+                </div>
+                <div>
+                  <p className="font-open-sauce text-[14px] text-[#5e5e5e] leading-[18px] mt-[10px] px-[13px]">
+                    {game.description}
+                  </p>
+                </div>
+              </div>
+              <button className="flex flex-row items-center justify-center w-fit h-fit bg-white hover:bg-[#f7f7f7] hover:translate-x-[5px] transition-all duration-200 rounded-[10px] px-[10px] py-[5px] border-[2px] border-[#efefef] ml-[10px] mb-[10px]">
+                <Image
+                  src="./play.svg"
+                  alt="Play Icon"
+                  width={15}
+                  height={15}
+                  className=""
+                />
+                <span className="font-pixel text-[15px] ml-[5px]">play</span>
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="dashed-line w-full"></div>
+
+        <div className="flex flex-col items-start justify-between w-full pl-[20px] pr-[15px] mt-[20px] mb-[20px] h-[150px]">
+          <span className="font-pixel text-[18px] text-[#1d1d1d]">Bengaluru, India 🇮🇳</span>
+          <span className="font-pixel text-[18px] text-[#1d1d1d] leading-[25px]">Built with
+            <Image
+              src="./love.svg"
+              alt="love Icon"
+              width={20}
+              height={20}
+              className="inline-block mx-[5px]"
+            />
+            by Saket rama, Atharv remeshan, Ritwik gupta, Zaid Khan and Pranshu Thakkar </span>
+        </div>
       </div>
       
       </div>

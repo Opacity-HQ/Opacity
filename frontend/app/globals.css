@@ -25,4 +25,18 @@
   );
 }
 
+.dashed-border {
+  border: 0;
+  border-radius: 16px;
+  position: relative;
+}
 
+.dashed-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  pointer-events: none;
+
+  background: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='1' y='1' width='calc(100% - 2px)' height='calc(100% - 2px)' rx='15' fill='none' stroke='%23e7e7e7' stroke-width='2' stroke-dasharray='12 8'/%3E%3C/svg%3E") no-repeat;
+}
