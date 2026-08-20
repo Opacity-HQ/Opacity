@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
@@ -21,6 +27,17 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
   const [step, setStep] = useState<"email" | "password">("email")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isMobile, setIsMobile] = useState<boolean>(false)
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 639px)")
+    const onChange = () => {
+      setIsMobile(mql.matches)
+    }
+    setIsMobile(mql.matches)
+    mql.addEventListener("change", onChange)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,6 +61,108 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
     }
   }
 
+  const formBody = (
+    <div className="flex flex-col items-center justify-start w-full">
+      <Image
+        src="/signin_image.png"
+        alt="signin image"
+        loading="eager"
+        width={350}
+        height={100}
+        className="w-full object-cover"
+      />
+      <div className="flex flex-col items-start justify-center w-full px-[20px] mt-[15px]">
+        <span className="text-[30px] font-pixel">Sign In</span>
+        <span className="text-[16px] text-[#5e5e5e] leading-[20px] mt-[5px] font-pixel">
+          Dyslexia can affect reading, spelling, ancold language processing. Play a few quick games to explore how you learn.
+        </span>
+        
+        <div className="w-full mt-[15px]">
+          <AnimatePresence mode="wait">
+            {step === "email" ? (
+              <motion.div
+                key="email-input"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15 }}
+                className="w-full"
+              >
+                <label htmlFor="email" className="text-[16px] hidden">Email</label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="john@example.com"
+                  className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] px-[20px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none !ring-0 !outline-none !px-[15px] items-center justify-center"
+                  required
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="password-input"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15 }}
+                className="w-full flex flex-col items-start"
+              >
+                <label htmlFor="password" className="text-[16px] hidden">Password</label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                  className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none !ring-0 !outline-none"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setStep("email")}
+                  className="text-[12px] text-[#5e5e5e] hover:underline mt-[10px] font-pixel cursor-pointer px-[10px]"
+                >
+                  ← back to email
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </div>
+  )
+
+  if (isMobile) {
+    return (
+      <Drawer onOpenChange={(open) => {
+        if (!open) {
+          setStep("email")
+        }
+      }}>
+        <form onSubmit={handleFormSubmit}>
+          <DrawerTrigger render={trigger} />
+          <DrawerContent className="w-full m-0 [--drawer-inset:0px] rounded-t-[24px] rounded-b-none !rounded-b-none border-none border-0 p-0 overflow-hidden flex flex-col items-center gap-3 pb-4">
+            {formBody}
+            <div className="flex flex-row items-center justify-between w-full px-[20px] gap-3 mt-[12px]">
+              <button type="submit" className="w-fit text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px] cursor-pointer">
+                  sign in 
+              </button>
+              <DrawerClose className="flex-1" render={
+                <button type="button" className="w-full text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] cursor-pointer whitespace-nowrap">
+                    play without login
+                </button>
+              } />
+            </div>
+          </DrawerContent>
+        </form>
+      </Drawer>
+    )
+  }
+
   return (
     <Dialog onOpenChange={(open) => {
       if (!open) {
@@ -52,90 +171,19 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
     }}>
       <form onSubmit={handleFormSubmit}>
         <DialogTrigger render={trigger} />
-        <DialogContent className="w-[350px] p-0 overflow-hidden flex flex-col items-center gap-3" showCloseButton={false}>
-          <div className="flex flex-col items-center justify-start w-full">
-            <Image
-                src="/signin_image.png"
-                alt="signin image"
-                loading="eager"
-                width={350}
-                height={100}
-                className="w-full object-cover"
-                />
-            <div className="flex flex-col items-start justify-center w-full px-[20px] mt-[15px]" >
-                <span className="text-[30px] font-pixel">Sign In</span>
-                <span className="text-[16px] text-[#5e5e5e] leading-[20px] mt-[5px] font-pixel">
-                Dyslexia can affect reading, spelling, ancold language processing. Play a few quick games to explore how you learn.
-                </span>
-                
-                <div className="w-full mt-[15px]">
-                  <AnimatePresence mode="wait">
-                    {step === "email" ? (
-                      <motion.div
-                        key="email-input"
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.15 }}
-                        className="w-full"
-                      >
-                        <label htmlFor="email" className="text-[16px] hidden">Email</label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                          placeholder="john@example.com"
-                          className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] px-[20px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus:ring-[2px] focus:ring-[#aaa9a9] !px-[15px] items-center justify-center"
-                          required
-                        />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="password-input"
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.15 }}
-                        className="w-full flex flex-col items-start"
-                      >
-                        <label htmlFor="password" className="text-[16px] hidden">Password</label>
-                        <Input
-                          id="password"
-                          name="password"
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Enter password"
-                          className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus:ring-[2px] focus:ring-[#aaa9a9]"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setStep("email")}
-                          className="text-[12px] text-[#5e5e5e] hover:underline mt-[10px] font-pixel cursor-pointer px-[10px]"
-                        >
-                          ← back to email
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-            </div>
-          </div>
+        <DialogContent className="w-[350px] p-0 overflow-hidden flex flex-col items-center justify-between gap-3" showCloseButton={false}>
+          {formBody}
           
-          <DialogFooter className="flex flex-row items-center justify-center w-full px-[20px] pb-[20px] gap-[20px] mt-[10px] sm:flex-row sm:justify-center">
-            <button type="submit" className="text-[18px] font-pixel flex flex-row items-center justify-center w-auto bg-[#ececec] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[17px] py-[8px]">
+          <div className="flex flex-row items-center justify-center w-full px-[20px] pb-[20px] gap-x-[20px] mt-[8px] sm:flex-row sm:justify-center">
+            <button type="submit" className="w-content text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px]">
                 sign in 
             </button>
             <DialogClose render={
-              <button type="button" className="text-[18px] font-pixel flex flex-row items-center justify-center w-auto bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[17px] py-[8px]">
+              <button type="button" className="w-auto text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] px-[15px]">
                   play without login
               </button>
             } />
-          </DialogFooter>
+          </div>
         </DialogContent>
       </form>
     </Dialog>
