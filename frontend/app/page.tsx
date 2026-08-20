@@ -44,6 +44,8 @@ const gameCards = [
   },
 ];
 
+import Signin from "@/components/signin";
+
 export default function Home() {
   return (
     <div className="flex flex-row border-black">
@@ -88,18 +90,22 @@ export default function Home() {
               className="inline-block align-middle"
             />
           </div>
-          <button>
-            <div className="button-shadow flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] shover:bg-[#323232]  hover:translate-y-[-5px] transition-all duration-200 rounded-[20px] mt-[30px] px-[17px] py-[8px]">
-              <Image
-                src="./game2.svg"
-                alt="Play Icon"
-                width={25}
-                height={25}
-                className="mr-[10px]"
-              />
-              <span className="font-pixel text-[20px] text-[#ffffff]">lets play</span>
-            </div>
-          </button>
+          <Signin
+            trigger={
+              <button>
+                <div className="button-shadow flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] shover:bg-[#323232]  hover:translate-y-[-5px] transition-all duration-200 rounded-[20px] mt-[30px] px-[17px] py-[8px]">
+                  <Image
+                    src="./game2.svg"
+                    alt="Play Icon"
+                    width={25}
+                    height={25}
+                    className="mr-[10px]"
+                  />
+                  <span className="font-pixel text-[20px] text-[#ffffff]">lets play</span>
+                </div>
+              </button>
+            }
+          />
         </div>
 
         <div className="dashed-line w-full mt-[40px]"></div>
@@ -179,7 +185,7 @@ export default function Home() {
               height={20}
               className="inline-block mx-[5px]"
             />
-            by Saket rama, Atharv remeshan, Ritwik gupta, Zaid Khan and Pranshu Thakkar </span>
+            by Saket rama, Atharv remeshan, Ritwik gupta, Saatvik Das, Zaid Khan and Pranshu Thakkar </span>
         </div>
       </div>
       
