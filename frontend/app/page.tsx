@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const gameCards = [
   {
@@ -7,6 +8,7 @@ const gameCards = [
       "Helps children practice connecting sounds with letters, strengthening sound–letter associations.",
     accent: "bg-[#F7FCEC]",
     icon: "./sound.svg",
+    href: "/sound-match",
   },
   {
     title: "Letter Detective",
@@ -14,6 +16,7 @@ const gameCards = [
       "Helps children distinguish commonly confused letters such as b/d, improving visual recognition and processing.",
     accent: "bg-[#f9f6fe]",
     icon: "./letter.svg",
+    href: "/letter-detective",
   },
   {
     title: "Word Builder",
@@ -21,6 +24,7 @@ const gameCards = [
       "Gives children practice building and decoding words, supporting spelling-related skills.",
     accent: "bg-[#fefcea]",
     icon: "./block.svg",
+    href: "/word-builder",
   },
   {
     title: "Memory Quest",
@@ -28,6 +32,7 @@ const gameCards = [
       "Exercises the ability to remember letters, words, and sequences, supporting short-term recall.",
     accent: "bg-[#f9f0f0]",
     icon: "./memory.svg",
+    href: "/memory-quest",
   },
   {
     title: "Rapid match",
@@ -35,6 +40,7 @@ const gameCards = [
       "Practices quickly recognizing objects, letters, and symbols, while measuring response speed.",
     accent: "bg-[#F5f8fe]",
     icon: "./rapid.svg",
+    href: "/rapid-match",
   },
 ];
 
@@ -144,7 +150,10 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <button className="flex flex-row items-center justify-center w-fit h-fit bg-white hover:bg-[#f7f7f7] hover:translate-x-[5px] transition-all duration-200 rounded-[10px] px-[10px] py-[5px] border-[2px] border-[#efefef] ml-[10px] mb-[10px]">
+              <Link
+                href={game.href}
+                className="flex flex-row items-center justify-center w-fit h-fit bg-white hover:bg-[#f7f7f7] hover:translate-x-[5px] transition-all duration-200 rounded-[10px] px-[10px] py-[5px] border-[2px] border-[#efefef] ml-[10px] mb-[10px]"
+              >
                 <Image
                   src="./play.svg"
                   alt="Play Icon"
@@ -153,7 +162,7 @@ export default function Home() {
                   className=""
                 />
                 <span className="font-pixel text-[15px] ml-[5px]">play</span>
-              </button>
+              </Link>
             </div>
           ))}
         </div>

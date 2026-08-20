@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { GeistPixelSquare } from "geist/font/pixel";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const openSauce = localFont({
   src: "./font/open-sauce.ttf",
@@ -20,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${GeistPixelSquare.variable} ${openSauce.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", GeistPixelSquare.variable, openSauce.variable, "font-sans", inter.variable)}
     >
       <body className="font-sauce min-h-full flex flex-col items-center justify-center">{children}</body>
     </html>
