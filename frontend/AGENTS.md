@@ -66,6 +66,33 @@ Add new game routes under `app/<route-name>/` with `page.tsx`; include `layout.t
 - If a new game is created, make a new `app/<game-name>/` folder for it and keep that game's route-specific files there.
 - Move code out of a game folder only when it is genuinely shared by multiple routes.
 
+## Git Workflow
+
+- Any game that has been created or edited must be raised in a pull request.
+- Do not commit game changes directly to the main branch.
+- Keep each pull request focused on the specific game or shared component being changed.
+
+Use this flow to create a pull request:
+
+```bash
+git status
+git switch main
+git pull origin main
+git switch -c feature/<short-change-name>
+# make the game changes after creating the branch
+git add <changed-files>
+git commit -m "<clear commit message>"
+git push -u origin feature/<short-change-name>
+gh pr create --base main --head feature/<short-change-name> --title "<clear PR title>" --body "<short summary and test notes>"
+```
+
+Before creating the PR, run the relevant checks:
+
+```bash
+npm run lint
+npm run build
+```
+
 ## Next.js Rules
 
 - Before changing Next-specific APIs, routing behavior, metadata, fonts, server/client component boundaries, or config, read the matching guide in `node_modules/next/dist/docs/`.
