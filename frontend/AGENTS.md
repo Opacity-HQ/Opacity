@@ -1,3 +1,7 @@
+# Frontend Agent Guide
+
+This file applies to everything under `frontend/`.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
@@ -7,3 +11,112 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Project Snapshot
+
+- Framework: Next.js `16.3.1` with the App Router.
+- Runtime UI: React `19.2.8`.
+- Language: TypeScript with `strict` enabled.
+- Styling: Tailwind CSS v4 through `app/globals.css`, plus shadcn/base-ui components.
+- Icons: `lucide-react`.
+- Motion: `motion/react`.
+- Import alias: use `@/` for project-root imports.
+- Product: Opacity, a dyslexia screening experience with game-like routes.
+
+## Commands
+
+Run commands from `frontend/`.
+
+```bash
+npm run dev
+npm run build
+npm run lint
+```
+
+Use `npm run lint` for quick validation after edits. Use `npm run build` before handing off larger changes that touch routing, layout, assets, or framework APIs.
+
+## Directory Conventions
+
+- `app/` contains routes, layouts, loading states, global CSS, and font assets.
+- `components/` contains reusable application components.
+- `components/ui/` contains shadcn/base-ui primitives. Keep these generic and reusable.
+- `lib/` contains shared helpers such as `cn`.
+- `public/` contains static images and SVGs referenced from the app.
+
+Add new game routes under `app/<route-name>/` with `page.tsx`; include `layout.tsx` and `loading.tsx` when the route needs its own shell or loading treatment.
+
+## Game Work Boundaries
+
+- Do not edit `app/page.tsx`; it was created by Atharv and should remain untouched unless Atharv explicitly asks for changes there.
+- Each game must stay in its own route folder under `app/`.
+- Put `letter-detective` work only in `app/letter-detective/`.
+- Put `memory-quest` work only in `app/memory-quest/`.
+- Put `rapid-match` work only in `app/rapid-match/`.
+- Put `sound-match` work only in `app/sound-match/`.
+- Put `word-builder` work only in `app/word-builder/`.
+- Do not edit any game folder's `layout.tsx`; every game route already has its layout, and it should remain untouched unless Atharv explicitly asks for layout changes.
+- Build or update the actual game only in that game's `page.tsx`.
+- Do not place one game's logic, state, assets, or route-only components inside another game's folder.
+- For game API endpoints, use only the game-specific folders already created under `app/api/games/`.
+- Put `letter-detective` endpoints only in `app/api/games/letter-detective/`.
+- Put `memory-quest` endpoints only in `app/api/games/memory-quest/`.
+- Put `rapid-match` endpoints only in `app/api/games/rapid-match/`.
+- Put `sound-match` endpoints only in `app/api/games/sound-match/`.
+- Put `word-builder` endpoints only in `app/api/games/word-builder/`.
+- If a new game is created, make a new `app/<game-name>/` folder for it and keep that game's route-specific files there.
+- Move code out of a game folder only when it is genuinely shared by multiple routes.
+
+## Next.js Rules
+
+- Before changing Next-specific APIs, routing behavior, metadata, fonts, server/client component boundaries, or config, read the matching guide in `node_modules/next/dist/docs/`.
+- Prefer server components by default. Add `"use client"` only when a component needs state, effects, browser APIs, event handlers, animation, or other client-only behavior.
+- Use `next/image` for image assets unless there is a specific reason to use a raw element.
+- Keep route metadata close to the relevant layout or page.
+- Do not remove the managed Next.js block in this file.
+
+## TypeScript And React
+
+- Keep TypeScript strict: avoid `any` unless the external API is genuinely untyped and a narrow local type is not practical.
+- Type component props explicitly.
+- Keep component state local until there is a real sharing requirement.
+- Prefer small, readable components over large pages with repeated JSX.
+- Use `React.ReactElement`, `React.ReactNode`, and route types consistently with the existing code.
+
+## Styling And UI
+
+- Use Tailwind utilities and the tokens defined in `app/globals.css` before adding custom CSS.
+- Use only the existing `font-pixel` and `font-sauce` font utilities. Do not introduce or rely on any other font family for game UI.
+- Keep each game's visual theme consistent with the rest of the website.
+- Keep the visual tone playful but readable for dyslexic users: clear spacing, strong hierarchy, predictable controls, and simple copy.
+- Do not rely on color alone to communicate important state.
+- Preserve keyboard access, labels, focus states, and semantic HTML for interactive elements.
+- Use `lucide-react` icons for common controls when an icon improves clarity.
+
+## Components
+
+- Use shadcn components first when a UI component is needed.
+- Reuse `components/ui/*` before creating a new primitive.
+- When editing `components/ui/*`, keep changes generic and avoid product-specific behavior.
+- Put any extra shared components you create in `components/`.
+- Put any game-specific component only in that game's own component folder, such as `app/<game-name>/components/`; do not put game-specific components in `components/`.
+- Use `cn` from `@/lib/utils` for conditional class names.
+- Keep responsive behavior explicit with stable dimensions and Tailwind breakpoints.
+
+## Assets
+
+- Put static assets in `public/`.
+- Reference public assets with root-relative paths such as `/logo.svg`.
+- Keep image alt text useful and human-readable.
+- Avoid committing generated build output such as `.next/` or TypeScript build info.
+
+## Quality Bar
+
+Before finishing a frontend change:
+
+1. Run `npm run lint`.
+2. Run `npm run build` for substantial changes.
+3. Manually check responsive behavior for pages, dialogs, drawers, and game screens.
+4. Verify interactive flows with keyboard and pointer input.
+5. Confirm text does not overlap or overflow on mobile widths.
+
+If a command cannot be run, note that clearly in the handoff.
