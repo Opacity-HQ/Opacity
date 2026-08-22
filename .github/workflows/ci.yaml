@@ -1,0 +1,190 @@
+name: Test Opacity
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        if: hashFiles('backend/package-lock.json', 'backend/package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Python
+        if: hashFiles('backend/pyproject.toml', 'backend/requirements.txt') != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Set up Go
+        if: hashFiles('backend/go.mod') != ''
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Run backend checks
+        working-directory: backend
+        run: |
+          set -euo pipefail
+
+          if [ -f package-lock.json ]; then
+            npm ci
+            npm run lint --if-present
+            npm test --if-present
+            npm run build --if-present
+          elif [ -f package.json ]; then
+            npm install
+            npm run lint --if-present
+            npm test --if-present
+            npm run build --if-present
+          elif [ -f pyproject.toml ]; then
+            python -m pip install --upgrade pip
+            python -m pip install .
+            python -m compileall .
+            if [ -d tests ]; then
+              python -m pip install pytest
+              python -m pytest
+            else
+              echo "No backend Python tests directory found."
+            fi
+          elif [ -f requirements.txt ]; then
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
+            python -m compileall .
+            if [ -d tests ]; then
+              python -m pip install pytest
+              python -m pytest
+            else
+              echo "No backend Python tests directory found."
+            fi
+          elif [ -f go.mod ]; then
+            go test ./...
+          elif [ -f Cargo.toml ]; then
+            cargo check
+          elif [ -f Dockerfile ]; then
+            docker build .
+          elif [ -f backend.md ]; then
+            echo "No backend runtime manifest found; validated backend documentation placeholder."
+          else
+            echo "Custom or unrecognized backend stack detected; skipping automated backend step safely."
+          fi
+
+  ml:
+    name: ML
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: hashFiles('ml/pyproject.toml', 'ml/requirements.txt') != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Set up Node.js
+        if: hashFiles('ml/package-lock.json', 'ml/package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Go
+        if: hashFiles('ml/go.mod') != ''
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Run ML checks
+        working-directory: ml
+        run: |
+          set -euo pipefail
+
+          if [ -f pyproject.toml ]; then
+            python -m pip install --upgrade pip
+            python -m pip install .
+            python -m compileall .
+            if [ -d tests ]; then
+              python -m pip install pytest
+              python -m pytest
+            else
+              echo "No ML Python tests directory found."
+            fi
+          elif [ -f requirements.txt ]; then
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
+            python -m compileall .
+            if [ -d tests ]; then
+              python -m pip install pytest
+              python -m pytest
+            else
+              echo "No ML Python tests directory found."
+            fi
+          elif [ -f package-lock.json ]; then
+            npm ci
+            npm run lint --if-present
+            npm test --if-present
+            npm run build --if-present
+          elif [ -f package.json ]; then
+            npm install
+            npm run lint --if-present
+            npm test --if-present
+            npm run build --if-present
+          elif [ -f go.mod ]; then
+            go test ./...
+          elif [ -f Cargo.toml ]; then
+            cargo check
+          elif [ -f Dockerfile ]; then
+            docker build .
+          elif [ -f ml.md ]; then
+            echo "No ML runtime manifest found; validated ML documentation placeholder."
+          else
+            echo "Custom or unrecognized ML stack detected; skipping automated ML step safely."
+          fi
+

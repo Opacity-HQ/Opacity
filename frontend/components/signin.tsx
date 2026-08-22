@@ -2,15 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import {
@@ -27,14 +22,19 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
   const [step, setStep] = useState<"email" | "password">("email")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [isMobile, setIsMobile] = useState<boolean>(false)
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === "undefined") {
+      return false
+    }
+
+    return window.matchMedia("(max-width: 639px)").matches
+  })
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 639px)")
     const onChange = () => {
       setIsMobile(mql.matches)
     }
-    setIsMobile(mql.matches)
     mql.addEventListener("change", onChange)
     return () => mql.removeEventListener("change", onChange)
   }, [])
