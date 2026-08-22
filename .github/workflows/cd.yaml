@@ -168,6 +168,8 @@ jobs:
     name: Deploy Application
     needs: [backend, ml]
     runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     defaults:
       run:
         working-directory: frontend
@@ -195,7 +197,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to Vercel (Production)
-        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        if: ${{ env.VERCEL_TOKEN != '' }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -205,7 +207,7 @@ jobs:
           working-directory: frontend
 
       - name: Upload Build Artifacts
-        if: ${{ secrets.VERCEL_TOKEN == '' }}
+        if: ${{ env.VERCEL_TOKEN == '' }}
         uses: actions/upload-artifact@v4
         with:
           name: opacity-frontend-build
@@ -215,3 +217,4 @@ jobs:
             frontend/package.json
             frontend/package-lock.json
           retention-days: 7
+
