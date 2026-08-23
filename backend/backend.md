@@ -71,3 +71,23 @@ Use the matching folder for each game's route handlers, scoring logic, submissio
 ## Empty Folders
 
 The `.gitkeep` files exist only so Git can track empty API folders. Remove a `.gitkeep` only after that folder contains a real tracked file, such as `route.ts`.
+
+## Environment & Secrets
+
+The project uses Supabase (Postgres + Auth + RLS). Env vars live in `frontend/.env.local`, which is git-ignored by `frontend/.gitignore` (`.env*`). Never commit an env file, never paste a real key into a commit, PR description, issue, or chat log.
+
+There are three Supabase keys. Know which one you're using:
+
+- `NEXT_PUBLIC_SUPABASE_URL` — the project URL. Public, safe anywhere.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — public client key. Safe in browser code. Every request made with it is still subject to Row Level Security, so it can only ever see what RLS allows.
+- `SUPABASE_SERVICE_ROLE_KEY` — **bypasses RLS entirely.** Whoever holds this key can read or write every row in every table, including other children's game data. Treat it as a master key, not an API key.
+
+Rules for the service role key:
+
+- Only ever imported in `frontend/lib/supabase/admin.ts`. Do not import it anywhere else.
+- Only ever used inside a route handler (`route.ts`) or other server-only code — never in a Client Component, never in anything under `"use client"`, never in code that ships to the browser.
+- Never read it into a game's own API folder directly. If a game route genuinely needs a privileged operation, call the shared `admin.ts` helper instead of importing the key again elsewhere.
+- Never log it, never put it in an error message, never put it in a GitHub Actions secret that a client-side step can echo.
+- If you think you need the service role key inside a Client Component, you almost certainly don't — RLS through the anon key with `requireUser()` / `requireChildAccess()` is the default. Ask before reaching for the service role key.
+
+Get keys from the Supabase dashboard: Project Settings → API. Ask Saket for org access if you don't have it yet — invites are per-organization, so one invite gives you every project in it.
