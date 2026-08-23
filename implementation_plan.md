@@ -11,29 +11,31 @@ Branch: `Saket-Backend_LetterDetective`
 - [x] `.env.local` set up (Saket, locally)
 
 ## Phase 1 — Foundations
-- [ ] Add deps: `@supabase/supabase-js`, `@supabase/ssr`, `zod`
-- [ ] `frontend/lib/supabase/server.ts` — cookie-bound server client
-- [ ] `frontend/lib/supabase/admin.ts` — service-role client, server-only guard
-- [ ] `frontend/lib/supabase/client.ts` — browser client
-- [ ] `frontend/lib/api/response.ts` — `ApiSuccess`/`ApiError` envelope
-- [ ] `frontend/lib/api/auth.ts` — `requireUser()`, `requireChildAccess()`
-- [ ] `frontend/proxy.ts` — Next 16 session-refresh (renamed from middleware)
-- [ ] `frontend/.env.example`
+- [x] Add deps: `@supabase/supabase-js`, `@supabase/ssr`, `zod`, `server-only`
+- [x] `frontend/lib/supabase/server.ts` — cookie-bound server client
+- [x] `frontend/lib/supabase/admin.ts` — service-role client, server-only guard
+- [x] `frontend/lib/supabase/client.ts` — browser client
+- [x] `frontend/lib/api/response.ts` — `ApiSuccess`/`ApiError` envelope
+- [x] `frontend/lib/api/auth.ts` — `requireUser()`, `requireChildAccess()`
+- [x] `frontend/proxy.ts` — Next 16 session-refresh (renamed from middleware)
+- [x] `frontend/.env.example`
 
 ## Phase 2 — Database schema
-- [ ] `backend/supabase/migrations/` — profiles, children, classrooms, classroom_members
-- [ ] games, game_sessions, game_trials, session_scores, skill_states, screening_reports
-- [ ] ld_letter_pairs, ld_word_items
-- [ ] RLS on every table + `owns_child`/`teaches_child` helper functions
-- [ ] `backend/supabase/seed/` — games, ld_letter_pairs, ld_word_items
-- [ ] Apply migrations to the provisioned Supabase project (Saket confirms)
-- [ ] Generate `frontend/lib/db/types.ts`
+- [x] `backend/supabase/migrations/` — profiles, children, classrooms, classroom_members
+- [x] games, game_sessions, game_trials, session_scores, skill_states, screening_reports
+- [x] ld_letter_pairs, ld_word_items
+- [x] RLS on every table + `owns_child`/`teaches_child` helper functions
+- [x] Seeds — games, ld_letter_pairs, ld_word_items (as migrations, applied)
+- [x] Applied all 13 migrations to the provisioned Supabase project
+- [x] Generate `frontend/lib/db/types.ts`, wired into all 3 clients
+- [x] Security advisor clean (2 expected findings only, documented in migration)
 
 ## Phase 3 — Auth API
-- [ ] `app/api/signin/route.ts` — account creation + anonymous entry
-- [ ] `app/api/login/route.ts` — password login, refresh, sign-out
-- [ ] Wire `components/signin.tsx` to real calls (small diff, flagged to Atharv in PR)
-- [ ] Enable Anonymous provider in Supabase dashboard (Saket, manual step)
+- [x] `app/api/signin/route.ts` — account creation, guest entry, claim-on-anonymous
+- [x] `app/api/login/route.ts` — password login, sign-out
+- [x] Wire `components/signin.tsx` to real calls (flagged to Atharv in PR)
+- [x] Verified live: signup, wrong-password rejection, error surfacing all correct
+- [ ] Enable Anonymous provider in Supabase dashboard (Saket, manual step — pending)
 
 ## Phase 4 — Dashboard API
 - [ ] `app/api/dashboard/route.ts` — children, per-game progress, latest report
