@@ -42,9 +42,11 @@ Branch: `Saket-Backend_LetterDetective`
 - [x] Verified live: empty list, child creation, aggregate shape, validation, cross-user RLS isolation (relies entirely on RLS, no manual owner_id filter)
 
 ## Phase 5 — Letter Detective API
-- [ ] `app/api/games/letter-detective/route.ts` — start session
-- [ ] `app/api/games/letter-detective/trial/route.ts` — batched trial submit
-- [ ] `app/api/games/letter-detective/complete/route.ts` — grade + score + update skill_states
+- [x] `plan.ts` — trial plan generator (lineup/impostor/stakeout/words) + grading, no answer-key fields sent to client
+- [x] `app/api/games/letter-detective/route.ts` — start session, reads skill_states for difficulty
+- [x] `app/api/games/letter-detective/trial/route.ts` — batched trial submit, server-side grading only
+- [x] `app/api/games/letter-detective/complete/route.ts` — session_scores + skill_states adaptive update
+- [x] Verified live end-to-end: 21-trial session, tamper attempt correctly rejected, all DB rows/scores/skill_states hand-checked correct, cascade cleanup confirmed
 
 ## Phase 6 — Letter Detective game
 - [ ] `app/letter-detective/page.tsx` + `app/letter-detective/components/`
