@@ -38,7 +38,8 @@ Branch: `Saket-Backend_LetterDetective`
 - [ ] Enable Anonymous provider in Supabase dashboard (Saket, manual step — pending)
 
 ## Phase 4 — Dashboard API
-- [ ] `app/api/dashboard/route.ts` — children, per-game progress, latest report
+- [x] `app/api/dashboard/route.ts` — GET children/per-game progress/latest report, POST create child
+- [x] Verified live: empty list, child creation, aggregate shape, validation, cross-user RLS isolation (relies entirely on RLS, no manual owner_id filter)
 
 ## Phase 5 — Letter Detective API
 - [ ] `app/api/games/letter-detective/route.ts` — start session
