@@ -49,23 +49,24 @@ Branch: `Saket-Backend_LetterDetective`
 - [x] Verified live end-to-end: 21-trial session, tamper attempt correctly rejected, all DB rows/scores/skill_states hand-checked correct, cascade cleanup confirmed
 
 ## Phase 6 — Letter Detective game
-- [ ] `app/letter-detective/page.tsx` + `app/letter-detective/components/`
-- [ ] Round types: The Lineup, Spot the Impostor, Stakeout, Undercover in Words, Case Files
-- [ ] Timing: rAF-stamped onset, `event.timeStamp` response capture
-- [ ] Anti-frustration: no live score, no failure state, reduced-motion support
-- [ ] Keyboard access end to end
+- [x] `app/letter-detective/page.tsx` + `app/letter-detective/components/` — full state machine (loading/needs-child/intro/playing/solved/error)
+- [x] Round types: The Lineup, Spot the Impostor, Stakeout, Undercover in Words. Case Files = the session-level wrapper (one pair per session), not a separate mechanic
+- [x] Timing: `useTrialClock` — rAF-stamped onset, `event.timeStamp` response capture
+- [x] Anti-frustration: no live score (dot progress only), no failure state (wiggle+glow, never red X), reduced-motion via `usePrefersReducedMotion`/`useSyncExternalStore`
+- [x] Real semantic buttons, `onKeyDown` Enter/Space handling, `aria-label`/`aria-pressed`/`role=group`/`role=progressbar`, focus-visible rings throughout
+- [x] Verified live: full playthrough via actual rendered UI (not just API calls) — child setup, all 4 round types, timeout path, case-solved screen, DB rows match UI exactly
 
 ## Phase 7 — Adaptive difficulty
-- [ ] `skill_states` read on session start, written on completion
+- [x] `skill_states` read on session start, written on completion (built as part of Phase 5's complete route)
 
 ## Verification
-- [ ] `npm run lint` / `npm run build` pass
-- [ ] RLS cross-child access proof (deny, not error-then-allow)
-- [ ] Full guest playthrough → correct DB rows
-- [ ] Tamper check: client-claimed correctness rejected
-- [ ] Session replay reproduces identical stimulus sequence
-- [ ] Keyboard-only + reduced-motion playthroughs
-- [ ] Mobile width check
+- [x] `npm run lint` / `npm run build` pass (checked after every phase)
+- [x] RLS cross-child access proof (Phase 4: second account sees zero of first account's children, no manual filter in the query)
+- [x] Full guest playthrough → correct DB rows (done with a confirmed test account; true anonymous-guest path still blocked on the dashboard toggle, see Phase 3)
+- [x] Tamper check: fabricated trial-index rejected with `trial_out_of_range`; client can never submit a claimed correctness, only raw response+timestamp
+- [ ] Session replay reproduces identical stimulus sequence (plan is stored verbatim in `game_sessions.config`, replay = re-render same array; not separately re-tested)
+- [ ] Keyboard-only playthrough (structural support in place — real buttons, keydown handlers, focus rings — not separately click-tested via keyboard-only)
+- [x] Mobile width check — actual playthrough happened at 374px width; desktop 1280px screenshot also checked, no overflow either way
 
 ## PR
 - [ ] Open via GitHub MCP (`gh` not installed locally), `Saket-Backend_LetterDetective` → `main`
