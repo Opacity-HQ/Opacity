@@ -1,7 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { useDashboardQuery } from "@/lib/queries/dashboard";
+import { ApiError } from "@/lib/queries/api-error";
 import Signin from "@/components/signin";
+import { useLetterDetectiveStore } from "./components/store";
+import {
+  useStartLetterDetectiveSessionMutation,
+  useSubmitLetterDetectiveTrialsMutation,
+  useCompleteLetterDetectiveSessionMutation,
+} from "./components/queries";
 import ChildSetup from "./components/ChildSetup";
 import CaseIntro from "./components/CaseIntro";
 import CaseSolved from "./components/CaseSolved";
@@ -9,75 +17,49 @@ import LineupRound from "./components/LineupRound";
 import ImpostorRound from "./components/ImpostorRound";
 import StakeoutRound from "./components/StakeoutRound";
 import WordsRound from "./components/WordsRound";
-import type { LDPair, LDTrial, TrialOutcome } from "./components/types";
-
-type Stage = "loading" | "needs-child" | "intro" | "playing" | "solved" | "error";
+import type { TrialOutcome } from "./components/types";
 
 const FLUSH_BATCH_SIZE = 5;
 
+const PRIMARY_BUTTON_CLASSES =
+  "font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer";
+
 export default function LetterDetectivePage() {
-  const [stage, setStage] = useState<Stage>("loading");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-  const [childId, setChildId] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [pair, setPair] = useState<LDPair | null>(null);
-  const [trials, setTrials] = useState<LDTrial[]>([]);
-  const [trialCursor, setTrialCursor] = useState(0);
-  const [accuracyResult, setAccuracyResult] = useState(0);
-  const [starting, setStarting] = useState(false);
+  // Server state (dashboard/children) lives entirely in TanStack Query —
+  // per frontend/AGENTS.md, Zustand never duplicates it.
+  const dashboardQuery = useDashboardQuery();
+
+  // Client-side active-session state lives in Zustand, scoped to this game.
+  const storeChildId = useLetterDetectiveStore((s) => s.childId);
+  const phase = useLetterDetectiveStore((s) => s.phase);
+  const sessionId = useLetterDetectiveStore((s) => s.sessionId);
+  const pair = useLetterDetectiveStore((s) => s.pair);
+  const trials = useLetterDetectiveStore((s) => s.trials);
+  const trialCursor = useLetterDetectiveStore((s) => s.trialCursor);
+  const accuracyResult = useLetterDetectiveStore((s) => s.accuracyResult);
+  const setChildId = useLetterDetectiveStore((s) => s.setChildId);
+  const startSessionState = useLetterDetectiveStore((s) => s.startSession);
+  const advanceTrial = useLetterDetectiveStore((s) => s.advanceTrial);
+  const setSolved = useLetterDetectiveStore((s) => s.setSolved);
+  const resetToIntro = useLetterDetectiveStore((s) => s.resetToIntro);
+
+  const startSessionMutation = useStartLetterDetectiveSessionMutation();
+  const submitTrialsMutation = useSubmitLetterDetectiveTrialsMutation();
+  const completeSessionMutation = useCompleteLetterDetectiveSessionMutation();
 
   const bufferRef = useRef<TrialOutcome[]>([]);
   const pendingFlushesRef = useRef<Promise<unknown>[]>([]);
   const sessionIdRef = useRef<string | null>(null);
-
   useEffect(() => {
     sessionIdRef.current = sessionId;
   }, [sessionId]);
-
-  const loadDashboard = useCallback(() => {
-    let cancelled = false;
-    fetch("/api/dashboard")
-      .then((r) => r.json())
-      .then((body) => {
-        if (cancelled) return;
-        if (!body.ok) {
-          setStage("error");
-          setErrorCode(body.error?.code ?? null);
-          setErrorMessage(body.error?.message ?? "Could not load your profile.");
-          return;
-        }
-        const children = body.data.children as { id: string }[];
-        if (children.length === 0) {
-          setStage("needs-child");
-        } else {
-          setChildId(children[0].id);
-          setStage("intro");
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setStage("error");
-          setErrorMessage("Could not connect. Please check your connection.");
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    return loadDashboard();
-  }, [loadDashboard]);
 
   function flushBuffer() {
     if (bufferRef.current.length === 0 || !sessionIdRef.current) return;
     const batch = bufferRef.current;
     bufferRef.current = [];
-    const promise = fetch("/api/games/letter-detective/trial", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const promise = submitTrialsMutation
+      .mutateAsync({
         sessionId: sessionIdRef.current,
         trials: batch.map((t) => ({
           trialIndex: t.trialIndex,
@@ -85,52 +67,31 @@ export default function LetterDetectivePage() {
           reactionTimeMs: t.reactionTimeMs,
           timeToFirstMoveMs: t.timeToFirstMoveMs,
         })),
-      }),
-    }).catch(() => {
-      // Network hiccup on a background flush isn't fatal to gameplay; the
-      // final flush before /complete is what matters most, and any gap
-      // here just means fewer trials scored, not a broken session.
-    });
+      })
+      .catch(() => {
+        // Network hiccup on a background flush isn't fatal to gameplay; the
+        // final flush before /complete is what matters most, and any gap
+        // here just means fewer trials scored, not a broken session.
+      });
     pendingFlushesRef.current.push(promise);
   }
 
-  async function startCase() {
-    if (!childId) return;
-    setStarting(true);
-    setErrorMessage(null);
+  async function startCase(childId: string) {
     try {
-      const res = await fetch("/api/games/letter-detective", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          childId,
-          device: {
-            userAgent: navigator.userAgent,
-            screenWidth: window.screen.width,
-            screenHeight: window.screen.height,
-            inputType: "ontouchstart" in window ? "touch" : "mouse",
-          },
-        }),
+      const result = await startSessionMutation.mutateAsync({
+        childId,
+        device: {
+          userAgent: navigator.userAgent,
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          inputType: "ontouchstart" in window ? "touch" : "mouse",
+        },
       });
-      const body = await res.json();
-      if (!res.ok) {
-        setErrorCode(body.error?.code ?? null);
-        setErrorMessage(body.error?.message ?? "Could not start the case.");
-        setStage("error");
-        return;
-      }
       bufferRef.current = [];
       pendingFlushesRef.current = [];
-      setSessionId(body.data.sessionId);
-      setPair(body.data.pair);
-      setTrials(body.data.trials);
-      setTrialCursor(0);
-      setStage("playing");
+      startSessionState(result);
     } catch {
-      setErrorMessage("Could not connect. Please check your connection.");
-      setStage("error");
-    } finally {
-      setStarting(false);
+      // Surfaced via startSessionMutation.error in the render below.
     }
   }
 
@@ -146,54 +107,93 @@ export default function LetterDetectivePage() {
       if (isLastTrial) {
         await Promise.all(pendingFlushesRef.current);
         try {
-          const res = await fetch("/api/games/letter-detective/complete", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sessionId: sessionIdRef.current }),
-          });
-          const body = await res.json();
-          if (!res.ok) {
-            setErrorCode(body.error?.code ?? null);
-            setErrorMessage(body.error?.message ?? "Could not finish the case.");
-            setStage("error");
-            return;
-          }
-          setAccuracyResult(body.data.accuracy);
-          setStage("solved");
+          const result = await completeSessionMutation.mutateAsync(
+            sessionIdRef.current!,
+          );
+          setSolved(result.accuracy);
         } catch {
-          setErrorMessage("Could not connect. Please check your connection.");
-          setStage("error");
+          // Surfaced via completeSessionMutation.error in the render below.
         }
         return;
       }
 
-      setTrialCursor((c) => c + 1);
+      advanceTrial();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [trialCursor, trials.length],
   );
 
   const currentTrial = trials[trialCursor];
 
+  if (dashboardQuery.isPending) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
+        <p className="font-pixel text-[18px] text-[#5e5e5e]">loading...</p>
+      </div>
+    );
+  }
+
+  if (dashboardQuery.isError) {
+    const err = dashboardQuery.error;
+    const isUnauthorized = err instanceof ApiError && err.code === "unauthorized";
+    return (
+      <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
+        <div className="flex flex-col items-center gap-4 text-center px-4">
+          <p className="font-pixel text-[18px] text-[#1d1d1d]">
+            {err.message || "Something went wrong."}
+          </p>
+          {isUnauthorized ? (
+            <Signin
+              onSuccess={() => dashboardQuery.refetch()}
+              trigger={
+                <button type="button" className={PRIMARY_BUTTON_CLASSES}>
+                  go sign in
+                </button>
+              }
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => dashboardQuery.refetch()}
+              className={PRIMARY_BUTTON_CLASSES}
+            >
+              try again
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const children = dashboardQuery.data.children;
+  const effectiveChildId = storeChildId ?? children[0]?.id ?? null;
+
+  if (!effectiveChildId) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
+        <ChildSetup onCreated={(child) => setChildId(child.id)} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
-      {stage === "loading" && (
-        <p className="font-pixel text-[18px] text-[#5e5e5e]">loading...</p>
+      {phase === "intro" && (
+        <div className="flex flex-col items-center gap-4">
+          <CaseIntro
+            pair={pair}
+            loading={startSessionMutation.isPending}
+            onStart={() => startCase(effectiveChildId)}
+          />
+          {startSessionMutation.isError && (
+            <p role="alert" className="font-pixel text-[13px] text-red-600">
+              {startSessionMutation.error.message}
+            </p>
+          )}
+        </div>
       )}
 
-      {stage === "needs-child" && (
-        <ChildSetup
-          onCreated={(child) => {
-            setChildId(child.id);
-            setStage("intro");
-          }}
-        />
-      )}
-
-      {stage === "intro" && (
-        <CaseIntro pair={pair} loading={starting} onStart={startCase} />
-      )}
-
-      {stage === "playing" && currentTrial && (
+      {phase === "playing" && currentTrial && (
         <div className="flex flex-col items-center justify-center w-full gap-8">
           <div
             role="progressbar"
@@ -243,43 +243,13 @@ export default function LetterDetectivePage() {
         </div>
       )}
 
-      {stage === "solved" && (
-        <CaseSolved
-          accuracy={accuracyResult}
-          onPlayAgain={() => {
-            setStage("intro");
-          }}
-        />
-      )}
-
-      {stage === "error" && (
-        <div className="flex flex-col items-center gap-4 text-center px-4">
-          <p className="font-pixel text-[18px] text-[#1d1d1d]">
-            {errorMessage ?? "Something went wrong."}
-          </p>
-          {errorCode === "unauthorized" ? (
-            <Signin
-              onSuccess={() => {
-                setStage("loading");
-                loadDashboard();
-              }}
-              trigger={
-                <button
-                  type="button"
-                  className="font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer"
-                >
-                  go sign in
-                </button>
-              }
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer"
-            >
-              try again
-            </button>
+      {phase === "solved" && (
+        <div className="flex flex-col items-center gap-4">
+          <CaseSolved accuracy={accuracyResult} onPlayAgain={resetToIntro} />
+          {completeSessionMutation.isError && (
+            <p role="alert" className="font-pixel text-[13px] text-red-600">
+              {completeSessionMutation.error.message}
+            </p>
           )}
         </div>
       )}

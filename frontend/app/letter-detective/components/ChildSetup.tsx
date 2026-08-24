@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useCreateChildMutation } from "@/lib/queries/dashboard";
 
 const currentYear = new Date().getFullYear();
 
@@ -12,32 +13,18 @@ export default function ChildSetup({
 }) {
   const [displayName, setDisplayName] = useState("");
   const [birthYear, setBirthYear] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const createChild = useCreateChildMutation();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
-    setError(null);
     try {
-      const res = await fetch("/api/dashboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          displayName,
-          birthYear: Number(birthYear),
-        }),
+      const child = await createChild.mutateAsync({
+        displayName,
+        birthYear: Number(birthYear),
       });
-      const body = await res.json();
-      if (!res.ok) {
-        setError(body.error?.message ?? "Could not save your profile.");
-        return;
-      }
-      onCreated({ id: body.data.id, displayName: body.data.displayName });
+      onCreated({ id: child.id, displayName: child.displayName });
     } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
+      // Surfaced via createChild.error below.
     }
   }
 
@@ -78,17 +65,17 @@ export default function ChildSetup({
           className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus-visible:ring-0 focus-visible:outline-none"
         />
       </div>
-      {error && (
+      {createChild.isError && (
         <p role="alert" className="font-pixel text-[13px] text-red-600">
-          {error}
+          {createChild.error.message}
         </p>
       )}
       <button
         type="submit"
-        disabled={submitting}
+        disabled={createChild.isPending}
         className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full"
       >
-        {submitting ? "saving..." : "let's go"}
+        {createChild.isPending ? "saving..." : "let's go"}
       </button>
     </form>
   );

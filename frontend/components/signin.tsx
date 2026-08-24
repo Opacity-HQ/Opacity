@@ -16,20 +16,19 @@ import {
 
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
+import { useSigninMutation, useLoginMutation } from "@/lib/queries/auth"
+import { ApiError } from "@/lib/queries/api-error"
 
-type ApiErrorBody = {
-  ok: false
-  error: { code: string; message: string; details?: { reason?: string } }
+function isEmailAlreadyRegistered(err: unknown) {
+  return (
+    err instanceof ApiError &&
+    (err.details as { reason?: string } | undefined)?.reason ===
+      "email_already_registered"
+  )
 }
 
-type SigninSuccessBody = {
-  ok: true
-  data: {
-    userId?: string
-    isAnonymous: boolean
-    confirmationRequired?: boolean
-    claimPending?: boolean
-  }
+function errorMessage(err: unknown, fallback: string) {
+  return err instanceof ApiError ? err.message : fallback
 }
 
 export default function Signin({
@@ -53,7 +52,9 @@ export default function Signin({
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const signinMutation = useSigninMutation()
+  const loginMutation = useLoginMutation()
+  const submitting = signinMutation.isPending || loginMutation.isPending
   const [isMobile, setIsMobile] = useState<boolean>(() => {
     if (typeof window === "undefined") {
       return false
@@ -83,72 +84,44 @@ export default function Signin({
   const enterAsGuest = async () => {
     setError(null)
     try {
-      const res = await fetch("/api/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "anonymous" }),
-      })
-      if (!res.ok) {
-        const body: ApiErrorBody = await res.json()
-        setError(body.error.message)
-        return
-      }
+      await signinMutation.mutateAsync({ mode: "anonymous" })
       handleAuthSuccess()
-    } catch {
-      setError("Could not connect. Please check your connection.")
+    } catch (err) {
+      setError(errorMessage(err, "Could not connect. Please check your connection."))
     }
   }
 
   const submitEmailPassword = async () => {
-    setSubmitting(true)
     setError(null)
     setInfo(null)
     try {
-      const signinRes = await fetch("/api/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "email", email, password }),
+      const result = await signinMutation.mutateAsync({
+        mode: "email",
+        email,
+        password,
       })
 
-      if (signinRes.ok) {
-        const body: SigninSuccessBody = await signinRes.json()
-
-        // No session yet — signUp() only returns one when email
-        // confirmation is off, and a claim never gets a new session at all.
-        if (body.data.confirmationRequired || body.data.claimPending) {
-          setInfo("Check your email to confirm your account, then sign in.")
-          return
-        }
-
-        handleAuthSuccess()
+      // No session yet — signUp() only returns one when email
+      // confirmation is off, and a claim never gets a new session at all.
+      if (result.confirmationRequired || result.claimPending) {
+        setInfo("Check your email to confirm your account, then sign in.")
         return
       }
 
-      const signinBody: ApiErrorBody = await signinRes.json()
-
+      handleAuthSuccess()
+    } catch (err) {
       // Not a fresh signup or claim -> this is a returning user, try login.
-      if (signinBody.error.details?.reason === "email_already_registered") {
-        const loginRes = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        })
-
-        if (loginRes.ok) {
+      if (isEmailAlreadyRegistered(err)) {
+        try {
+          await loginMutation.mutateAsync({ email, password })
           handleAuthSuccess()
-          return
+        } catch (loginErr) {
+          setError(errorMessage(loginErr, "Something went wrong. Please try again."))
         }
-
-        const loginBody: ApiErrorBody = await loginRes.json()
-        setError(loginBody.error.message)
         return
       }
 
-      setError(signinBody.error.message)
-    } catch {
-      setError("Something went wrong. Please try again.")
-    } finally {
-      setSubmitting(false)
+      setError(errorMessage(err, "Something went wrong. Please try again."))
     }
   }
 

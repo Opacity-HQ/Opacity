@@ -3,6 +3,7 @@ import { GeistPixelSquare } from "geist/font/pixel";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Providers } from "./providers";
 
 const openSauce = localFont({
   src: "./font/open-sauce.ttf",
@@ -23,7 +24,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={cn("h-full", "antialiased", GeistPixelSquare.variable, openSauce.variable, "font-sans")}
     >
-      <body className="font-sauce min-h-full flex flex-col items-center justify-center">{children}</body>
+      <body className="font-sauce min-h-full flex flex-col items-center justify-center">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
