@@ -53,6 +53,33 @@ frontend/app/api/games/word-builder/
 
 Use the matching folder for each game's route handlers, scoring logic, submission endpoints, and game-specific data.
 
+### Memory Quest contract
+
+Memory Quest exposes one route at:
+
+```text
+GET/POST frontend/app/api/games/memory-quest/route.ts
+```
+
+`GET /api/games/memory-quest?playerId=<id>&type=sequence|position` creates a challenge. The response includes an opaque challenge ID, the sequence to display, the display duration, and the current adaptive level. The expected answer is retained server-side until submission.
+
+`POST /api/games/memory-quest` accepts:
+
+```json
+{
+	"challengeId": "uuid",
+	"playerId": "user-id",
+	"response": ["apple", "dog", "star"],
+	"responseTimeMs": 1800,
+	"attempts": 1,
+	"mistakes": 0
+}
+```
+
+The response returns correctness, score, the next level, and the measured summary: accuracy, maximum sequence length, average response time, attempts, errors, and difficulty reached. The adaptive policy advances after three strong recent rounds and eases the level after low accuracy or repeated mistakes. This is an explainable baseline model, so it needs no AI API.
+
+The current route uses an in-memory store as a development fallback. A Supabase project URL and server-only service role key are needed later for durable challenge and performance storage across deployments. Never expose the service role key to the browser.
+
 ## Route Handler Rules
 
 - Create Next.js route handlers as `route.ts` files inside the correct API folder.
