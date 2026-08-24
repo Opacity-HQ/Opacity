@@ -17,6 +17,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Framework: Next.js `16.3.1` with the App Router.
 - Runtime UI: React `19.2.8`.
 - Language: TypeScript with `strict` enabled.
+- Server State & API: `@tanstack/react-query` (TanStack Query).
+- Client Global State: Zustand (`zustand`).
 - Styling: Tailwind CSS v4 through `app/globals.css`, plus shadcn/base-ui components.
 - Icons: `lucide-react`.
 - Motion: `motion/react`.
@@ -100,6 +102,26 @@ npm run build
 - Use `next/image` for image assets unless there is a specific reason to use a raw element.
 - Keep route metadata close to the relevant layout or page.
 - Do not remove the managed Next.js block in this file.
+
+## Data Fetching & API (TanStack Query)
+
+- **Exclusive API & Data Fetching Standard**: Use **only** TanStack Query (`@tanstack/react-query`) for all client-side data fetching, mutations, caching, and server-state management. Do not use raw `fetch()` calls directly inside client components, `axios`, or manual `useEffect` + `useState` fetching patterns.
+- **Structured Query Keys**: Organize query keys consistently as tuples or array hierarchies (e.g. `['games', gameId]`, `['user', userId]`) to ensure predictable cache updates and precise invalidations via `queryClient.invalidateQueries`.
+- **Mandatory Performance & Optimization Practices**:
+  - **`staleTime`**: Set an explicit, tailored `staleTime` for queries to avoid unnecessary background re-fetches (e.g., non-zero `staleTime` for static or infrequently changing game configuration data).
+  - **`gcTime`**: Configure `gcTime` (Garbage Collection Time) intentionally based on lifecycle needs to optimize client memory usage.
+  - **`select` Data Transformation**: Use the `select` option in `useQuery` to transform or filter response data inline. This memoizes the output and prevents unnecessary component re-renders when unneeded fields update.
+  - **Refetch Fine-Tuning**: Explicitly configure `refetchOnWindowFocus`, `refetchOnReconnect`, and `refetchOnMount` to avoid disruptive background fetching during user gameplay or active UI interactions.
+  - **Optimistic Updates**: For user actions using `useMutation`, implement optimistic updates (`onMutate`, `onError`, `onSettled`, `queryClient.setQueryData`) to deliver immediate visual feedback.
+  - **Prefetching**: Leverage `queryClient.prefetchQuery` or `queryClient.ensureQueryData` to pre-load route or game assets ahead of navigation/transitions.
+  - **Retry & Error Management**: Fine-tune `retry` counts and backoff logic to prevent hammering endpoints when requests fail (e.g. disable automatic retries on 4xx client errors).
+
+## Client Global State (Zustand)
+
+- **Purpose & Scope**: Use Zustand (`zustand`) exclusively for client-side global UI state, active game session state, temporary local settings/preferences, and cross-component client state.
+- **Separation of Concerns**: Do NOT use Zustand to store or duplicate server data or API responses — use TanStack Query as the single source of truth for server state.
+- **Store Organization**: Keep stores modular and scoped to specific domain areas or game routes (e.g. `useSoundMatchStore`, `useUIStore`) rather than creating a single bloated monolithic store.
+- **Selectors & Performance**: Always use selector functions when subscribing to Zustand store state (e.g. `const score = useGameStore((s) => s.score)`) to prevent unnecessary component re-renders when unrelated properties in the store change.
 
 ## TypeScript And React
 
