@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Signin from "@/components/signin";
 import ChildSetup from "./components/ChildSetup";
 import CaseIntro from "./components/CaseIntro";
 import CaseSolved from "./components/CaseSolved";
@@ -35,7 +35,7 @@ export default function LetterDetectivePage() {
     sessionIdRef.current = sessionId;
   }, [sessionId]);
 
-  useEffect(() => {
+  const loadDashboard = useCallback(() => {
     let cancelled = false;
     fetch("/api/dashboard")
       .then((r) => r.json())
@@ -65,6 +65,10 @@ export default function LetterDetectivePage() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    return loadDashboard();
+  }, [loadDashboard]);
 
   function flushBuffer() {
     if (bufferRef.current.length === 0 || !sessionIdRef.current) return;
@@ -254,12 +258,20 @@ export default function LetterDetectivePage() {
             {errorMessage ?? "Something went wrong."}
           </p>
           {errorCode === "unauthorized" ? (
-            <Link
-              href="/"
-              className="font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer"
-            >
-              go sign in
-            </Link>
+            <Signin
+              onSuccess={() => {
+                setStage("loading");
+                loadDashboard();
+              }}
+              trigger={
+                <button
+                  type="button"
+                  className="font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer"
+                >
+                  go sign in
+                </button>
+              }
+            />
           ) : (
             <button
               type="button"

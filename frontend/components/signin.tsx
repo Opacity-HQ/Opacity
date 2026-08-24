@@ -32,7 +32,20 @@ type SigninSuccessBody = {
   }
 }
 
-export default function Signin({ trigger }: { trigger: React.ReactElement }) {
+export default function Signin({
+  trigger,
+  onSuccess,
+}: {
+  trigger: React.ReactElement
+  // Called after a session is actually established (guest entry, login, or
+  // signup with email confirmation off). Defaults to navigating to
+  // /dashboard, the landing page's behavior. Lets a caller like the
+  // letter-detective page instead just refresh its own state in place,
+  // since router.push to the same route it's already on wouldn't remount
+  // it. Never called for the "check your email" branch — there is no
+  // session yet in that case.
+  onSuccess?: () => void
+}) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<"email" | "password">("email")
@@ -58,6 +71,15 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
     return () => mql.removeEventListener("change", onChange)
   }, [])
 
+  const handleAuthSuccess = () => {
+    setOpen(false)
+    if (onSuccess) {
+      onSuccess()
+    } else {
+      router.push("/dashboard")
+    }
+  }
+
   const enterAsGuest = async () => {
     setError(null)
     try {
@@ -71,8 +93,7 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
         setError(body.error.message)
         return
       }
-      setOpen(false)
-      router.push("/dashboard")
+      handleAuthSuccess()
     } catch {
       setError("Could not connect. Please check your connection.")
     }
@@ -99,8 +120,7 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
           return
         }
 
-        setOpen(false)
-        router.push("/dashboard")
+        handleAuthSuccess()
         return
       }
 
@@ -115,8 +135,7 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
         })
 
         if (loginRes.ok) {
-          setOpen(false)
-          router.push("/dashboard")
+          handleAuthSuccess()
           return
         }
 
