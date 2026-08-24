@@ -5,13 +5,11 @@ import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerTrigger,
 } from "@/components/ui/drawer"
@@ -61,14 +59,22 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
   }, [])
 
   const enterAsGuest = async () => {
+    setError(null)
     try {
-      await fetch("/api/signin", {
+      const res = await fetch("/api/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "anonymous" }),
       })
-    } finally {
+      if (!res.ok) {
+        const body: ApiErrorBody = await res.json()
+        setError(body.error.message)
+        return
+      }
+      setOpen(false)
       router.push("/dashboard")
+    } catch {
+      setError("Could not connect. Please check your connection.")
     }
   }
 
@@ -221,19 +227,19 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
                 >
                   ← back to email
                 </button>
-                {error ? (
-                  <p role="alert" className="text-[13px] text-red-600 mt-[10px] font-pixel px-[10px]">
-                    {error}
-                  </p>
-                ) : null}
-                {info ? (
-                  <p role="status" className="text-[13px] text-[#1d1d1d] mt-[10px] font-pixel px-[10px]">
-                    {info}
-                  </p>
-                ) : null}
               </motion.div>
             )}
           </AnimatePresence>
+          {error ? (
+            <p role="alert" className="text-[13px] text-red-600 mt-[10px] font-pixel px-[10px]">
+              {error}
+            </p>
+          ) : null}
+          {info ? (
+            <p role="status" className="text-[13px] text-[#1d1d1d] mt-[10px] font-pixel px-[10px]">
+              {info}
+            </p>
+          ) : null}
         </div>
       </div>
     </div>
@@ -249,48 +255,50 @@ export default function Signin({ trigger }: { trigger: React.ReactElement }) {
     }
   }
 
+  // DialogContent/DrawerContent render through a portal (see
+  // components/ui/dialog.tsx / drawer.tsx), so their children end up in a
+  // different DOM subtree than anything outside them. A <form> only fires a
+  // native submit event for a type="submit" button that shares a real DOM
+  // ancestor, so the form must live inside the portaled content, not
+  // wrapping it. `className="contents"` keeps it invisible to layout.
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={resetOnClose}>
-        <form onSubmit={handleFormSubmit}>
-          <DrawerTrigger render={trigger} />
-          <DrawerContent className="w-full m-0 [--drawer-inset:0px] rounded-t-[24px] rounded-b-none !rounded-b-none border-none border-0 p-0 overflow-hidden flex flex-col items-center gap-3 pb-4">
+        <DrawerTrigger render={trigger} />
+        <DrawerContent className="w-full m-0 [--drawer-inset:0px] rounded-t-[24px] rounded-b-none !rounded-b-none border-none border-0 p-0 overflow-hidden flex flex-col items-center gap-3 pb-4">
+          <form onSubmit={handleFormSubmit} className="contents">
             {formBody}
             <div className="flex flex-row items-center justify-between w-full px-[20px] gap-3 mt-[12px]">
               <button type="submit" disabled={submitting} className="w-fit text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                   {submitting ? "signing in..." : "sign in"}
               </button>
-              <DrawerClose className="flex-1" render={
-                <button type="button" onClick={enterAsGuest} className="w-full text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] cursor-pointer whitespace-nowrap">
-                    play without login
-                </button>
-              } />
+              <button type="button" onClick={enterAsGuest} className="flex-1 w-full text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] cursor-pointer whitespace-nowrap">
+                  play without login
+              </button>
             </div>
-          </DrawerContent>
-        </form>
+          </form>
+        </DrawerContent>
       </Drawer>
     )
   }
 
   return (
     <Dialog open={open} onOpenChange={resetOnClose}>
-      <form onSubmit={handleFormSubmit}>
-        <DialogTrigger render={trigger} />
-        <DialogContent className="w-[350px] p-0 overflow-hidden flex flex-col items-center justify-between gap-3" showCloseButton={false}>
+      <DialogTrigger render={trigger} />
+      <DialogContent className="w-[350px] p-0 overflow-hidden flex flex-col items-center justify-between gap-3" showCloseButton={false}>
+        <form onSubmit={handleFormSubmit} className="contents">
           {formBody}
 
           <div className="flex flex-row items-center justify-center w-full px-[20px] pb-[20px] gap-x-[20px] mt-[8px] sm:flex-row sm:justify-center">
             <button type="submit" disabled={submitting} className="w-content text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px] disabled:opacity-60 disabled:cursor-not-allowed">
                 {submitting ? "signing in..." : "sign in"}
             </button>
-            <DialogClose render={
-              <button type="button" onClick={enterAsGuest} className="w-auto text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] px-[15px]">
-                  play without login
-              </button>
-            } />
+            <button type="button" onClick={enterAsGuest} className="w-auto text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] px-[15px]">
+                play without login
+            </button>
           </div>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   )
 }

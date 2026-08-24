@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import ChildSetup from "./components/ChildSetup";
 import CaseIntro from "./components/CaseIntro";
 import CaseSolved from "./components/CaseSolved";
@@ -17,6 +18,7 @@ const FLUSH_BATCH_SIZE = 5;
 export default function LetterDetectivePage() {
   const [stage, setStage] = useState<Stage>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [childId, setChildId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [pair, setPair] = useState<LDPair | null>(null);
@@ -41,6 +43,7 @@ export default function LetterDetectivePage() {
         if (cancelled) return;
         if (!body.ok) {
           setStage("error");
+          setErrorCode(body.error?.code ?? null);
           setErrorMessage(body.error?.message ?? "Could not load your profile.");
           return;
         }
@@ -107,6 +110,7 @@ export default function LetterDetectivePage() {
       });
       const body = await res.json();
       if (!res.ok) {
+        setErrorCode(body.error?.code ?? null);
         setErrorMessage(body.error?.message ?? "Could not start the case.");
         setStage("error");
         return;
@@ -145,6 +149,7 @@ export default function LetterDetectivePage() {
           });
           const body = await res.json();
           if (!res.ok) {
+            setErrorCode(body.error?.code ?? null);
             setErrorMessage(body.error?.message ?? "Could not finish the case.");
             setStage("error");
             return;
@@ -248,13 +253,22 @@ export default function LetterDetectivePage() {
           <p className="font-pixel text-[18px] text-[#1d1d1d]">
             {errorMessage ?? "Something went wrong."}
           </p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer"
-          >
-            try again
-          </button>
+          {errorCode === "unauthorized" ? (
+            <Link
+              href="/"
+              className="font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer"
+            >
+              go sign in
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer"
+            >
+              try again
+            </button>
+          )}
         </div>
       )}
     </div>
