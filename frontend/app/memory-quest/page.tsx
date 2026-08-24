@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import {
+  Star, Home, TreePine, Moon, Book, Sun, Key, Cloud,
+  Heart, Flower, Umbrella, Music, Anchor, Bell, Rocket,
+  Snowflake, Trophy, Zap, HelpCircle, Eye, Brain, Hand, Frown, Target, Hash, Timer, Sparkles, type LucideIcon
+} from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,34 +41,24 @@ interface GameSummary {
   difficultyLevelReached: number;
 }
 
-// ─── Emoji map ────────────────────────────────────────────────────────────────
+// ─── Icon map ────────────────────────────────────────────────────────────────
 
-const EMOJI_MAP: Record<string, string> = {
-  apple:     "🍎",
-  dog:       "🐶",
-  star:      "⭐",
-  house:     "🏠",
-  tree:      "🌳",
-  moon:      "🌙",
-  fish:      "🐟",
-  book:      "📖",
-  sun:       "☀️",
-  key:       "🔑",
-  rabbit:    "🐰",
-  flower:    "🌸",
-  cloud:     "☁️",
-  heart:     "💜",
-  mushroom:  "🍄",
-  butterfly: "🦋",
-  acorn:     "🌰",
-  owl:       "🦉",
+const ICON_MAP: Record<string, LucideIcon> = {
+  Star, Home, TreePine, Moon, Book, Sun, Key, Cloud,
+  Heart, Flower, Umbrella, Music, Anchor, Bell, Rocket,
+  Snowflake, Trophy, Zap, Eye, Brain, Hand, Frown, Target, Hash, Timer, Sparkles
 };
 
-const ALL_SYMBOLS = Object.keys(EMOJI_MAP);
+const ALL_SYMBOLS = [
+  "Star", "Home", "TreePine", "Moon", "Book", "Sun", "Key", "Cloud",
+  "Heart", "Flower", "Umbrella", "Music", "Anchor", "Bell", "Rocket",
+  "Snowflake", "Trophy", "Zap",
+];
 const PLAYER_ID = "pranshu";
 
-function getEmoji(symbol: string): string {
-  return EMOJI_MAP[symbol] ?? "❓";
+function getIcon(symbol: string, className: string = "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]") {
+  const Icon = ICON_MAP[symbol] || HelpCircle;
+  return <Icon className={className} strokeWidth={2.5} />;
 }
 
 /** Build a shuffled bank of emojis: sequence items + random distractors. */
@@ -277,7 +272,7 @@ export default function MemoryQuestPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1, type: "spring", stiffness: 200 }}
                 >
-                  {e}
+                  {getIcon(e, "w-10 h-10 sm:w-12 sm:h-12 text-[#1d1d1d]")}
                 </motion.span>
               ))}
             </div>
@@ -294,12 +289,12 @@ export default function MemoryQuestPage() {
             {/* How to play */}
             <div className="w-full max-w-[340px] bg-white border-[2px] border-[#efefef] rounded-[15px] p-4">
               {[
-                { emoji: "👀", text: "Watch the path or map carefully" },
-                { emoji: "🧠", text: "Remember the order or treasure spot" },
-                { emoji: "👆", text: "Tap to reproduce the memory" },
-              ].map(({ emoji, text }) => (
+                { icon: "Eye", text: "Watch the path or map carefully" },
+                { icon: "Brain", text: "Remember the order or treasure spot" },
+                { icon: "Hand", text: "Tap to reproduce the memory" },
+              ].map(({ icon, text }) => (
                 <div key={text} className="flex flex-row items-center gap-3 py-1.5">
-                  <span className="text-[18px]">{emoji}</span>
+                  <span className="text-[18px]">{getIcon(icon, "w-5 h-5 text-[#5e5e5e]")}</span>
                   <span className="font-sauce text-[14px] sm:text-[15px] text-[#5e5e5e]">
                     {text}
                   </span>
@@ -346,7 +341,7 @@ export default function MemoryQuestPage() {
               transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
               className="text-[44px] block"
             >
-              🌟
+              <Sparkles className="w-10 h-10 text-[#1d1d1d]" strokeWidth={2} />
             </motion.span>
             <span className="font-pixel text-[16px] text-[#5e5e5e]">loading path...</span>
           </motion.div>
@@ -365,8 +360,8 @@ export default function MemoryQuestPage() {
               <h2 className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d]">
                 {challenge.type === "position" ? "the map" : "the path"}
               </h2>
-              <p className="font-sauce text-[14px] text-[#5e5e5e]">
-                {challenge.type === "position" ? `Remember where ${getEmoji(challenge.target || "")} is!` : "Remember this sequence!"}
+              <p className="font-sauce text-[14px] text-[#5e5e5e] flex items-center justify-center gap-1">
+                {challenge.type === "position" ? <>Remember where {getIcon(challenge.target || "", "w-5 h-5 text-[#1d1d1d]")} is!</> : "Remember this sequence!"}
               </p>
             </div>
 
@@ -384,7 +379,7 @@ export default function MemoryQuestPage() {
                     className="flex items-center justify-center w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] bg-[#f9f0f0] border-[2px] border-[#efefef] rounded-[14px]"
                   >
                     <span className="text-[30px] sm:text-[34px] select-none">
-                      {symbol ? getEmoji(symbol) : ""}
+                      {symbol ? getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]") : ""}
                     </span>
                   </motion.div>
                 ))}
@@ -401,7 +396,7 @@ export default function MemoryQuestPage() {
                   >
                     <div className="flex items-center justify-center w-[62px] h-[62px] sm:w-[70px] sm:h-[70px] bg-[#f9f0f0] border-[2px] border-[#efefef] rounded-[14px]">
                       <span className="text-[30px] sm:text-[34px] select-none">
-                        {getEmoji(symbol)}
+                        {getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}
                       </span>
                     </div>
                     {i < challenge.sequence.length - 1 && (
@@ -450,8 +445,8 @@ export default function MemoryQuestPage() {
               <h2 className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d]">
                 your turn!
               </h2>
-              <p className="font-sauce text-[14px] text-[#5e5e5e]">
-                {challenge.type === "position" ? `Where was ${getEmoji(challenge.target || "")}?` : "Tap the emojis in the correct order"}
+              <p className="font-sauce text-[14px] text-[#5e5e5e] flex items-center justify-center gap-1">
+                {challenge.type === "position" ? <>Where was {getIcon(challenge.target || "", "w-5 h-5 text-[#1d1d1d]")}?</> : "Tap the emojis in the correct order"}
               </p>
             </div>
 
@@ -503,7 +498,7 @@ export default function MemoryQuestPage() {
                           animate={{ scale: 1 }}
                           className="text-[26px] sm:text-[30px] select-none"
                         >
-                          {getEmoji(currentAnswer[i])}
+                          {getIcon(currentAnswer[i], "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}
                         </motion.span>
                       ) : (
                         <span className="font-pixel text-[11px] text-[#d0d0d0]">
@@ -540,7 +535,7 @@ export default function MemoryQuestPage() {
                         className="flex items-center justify-center aspect-square bg-white border-[2px] border-[#efefef] rounded-[12px] hover:bg-[#fdf5f5] hover:border-[#e8d0d0] transition-all duration-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                       >
                         <span className="text-[26px] sm:text-[30px] select-none">
-                          {getEmoji(symbol)}
+                          {getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}
                         </span>
                       </motion.button>
                     ))}
@@ -591,7 +586,7 @@ export default function MemoryQuestPage() {
               transition={{ duration: 0.55 }}
               className="text-[64px] sm:text-[72px] block"
             >
-              {feedbackResult.correct ? "🎉" : "😅"}
+              {feedbackResult.correct ? <Trophy className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={2} /> : <Frown className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={2} />}
             </motion.span>
 
             <div className="flex flex-col items-center gap-1 text-center">
@@ -659,7 +654,7 @@ export default function MemoryQuestPage() {
                         }`}
                       >
                         <span className="text-[20px] select-none">
-                          {i === challenge.targetIndex ? getEmoji(challenge.target || "") : ""}
+                          {i === challenge.targetIndex ? getIcon(challenge.target || "", "w-6 h-6 inline-block align-text-bottom text-[#1d1d1d]") : ""}
                         </span>
                       </div>
                     ))}
@@ -671,7 +666,7 @@ export default function MemoryQuestPage() {
                         key={i}
                         className="flex items-center justify-center w-[44px] h-[44px] bg-[#f9f0f0] border-[2px] border-[#e8c8c8] rounded-[10px]"
                       >
-                        <span className="text-[22px] select-none">{getEmoji(symbol)}</span>
+                        <span className="text-[22px] select-none">{getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}</span>
                       </div>
                     ))}
                   </div>
@@ -712,11 +707,11 @@ export default function MemoryQuestPage() {
             {/* Stats card — same visual style as the disclaimer on the home page */}
             <div className="w-full max-w-[360px] bg-white border-[2px] border-[#efefef] rounded-[15px] overflow-hidden">
               {[
-                { label: "accuracy",      value: `${summary.accuracy}%`,                              icon: "🎯" },
-                { label: "max sequence",  value: `${summary.maxSequenceLength} items`,                icon: "🔢" },
-                { label: "avg response",  value: `${(summary.averageResponseTimeMs / 1000).toFixed(1)}s`, icon: "⏱️" },
-                { label: "level reached", value: `level ${summary.difficultyLevelReached}`,           icon: "⭐" },
-                { label: "total score",   value: `${totalScore}`,                                     icon: "🏆" },
+                { label: "accuracy",      value: `${summary.accuracy}%`,                              icon: "Target" },
+                { label: "max sequence",  value: `${summary.maxSequenceLength} items`,                icon: "Hash" },
+                { label: "avg response",  value: `${(summary.averageResponseTimeMs / 1000).toFixed(1)}s`, icon: "Timer" },
+                { label: "level reached", value: `level ${summary.difficultyLevelReached}`,           icon: "Star" },
+                { label: "total score",   value: `${totalScore}`,                                     icon: "Trophy" },
               ].map(({ label, value, icon }, i, arr) => (
                 <motion.div
                   key={label}
@@ -728,7 +723,7 @@ export default function MemoryQuestPage() {
                   }`}
                 >
                   <div className="flex flex-row items-center gap-2">
-                    <span className="text-[16px]">{icon}</span>
+                    <span className="text-[16px]">{getIcon(icon, "w-4 h-4 text-[#5e5e5e]")}</span>
                     <span className="font-sauce text-[14px] text-[#5e5e5e]">{label}</span>
                   </div>
                   <span className="font-pixel text-[14px] sm:text-[15px] text-[#1d1d1d]">

@@ -37,11 +37,9 @@ type GlobalMemoryQuestStore = {
 // ─── Symbol pool (18 items — matches frontend EMOJI_MAP) ─────────────────────
 
 const symbols = [
-  "apple", "dog",     "star",      "house",
-  "tree",  "moon",    "fish",      "book",
-  "sun",   "key",     "rabbit",    "flower",
-  "cloud", "heart",   "mushroom",  "butterfly",
-  "acorn", "owl",
+  "Star", "Home", "TreePine", "Moon", "Book", "Sun", "Key", "Cloud",
+  "Heart", "Flower", "Umbrella", "Music", "Anchor", "Bell", "Rocket",
+  "Snowflake", "Trophy", "Zap",
 ];
 
 // ─── Difficulty constants ─────────────────────────────────────────────────────
