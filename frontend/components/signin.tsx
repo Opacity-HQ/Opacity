@@ -55,16 +55,11 @@ export default function Signin({
   const signinMutation = useSigninMutation()
   const loginMutation = useLoginMutation()
   const submitting = signinMutation.isPending || loginMutation.isPending
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === "undefined") {
-      return false
-    }
-
-    return window.matchMedia("(max-width: 639px)").matches
-  })
+  const [isMobile, setIsMobile] = useState<boolean>(false)
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 639px)")
+    setIsMobile(mql.matches)
     const onChange = () => {
       setIsMobile(mql.matches)
     }
