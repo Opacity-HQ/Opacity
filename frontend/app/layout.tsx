@@ -18,7 +18,11 @@ export const metadata: Metadata = {
   description: "Dyslexia screening tool for dyslexic users",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="en"
