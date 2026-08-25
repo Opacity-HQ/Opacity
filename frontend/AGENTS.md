@@ -22,6 +22,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Styling: Tailwind CSS v4 through `app/globals.css`, plus shadcn/base-ui components.
 - Icons: `lucide-react`.
 - Motion: `motion/react`.
+- Sound: `cuelume`.
+- Haptics: `web-haptics`.
 - Import alias: use `@/` for project-root imports.
 - Product: Opacity, a dyslexia screening experience with game-like routes.
 
@@ -122,6 +124,11 @@ npm run build
 - **Separation of Concerns**: Do NOT use Zustand to store or duplicate server data or API responses — use TanStack Query as the single source of truth for server state.
 - **Store Organization**: Keep stores modular and scoped to specific domain areas or game routes (e.g. `useSoundMatchStore`, `useUIStore`) rather than creating a single bloated monolithic store.
 - **Selectors & Performance**: Always use selector functions when subscribing to Zustand store state (e.g. `const score = useGameStore((s) => s.score)`) to prevent unnecessary component re-renders when unrelated properties in the store change.
+
+## Sound & Haptics
+
+- **In-Game Sound Effects & Audio**: All game sounds and audio effects must be implemented using the pre-installed `cuelume` library.
+- **Web Haptics & Vibration**: All tactile and vibrational feedback across games must be implemented using the pre-installed `web-haptics` library.
 
 ## TypeScript And React
 
