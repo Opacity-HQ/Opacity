@@ -164,9 +164,41 @@ jobs:
           fi
 
 
+  frontend:
+    name: Frontend Pre-deploy Checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.2.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build Next.js application
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+        run: npm run build
+
   deploy:
     name: Deploy Application
-    needs: [backend, ml]
+    needs: [frontend, backend, ml]
     runs-on: ubuntu-latest
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
