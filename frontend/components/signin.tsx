@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useSyncExternalStore } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import {
@@ -18,6 +18,20 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { useSigninMutation, useLoginMutation } from "@/lib/queries/auth"
 import { ApiError } from "@/lib/queries/api-error"
+
+function subscribeMobile(callback: () => void) {
+  const mql = window.matchMedia("(max-width: 639px)")
+  mql.addEventListener("change", callback)
+  return () => mql.removeEventListener("change", callback)
+}
+
+function getMobileSnapshot() {
+  return window.matchMedia("(max-width: 639px)").matches
+}
+
+function getMobileServerSnapshot() {
+  return false
+}
 
 function isEmailAlreadyRegistered(err: unknown) {
   return (
@@ -55,17 +69,11 @@ export default function Signin({
   const signinMutation = useSigninMutation()
   const loginMutation = useLoginMutation()
   const submitting = signinMutation.isPending || loginMutation.isPending
-  const [isMobile, setIsMobile] = useState<boolean>(false)
-
-  useEffect(() => {
-    const mql = window.matchMedia("(max-width: 639px)")
-    setIsMobile(mql.matches)
-    const onChange = () => {
-      setIsMobile(mql.matches)
-    }
-    mql.addEventListener("change", onChange)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
+  const isMobile = useSyncExternalStore(
+    subscribeMobile,
+    getMobileSnapshot,
+    getMobileServerSnapshot
+  )
 
   const handleAuthSuccess = () => {
     setOpen(false)
