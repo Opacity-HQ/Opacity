@@ -228,12 +228,16 @@ jobs:
           NEXT_TELEMETRY_DISABLED: 1
         run: npm run build
 
+      - name: Setup Vercel project linking
+        if: ${{ env.VERCEL_TOKEN != '' }}
+        run: |
+          mkdir -p .vercel
+          echo '{"orgId":"${{ secrets.VERCEL_ORG_ID }}","projectId":"${{ secrets.VERCEL_PROJECT_ID }}"}' > .vercel/project.json
+
       - name: Deploy to Vercel (Production)
         if: ${{ env.VERCEL_TOKEN != '' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: npx vercel deploy --prod --token="${{ secrets.VERCEL_TOKEN }}" --yes
 
       - name: Upload Build Artifacts
