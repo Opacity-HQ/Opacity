@@ -92,7 +92,7 @@ export default function Home() {
           <Signin
             trigger={
               <button className="cursor-pointer">
-                <div className="button-shadow flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-5px] transition-all duration-200 rounded-[20px] mt-6 sm:mt-[30px] px-[17px] py-[8px]">
+                <div className="button-shadow flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-5px] transition-all duration-200 rounded-[10px] mt-6 sm:mt-[30px] px-[17px] py-[8px]">
                   <Image
                     src="./game2.svg"
                     alt="Play Icon"

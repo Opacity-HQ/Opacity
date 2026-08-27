@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "blobatar/motion.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -55,6 +56,14 @@
 		0 34px 21px 0 rgba(143, 143, 143, 0.05),
 		0 15px 15px 0 rgba(143, 143, 143, 0.09),
 		0 4px 8px 0 rgba(143, 143, 143, 0.10);
+}
+
+@keyframes wiggle {
+	0%, 100% { transform: translateX(0); }
+	20% { transform: translateX(-4px); }
+	40% { transform: translateX(4px); }
+	60% { transform: translateX(-3px); }
+	80% { transform: translateX(3px); }
 }
 
 .dashed-line {
