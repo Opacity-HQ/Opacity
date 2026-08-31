@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { useTrialClock } from "./useTrialClock";
+import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import type { LDTrial, TrialOutcome } from "./types";
 
@@ -15,7 +15,7 @@ export default function WordsRound({
   trial: WordsTrial;
   onAnswer: (outcome: TrialOutcome) => void;
 }) {
-  const { markFirstMove, commit } = useTrialClock(trial.index);
+  const { markFirstMove, commit, hasElapsedSinceOnset } = useTrialClock(trial.index);
   const reducedMotion = usePrefersReducedMotion();
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -126,7 +126,10 @@ export default function WordsRound({
       {!submitted && (
         <button
           type="button"
-          onClick={(e) => submit(e.timeStamp)}
+          onClick={(e) => {
+            if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
+            submit(e.timeStamp);
+          }}
           data-cuelume-press
           data-cuelume-release
           className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[8px] text-white cursor-pointer"

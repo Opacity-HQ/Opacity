@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTrialClock } from "./useTrialClock";
+import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import type { LDTrial, TrialOutcome } from "./types";
 
@@ -16,7 +16,7 @@ export default function ImpostorRound({
   trial: ImpostorTrial;
   onAnswer: (outcome: TrialOutcome) => void;
 }) {
-  const { markFirstMove, commit } = useTrialClock(trial.index);
+  const { markFirstMove, commit, hasElapsedSinceOnset } = useTrialClock(trial.index);
   const reducedMotion = usePrefersReducedMotion();
   const [selected, setSelected] = useState<number | null>(null);
   const answeredRef = useRef(false);
@@ -46,6 +46,7 @@ export default function ImpostorRound({
 
   function handlePick(index: number, e: React.MouseEvent | React.KeyboardEvent) {
     if (answeredRef.current) return;
+    if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
     answeredRef.current = true;
     setSelected(index);
     const { reactionTimeMs, timeToFirstMoveMs } = commit(e.timeStamp);

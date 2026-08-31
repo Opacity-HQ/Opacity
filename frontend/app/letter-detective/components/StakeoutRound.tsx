@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { useTrialClock } from "./useTrialClock";
+import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import type { LDTrial, TrialOutcome } from "./types";
 
@@ -17,7 +17,7 @@ export default function StakeoutRound({
   targetLetter: string;
   onAnswer: (outcome: TrialOutcome) => void;
 }) {
-  const { markFirstMove, commit } = useTrialClock(trial.index);
+  const { markFirstMove, commit, hasElapsedSinceOnset } = useTrialClock(trial.index);
   const reducedMotion = usePrefersReducedMotion();
   const [tapped, setTapped] = useState(false);
   const answeredRef = useRef(false);
@@ -66,12 +66,14 @@ export default function StakeoutRound({
         type="button"
         disabled={answeredRef.current}
         onMouseDown={(e) => {
+          if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
           markFirstMove(e.timeStamp);
           submit(true, e.timeStamp);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
+            if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
             markFirstMove(e.timeStamp);
             submit(true, e.timeStamp);
           }
