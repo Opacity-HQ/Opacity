@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTrialClock } from "./useTrialClock";
+import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import type { LDTrial, TrialOutcome } from "./types";
 
@@ -16,7 +16,7 @@ export default function LineupRound({
   trial: LineupTrial;
   onAnswer: (outcome: TrialOutcome) => void;
 }) {
-  const { markFirstMove, commit } = useTrialClock(trial.index);
+  const { markFirstMove, commit, hasElapsedSinceOnset } = useTrialClock(trial.index);
   const reducedMotion = usePrefersReducedMotion();
   const [selected, setSelected] = useState<number | null>(null);
   const answeredRef = useRef(false);
@@ -46,6 +46,7 @@ export default function LineupRound({
 
   function handlePick(index: number, e: React.MouseEvent | React.KeyboardEvent) {
     if (answeredRef.current) return;
+    if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
     answeredRef.current = true;
     setSelected(index);
     const { reactionTimeMs, timeToFirstMoveMs } = commit(e.timeStamp);
@@ -96,13 +97,23 @@ export default function LineupRound({
                 }
               }}
               onClick={(e) => handlePick(index, e)}
-              aria-label={`Letter ${letter}`}
+              aria-label={
+                isCorrectAnswer
+                  ? `Letter ${letter}, correct answer`
+                  : isWrongPick
+                    ? `Letter ${letter}, your pick, not correct`
+                    : `Letter ${letter}`
+              }
+              data-cuelume-press
+              data-cuelume-release
               className={cn(
                 "font-pixel text-[24px] sm:text-[28px] aspect-square rounded-[14px] border-2 flex items-center justify-center transition-all duration-150",
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
                 isCorrectAnswer && "border-emerald-500 bg-emerald-50",
                 isWrongPick &&
-                  (reducedMotion ? "border-[#1d1d1d]" : "border-[#1d1d1d] animate-[wiggle_0.4s_ease-in-out]"),
+                  (reducedMotion
+                    ? "border-[#e8c8c8] bg-[#f9f0f0]"
+                    : "border-[#e8c8c8] bg-[#f9f0f0] animate-[wiggle_0.4s_ease-in-out]"),
               )}
             >
               <span className="relative">
@@ -111,6 +122,13 @@ export default function LineupRound({
                   <Check
                     className="absolute -top-3 -right-5 text-emerald-600"
                     size={16}
+                    aria-hidden="true"
+                  />
+                )}
+                {isWrongPick && (
+                  <Circle
+                    className="absolute -top-3 -right-5 text-[#c88f8f] fill-[#c88f8f]"
+                    size={12}
                     aria-hidden="true"
                   />
                 )}

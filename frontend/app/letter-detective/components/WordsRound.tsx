@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Check, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTrialClock } from "./useTrialClock";
+import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import type { LDTrial, TrialOutcome } from "./types";
 
@@ -15,7 +16,7 @@ export default function WordsRound({
   trial: WordsTrial;
   onAnswer: (outcome: TrialOutcome) => void;
 }) {
-  const { markFirstMove, commit } = useTrialClock(trial.index);
+  const { markFirstMove, commit, hasElapsedSinceOnset } = useTrialClock(trial.index);
   const reducedMotion = usePrefersReducedMotion();
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -107,17 +108,42 @@ export default function WordsRound({
                 }
               }}
               aria-pressed={isSelected}
-              aria-label={`Letter ${letter}, position ${index + 1}`}
+              aria-label={
+                showCorrect
+                  ? `Letter ${letter}, position ${index + 1}, correct`
+                  : showWrong
+                    ? `Letter ${letter}, position ${index + 1}, your pick, not correct`
+                    : `Letter ${letter}, position ${index + 1}`
+              }
+              data-cuelume-toggle
               className={cn(
                 "font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
                 isSelected && !submitted && "border-[#1d1d1d] bg-[#f7f7f7]",
                 showCorrect && "border-emerald-500 bg-emerald-50",
                 showWrong &&
-                  (reducedMotion ? "border-red-400" : "border-red-400 animate-[wiggle_0.4s_ease-in-out]"),
+                  (reducedMotion
+                    ? "border-[#e8c8c8] bg-[#f9f0f0]"
+                    : "border-[#e8c8c8] bg-[#f9f0f0] animate-[wiggle_0.4s_ease-in-out]"),
               )}
             >
-              {letter}
+              <span className="relative">
+                {letter}
+                {showCorrect && (
+                  <Check
+                    className="absolute -top-3 -right-4 text-emerald-600"
+                    size={14}
+                    aria-hidden="true"
+                  />
+                )}
+                {showWrong && (
+                  <Circle
+                    className="absolute -top-3 -right-4 text-[#c88f8f] fill-[#c88f8f]"
+                    size={10}
+                    aria-hidden="true"
+                  />
+                )}
+              </span>
             </button>
           );
         })}
@@ -125,7 +151,12 @@ export default function WordsRound({
       {!submitted && (
         <button
           type="button"
-          onClick={(e) => submit(e.timeStamp)}
+          onClick={(e) => {
+            if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
+            submit(e.timeStamp);
+          }}
+          data-cuelume-press
+          data-cuelume-release
           className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[8px] text-white cursor-pointer"
         >
           done
