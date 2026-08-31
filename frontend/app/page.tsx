@@ -8,7 +8,7 @@ const gameCards = [
     description:
       "Helps children practice connecting sounds with letters, strengthening sound–letter associations.",
     accent: "bg-[#F7FCEC]",
-    icon: "./sound.svg",
+    icon: "/sound.svg",
     href: "/sound-match",
   },
   {
@@ -16,7 +16,7 @@ const gameCards = [
     description:
       "Helps children distinguish commonly confused letters such as b/d, improving visual recognition and processing.",
     accent: "bg-[#f9f6fe]",
-    icon: "./letter.svg",
+    icon: "/letter.svg",
     href: "/letter-detective",
   },
   {
@@ -24,7 +24,7 @@ const gameCards = [
     description:
       "Gives children practice building and decoding words, supporting spelling-related skills.",
     accent: "bg-[#fefcea]",
-    icon: "./block.svg",
+    icon: "/block.svg",
     href: "/word-builder",
   },
   {
@@ -32,7 +32,7 @@ const gameCards = [
     description:
       "Exercises the ability to remember letters, words, and sequences, supporting short-term recall.",
     accent: "bg-[#f9f0f0]",
-    icon: "./memory.svg",
+    icon: "/memory.svg",
     href: "/memory-quest",
   },
   {
@@ -40,7 +40,7 @@ const gameCards = [
     description:
       "Practices quickly recognizing objects, letters, and symbols, while measuring response speed.",
     accent: "bg-[#F5f8fe]",
-    icon: "./rapid.svg",
+    icon: "/rapid.svg",
     href: "/rapid-match",
   },
 ];
@@ -51,7 +51,7 @@ export default function Home() {
       <div className="flex flex-col items-center w-full max-w-2xl min-h-screen border-x-0 sm:border-x-2 border-[#efefef]">
         <div className="flex flex-row items-center justify-start w-full px-4 py-4 sm:px-5 sm:py-5">
           <Image
-            src="./logo.svg"
+            src="/logo.svg"
             alt="Opacity Logo"
             width={30}
             height={30}
@@ -65,7 +65,7 @@ export default function Home() {
           <div className="font-open-sauce text-[16px] sm:text-[18px] md:text-[20px] text-[#5e5e5e] mt-4 sm:mt-[20px] leading-[24px] sm:leading-[28px]">
             A gamified{" "}
             <Image
-              src="./game.svg"
+              src="/game.svg"
               alt="Gamification Icon"
               width={25}
               height={25}
@@ -74,7 +74,7 @@ export default function Home() {
             platform that helps identify potential learning difficulties early and
             turns gameplay into personalized {" "}
             <Image
-              src="./face.svg"
+              src="/face.svg"
               alt="face Icon"
               width={22}
               height={22}
@@ -82,7 +82,7 @@ export default function Home() {
             />{" "}
             learning activities for every child.
             <Image
-              src="./baby.svg"
+              src="/baby.svg"
               alt="Baby Icon"
               width={26}
               height={26}
@@ -94,7 +94,7 @@ export default function Home() {
               <button className="cursor-pointer">
                 <div className="button-shadow flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-5px] transition-all duration-200 rounded-[10px] mt-6 sm:mt-[30px] px-[17px] py-[8px]">
                   <Image
-                    src="./game2.svg"
+                    src="/game2.svg"
                     alt="Play Icon"
                     width={25}
                     height={25}
@@ -120,7 +120,7 @@ export default function Home() {
           <div className="flex flex-col items-start justify-center w-full mt-5 sm:mt-[30px] dashed-border bg-[#fefefe] p-3.5 sm:p-[15px] rounded-[20px]">
             <div className="flex flex-row items-center justify-start w-full">
               <Image
-                src="./skull.svg"
+                src="/skull.svg"
                 alt="skull Icon"
                 width={20}
                 height={20}    
@@ -160,7 +160,7 @@ export default function Home() {
                 className="flex flex-row items-center justify-center w-fit h-fit bg-white hover:bg-[#f7f7f7] hover:translate-x-[5px] transition-all duration-200 rounded-[10px] px-[10px] py-[5px] border-[2px] border-[#efefef] ml-[10px] mb-[10px] mt-3"
               >
                 <Image
-                  src="./play.svg"
+                  src="/play.svg"
                   alt="Play Icon"
                   width={15}
                   height={15}
@@ -178,7 +178,7 @@ export default function Home() {
           <span className="font-pixel text-[16px] sm:text-[18px] text-[#1d1d1d]">Bengaluru, India 🇮🇳</span>
           <span className="font-pixel text-[15px] sm:text-[18px] text-[#1d1d1d] leading-[22px] sm:leading-[25px]">Built with
             <Image
-              src="./love.svg"
+              src="/love.svg"
               alt="love Icon"
               width={20}
               height={20}
