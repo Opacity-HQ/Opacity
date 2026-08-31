@@ -1,5 +1,16 @@
 import GameLayout from "@/components/game-layout";
+import { getDisplayUsername } from "@/lib/auth/get-display-username";
 
-export default function MemoryQuestLayout({ children }: { children: React.ReactNode }) {
-  return <GameLayout title="memory quest">{children}</GameLayout>;
+export default async function MemoryQuestLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const username = await getDisplayUsername();
+
+  return (
+    <GameLayout title="memory quest" username={username}>
+      {children}
+    </GameLayout>
+  );
 }
