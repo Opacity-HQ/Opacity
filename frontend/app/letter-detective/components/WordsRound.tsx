@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Circle } from "lucide-react";
+import { Check, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
@@ -117,33 +117,29 @@ export default function WordsRound({
               }
               data-cuelume-toggle
               className={cn(
-                "font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
+                "relative font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
                 isSelected && !submitted && "border-[#1d1d1d] bg-[#f7f7f7]",
-                showCorrect && "border-emerald-500 bg-emerald-50",
+                showCorrect && "border-emerald-500 bg-emerald-50 text-emerald-900",
                 showWrong &&
                   (reducedMotion
-                    ? "border-[#e8c8c8] bg-[#f9f0f0]"
-                    : "border-[#e8c8c8] bg-[#f9f0f0] animate-[wiggle_0.4s_ease-in-out]"),
+                    ? "border-[#e8c8c8] bg-[#f9f0f0] text-[#991b1b]"
+                    : "border-[#e8c8c8] bg-[#f9f0f0] text-[#991b1b] animate-[wiggle_0.4s_ease-in-out]"),
               )}
             >
-              <span className="relative">
-                {letter}
-                {showCorrect && (
-                  <Check
-                    className="absolute -top-3 -right-4 text-emerald-600"
-                    size={14}
-                    aria-hidden="true"
-                  />
-                )}
-                {showWrong && (
-                  <Circle
-                    className="absolute -top-3 -right-4 text-[#c88f8f] fill-[#c88f8f]"
-                    size={10}
-                    aria-hidden="true"
-                  />
-                )}
-              </span>
+              <span>{letter}</span>
+              {showCorrect && (
+                <Check
+                  className="absolute top-1 right-1 text-emerald-600 w-3.5 h-3.5"
+                  aria-hidden="true"
+                />
+              )}
+              {showWrong && (
+                <XCircle
+                  className="absolute top-1 right-1 text-[#991b1b] w-3.5 h-3.5"
+                  aria-hidden="true"
+                />
+              )}
             </button>
           );
         })}

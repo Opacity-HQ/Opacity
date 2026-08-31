@@ -69,6 +69,7 @@ Add new game routes under `app/<route-name>/` with `page.tsx`; include `layout.t
 - Put `word-builder` endpoints only in `app/api/games/word-builder/`.
 - If a new game is created, make a new `app/<game-name>/` folder for it and keep that game's route-specific files there.
 - Move code out of a game folder only when it is genuinely shared by multiple routes.
+- Every game folder under `app/<game-name>/` MUST contain an `AGENTS.md` file that explains that game's frontend files and corresponding backend endpoints.
 
 ## Git Workflow
 
@@ -146,6 +147,7 @@ npm run build
 - Keep the visual tone playful but readable for dyslexic users: clear spacing, strong hierarchy, predictable controls, and simple copy.
 - Do not rely on color alone to communicate important state.
 - Preserve keyboard access, labels, focus states, and semantic HTML for interactive elements.
+- Do not use emojis in the UI — use only the pre-installed `lucide-react` icon library (or dedicated SVG assets under `public/`).
 - Use `lucide-react` icons for common controls when an icon improves clarity.
 
 ## Components
