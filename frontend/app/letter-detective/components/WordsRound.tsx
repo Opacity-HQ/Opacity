@@ -108,6 +108,7 @@ export default function WordsRound({
               }}
               aria-pressed={isSelected}
               aria-label={`Letter ${letter}, position ${index + 1}`}
+              data-cuelume-toggle
               className={cn(
                 "font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
@@ -126,6 +127,8 @@ export default function WordsRound({
         <button
           type="button"
           onClick={(e) => submit(e.timeStamp)}
+          data-cuelume-press
+          data-cuelume-release
           className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[8px] text-white cursor-pointer"
         >
           done

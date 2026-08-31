@@ -28,6 +28,8 @@ export default function CaseIntro({
         type="button"
         onClick={onStart}
         disabled={loading}
+        data-cuelume-press
+        data-cuelume-release
         className="button-shadow font-pixel text-[18px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-3px] transition-all duration-200 rounded-[20px] px-[28px] py-[10px] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? "loading case..." : "start case"}

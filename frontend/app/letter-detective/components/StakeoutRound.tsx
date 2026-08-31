@@ -77,6 +77,8 @@ export default function StakeoutRound({
           }
         }}
         aria-label={`Current letter ${trial.streamLetter}. Tap if this matches ${targetLetter}.`}
+        data-cuelume-press
+        data-cuelume-release
         className={cn(
           "font-pixel text-[64px] sm:text-[80px] w-[160px] h-[160px] rounded-[24px] border-2 flex items-center justify-center transition-all duration-150",
           "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",

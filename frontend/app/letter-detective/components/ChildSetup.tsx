@@ -73,6 +73,8 @@ export default function ChildSetup({
       <button
         type="submit"
         disabled={createChild.isPending}
+        data-cuelume-press
+        data-cuelume-release
         className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full"
       >
         {createChild.isPending ? "saving..." : "let's go"}

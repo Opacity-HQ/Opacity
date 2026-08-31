@@ -97,6 +97,8 @@ export default function LineupRound({
               }}
               onClick={(e) => handlePick(index, e)}
               aria-label={`Letter ${letter}`}
+              data-cuelume-press
+              data-cuelume-release
               className={cn(
                 "font-pixel text-[24px] sm:text-[28px] aspect-square rounded-[14px] border-2 flex items-center justify-center transition-all duration-150",
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",

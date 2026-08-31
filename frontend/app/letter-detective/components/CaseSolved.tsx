@@ -26,12 +26,16 @@ export default function CaseSolved({
         <button
           type="button"
           onClick={onPlayAgain}
+          data-cuelume-press
+          data-cuelume-release
           className="button-shadow font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-3px] transition-all duration-200 rounded-[18px] px-[22px] py-[9px] text-white cursor-pointer"
         >
           next case
         </button>
         <Link
           href="/dashboard"
+          data-cuelume-press
+          data-cuelume-release
           className="font-pixel text-[16px] flex items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] transition-all duration-200 rounded-[18px] px-[22px] py-[9px] text-[#1d1d1d]"
         >
           back to detective office
