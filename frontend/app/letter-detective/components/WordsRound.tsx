@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Check, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
@@ -107,7 +108,13 @@ export default function WordsRound({
                 }
               }}
               aria-pressed={isSelected}
-              aria-label={`Letter ${letter}, position ${index + 1}`}
+              aria-label={
+                showCorrect
+                  ? `Letter ${letter}, position ${index + 1}, correct`
+                  : showWrong
+                    ? `Letter ${letter}, position ${index + 1}, your pick, not correct`
+                    : `Letter ${letter}, position ${index + 1}`
+              }
               data-cuelume-toggle
               className={cn(
                 "font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
@@ -115,10 +122,28 @@ export default function WordsRound({
                 isSelected && !submitted && "border-[#1d1d1d] bg-[#f7f7f7]",
                 showCorrect && "border-emerald-500 bg-emerald-50",
                 showWrong &&
-                  (reducedMotion ? "border-red-400" : "border-red-400 animate-[wiggle_0.4s_ease-in-out]"),
+                  (reducedMotion
+                    ? "border-amber-400 bg-amber-50"
+                    : "border-amber-400 bg-amber-50 animate-[wiggle_0.4s_ease-in-out]"),
               )}
             >
-              {letter}
+              <span className="relative">
+                {letter}
+                {showCorrect && (
+                  <Check
+                    className="absolute -top-3 -right-4 text-emerald-600"
+                    size={14}
+                    aria-hidden="true"
+                  />
+                )}
+                {showWrong && (
+                  <Circle
+                    className="absolute -top-3 -right-4 text-amber-500 fill-amber-500"
+                    size={10}
+                    aria-hidden="true"
+                  />
+                )}
+              </span>
             </button>
           );
         })}

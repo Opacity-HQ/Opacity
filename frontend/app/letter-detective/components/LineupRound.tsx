@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
@@ -97,7 +97,13 @@ export default function LineupRound({
                 }
               }}
               onClick={(e) => handlePick(index, e)}
-              aria-label={`Letter ${letter}`}
+              aria-label={
+                isCorrectAnswer
+                  ? `Letter ${letter}, correct answer`
+                  : isWrongPick
+                    ? `Letter ${letter}, your pick, not correct`
+                    : `Letter ${letter}`
+              }
               data-cuelume-press
               data-cuelume-release
               className={cn(
@@ -105,7 +111,9 @@ export default function LineupRound({
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
                 isCorrectAnswer && "border-emerald-500 bg-emerald-50",
                 isWrongPick &&
-                  (reducedMotion ? "border-[#1d1d1d]" : "border-[#1d1d1d] animate-[wiggle_0.4s_ease-in-out]"),
+                  (reducedMotion
+                    ? "border-amber-400 bg-amber-50"
+                    : "border-amber-400 bg-amber-50 animate-[wiggle_0.4s_ease-in-out]"),
               )}
             >
               <span className="relative">
@@ -114,6 +122,13 @@ export default function LineupRound({
                   <Check
                     className="absolute -top-3 -right-5 text-emerald-600"
                     size={16}
+                    aria-hidden="true"
+                  />
+                )}
+                {isWrongPick && (
+                  <Circle
+                    className="absolute -top-3 -right-5 text-amber-500 fill-amber-500"
+                    size={12}
                     aria-hidden="true"
                   />
                 )}
