@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Blobatar } from "@blobatar/react";
-import { happy, surprised } from "blobatar/expression";
+import { surprised } from "blobatar/expression";
 import {
   ChevronDown,
   Check,

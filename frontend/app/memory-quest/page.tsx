@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { bind, play } from "cuelume";
+import { useWebHaptics } from "web-haptics/react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Star, Home, TreePine, Moon, Book, Sun, Key, Cloud,
@@ -74,6 +76,7 @@ function buildEmojiBank(sequence: string[]): string[] {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function MemoryQuestPage() {
+  const { trigger } = useWebHaptics();
   const [phase, setPhase] = useState<GamePhase>("intro");
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [currentAnswer, setCurrentAnswer] = useState<string[]>([]);
@@ -103,6 +106,24 @@ export default function MemoryQuestPage() {
   useEffect(() => { roundCountRef.current = roundCount; }, [roundCount]);
   useEffect(() => { isSubmittingRef.current = isSubmitting; }, [isSubmitting]);
   useEffect(() => { summaryRef.current = summary; }, [summary]);
+
+  useEffect(() => {
+    bind();
+  }, []);
+
+  const triggerHaptic = useCallback(
+    (preset: "nudge" | "success" | "error" | "buzz") => {
+      trigger(preset);
+    },
+    [trigger],
+  );
+
+  const playCue = useCallback(
+    (sound: "loading" | "pulse" | "tick" | "success" | "error" | "droplet" | "release", volume?: number) => {
+      play(sound, volume !== undefined ? { volume } : undefined);
+    },
+    [],
+  );
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -153,6 +174,15 @@ export default function MemoryQuestPage() {
           roundCountRef.current = prev + 1;
           return prev + 1;
         });
+
+        if (data.result.correct) {
+          playCue("success");
+          triggerHaptic("success");
+        } else {
+          playCue("error");
+          triggerHaptic("error");
+        }
+
         setPhase("feedback");
       }
     } catch {
@@ -161,7 +191,7 @@ export default function MemoryQuestPage() {
       isSubmittingRef.current = false;
       setIsSubmitting(false);
     }
-  }, []);
+  }, [playCue, triggerHaptic]);
 
   // Auto-submit when the answer slots are completely filled
   useEffect(() => {
@@ -182,6 +212,8 @@ export default function MemoryQuestPage() {
     if (showTimerRef.current) clearTimeout(showTimerRef.current);
     if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
 
+    playCue("loading");
+    triggerHaptic("nudge");
     setPhase("loading");
     setCurrentAnswer([]);
     setMistakes(0);
@@ -218,7 +250,7 @@ export default function MemoryQuestPage() {
     } catch {
       setPhase("intro");
     }
-  }, []);
+  }, [playCue, triggerHaptic]);
 
   const handleEmojiTap = useCallback((symbol: string) => {
     if (isSubmittingRef.current) return;
@@ -226,26 +258,32 @@ export default function MemoryQuestPage() {
     if (!c) return;
     setCurrentAnswer((prev) => {
       if (prev.length >= c.sequence.length) return prev;
+      playCue("tick", 0.7);
+      triggerHaptic("nudge");
       return [...prev, symbol];
     });
-  }, []);
+  }, [playCue, triggerHaptic]);
 
   const handleBackspace = useCallback(() => {
     setCurrentAnswer((prev) => {
       if (prev.length === 0) return prev;
       setMistakes((m) => m + 1);
+      playCue("droplet", 0.7);
+      triggerHaptic("nudge");
       return prev.slice(0, -1);
     });
-  }, []);
+  }, [playCue, triggerHaptic]);
 
   const handleNextRound = useCallback(() => {
     const rc = roundCountRef.current;
+    playCue("pulse", 0.8);
+    triggerHaptic("nudge");
     if (rc > 0 && rc % 3 === 0 && summaryRef.current) {
       setPhase("stats");
     } else {
       fetchChallenge();
     }
-  }, [fetchChallenge]);
+  }, [fetchChallenge, playCue, triggerHaptic]);
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -310,7 +348,11 @@ export default function MemoryQuestPage() {
               )}
               <button
                 id="memory-quest-start"
-                onClick={fetchChallenge}
+                onClick={() => {
+                  playCue("pulse", 0.8);
+                  triggerHaptic("nudge");
+                  fetchChallenge();
+                }}
                 className="button-shadow flex flex-row items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-4px] transition-all duration-200 rounded-[20px] px-[24px] py-[10px] cursor-pointer"
               >
                 <span className="font-pixel text-[18px] sm:text-[20px] text-white">
@@ -735,7 +777,11 @@ export default function MemoryQuestPage() {
 
             <button
               id="memory-quest-continue"
-              onClick={fetchChallenge}
+              onClick={() => {
+                playCue("pulse", 0.8);
+                triggerHaptic("nudge");
+                fetchChallenge();
+              }}
               className="button-shadow flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-4px] transition-all duration-200 rounded-[20px] px-[24px] py-[10px] cursor-pointer"
             >
               <span className="font-pixel text-[17px] sm:text-[20px] text-white">
