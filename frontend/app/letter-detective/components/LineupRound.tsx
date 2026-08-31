@@ -112,8 +112,8 @@ export default function LineupRound({
                 isCorrectAnswer && "border-emerald-500 bg-emerald-50",
                 isWrongPick &&
                   (reducedMotion
-                    ? "border-amber-400 bg-amber-50"
-                    : "border-amber-400 bg-amber-50 animate-[wiggle_0.4s_ease-in-out]"),
+                    ? "border-[#e8c8c8] bg-[#f9f0f0]"
+                    : "border-[#e8c8c8] bg-[#f9f0f0] animate-[wiggle_0.4s_ease-in-out]"),
               )}
             >
               <span className="relative">
@@ -127,7 +127,7 @@ export default function LineupRound({
                 )}
                 {isWrongPick && (
                   <Circle
-                    className="absolute -top-3 -right-5 text-amber-500 fill-amber-500"
+                    className="absolute -top-3 -right-5 text-[#c88f8f] fill-[#c88f8f]"
                     size={12}
                     aria-hidden="true"
                   />
