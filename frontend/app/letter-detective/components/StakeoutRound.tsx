@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { useTrialClock } from "./useTrialClock";
+import { useTrialClock, MIN_REACTION_MS } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import type { LDTrial, TrialOutcome } from "./types";
 
@@ -17,7 +17,7 @@ export default function StakeoutRound({
   targetLetter: string;
   onAnswer: (outcome: TrialOutcome) => void;
 }) {
-  const { markFirstMove, commit } = useTrialClock(trial.index);
+  const { markFirstMove, commit, hasElapsedSinceOnset } = useTrialClock(trial.index);
   const reducedMotion = usePrefersReducedMotion();
   const [tapped, setTapped] = useState(false);
   const answeredRef = useRef(false);
@@ -66,17 +66,21 @@ export default function StakeoutRound({
         type="button"
         disabled={answeredRef.current}
         onMouseDown={(e) => {
+          if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
           markFirstMove(e.timeStamp);
           submit(true, e.timeStamp);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
+            if (!hasElapsedSinceOnset(MIN_REACTION_MS, e.timeStamp)) return;
             markFirstMove(e.timeStamp);
             submit(true, e.timeStamp);
           }
         }}
         aria-label={`Current letter ${trial.streamLetter}. Tap if this matches ${targetLetter}.`}
+        data-cuelume-press
+        data-cuelume-release
         className={cn(
           "font-pixel text-[64px] sm:text-[80px] w-[160px] h-[160px] rounded-[24px] border-2 flex items-center justify-center transition-all duration-150",
           "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",

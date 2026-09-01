@@ -1,5 +1,16 @@
 import GameLayout from "@/components/game-layout";
+import { getDisplayUsername } from "@/lib/auth/get-display-username";
 
-export default function LetterDetectiveLayout({ children }: { children: React.ReactNode }) {
-  return <GameLayout title="letter detective">{children}</GameLayout>;
+export default async function LetterDetectiveLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const username = await getDisplayUsername();
+
+  return (
+    <GameLayout title="letter detective" username={username}>
+      {children}
+    </GameLayout>
+  );
 }

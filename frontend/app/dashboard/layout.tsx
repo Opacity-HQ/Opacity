@@ -1,5 +1,16 @@
 import GameLayout from "@/components/game-layout";
+import { getDisplayUsername } from "@/lib/auth/get-display-username";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <GameLayout title="dashboard">{children}</GameLayout>;
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const username = await getDisplayUsername();
+
+  return (
+    <GameLayout title="dashboard" username={username}>
+      {children}
+    </GameLayout>
+  );
 }

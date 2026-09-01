@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { bind } from "cuelume";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { ApiError } from "@/lib/queries/api-error";
 import Signin from "@/components/signin";
 import { useLetterDetectiveStore } from "./components/store";
+import { useGameFeedback } from "./components/useGameFeedback";
 import {
   useStartLetterDetectiveSessionMutation,
   useSubmitLetterDetectiveTrialsMutation,
@@ -46,6 +48,14 @@ export default function LetterDetectivePage() {
   const startSessionMutation = useStartLetterDetectiveSessionMutation();
   const submitTrialsMutation = useSubmitLetterDetectiveTrialsMutation();
   const completeSessionMutation = useCompleteLetterDetectiveSessionMutation();
+  const feedback = useGameFeedback();
+
+  // Delegates data-cuelume-* press/release sounds for every button in this
+  // page's subtree, per frontend/AGENTS.md. Idempotent and handles the
+  // per-trial remounted round components automatically.
+  useEffect(() => {
+    bind();
+  }, []);
 
   const bufferRef = useRef<TrialOutcome[]>([]);
   const pendingFlushesRef = useRef<Promise<unknown>[]>([]);
@@ -77,6 +87,7 @@ export default function LetterDetectivePage() {
   }
 
   async function startCase(childId: string) {
+    feedback.onCaseStart();
     try {
       const result = await startSessionMutation.mutateAsync({
         childId,
@@ -97,6 +108,12 @@ export default function LetterDetectivePage() {
 
   const handleAnswer = useCallback(
     async (outcome: TrialOutcome) => {
+      if (outcome.localCorrect) {
+        feedback.onCorrect();
+      } else {
+        feedback.onWrong();
+      }
+
       bufferRef.current.push(outcome);
       const isLastTrial = trialCursor + 1 >= trials.length;
 
@@ -110,6 +127,7 @@ export default function LetterDetectivePage() {
           const result = await completeSessionMutation.mutateAsync(
             sessionIdRef.current!,
           );
+          feedback.onCaseSolved();
           setSolved(result.accuracy);
         } catch {
           // Surfaced via completeSessionMutation.error in the render below.
