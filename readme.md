@@ -68,7 +68,7 @@ Supabase (Postgres + Auth + RLS)
 | **Validation** | Zod |
 | **Animations** | Motion, Cuelume (haptics), tw-animate-css |
 | **Auth** | Supabase Auth (email/password + anonymous) |
-| **ML** | Python (GBDT + SHAP), reserved for `backend/` |
+| **ML** | Python (Gradient Boosted Decision Trees + SHAP), reserved for `backend/` |
 
 ---
 
