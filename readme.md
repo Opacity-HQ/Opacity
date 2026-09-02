@@ -527,10 +527,10 @@ All PRs to `main` require review. Watch for:
 
 ## Team
 
-- **Saket Rama** — Backend, Letter Detective, Database Schema
-- **Atharv** — Parent/teacher dashboard UI
-- **Zaid, Ritwik, Pranshu** — Game UIs (Sound Match, Word Builder, Rapid Match)
-- **Saatvik** — ML scoring service (GBDT + SHAP, Whisper integration)
+- [saket](https://github.com/saketrama-v) — Backend, Letter Detective, Database Schema
+- [Atharv](https://github.com/atharv-rem) — dashboard UI + frontend + rapid match game
+- [Zaid](https://github.com/Zaidk2509), [Ritwik](https://github.com/RitwikGupta06), [Pranshu](https://github.com/pranshu1606) — Game UIs (Sound Match, Word Builder, Memory Quest)
+- [Saatvik](https://github.com/Saatvik6) — ML scoring service (GBDT + SHAP, Whisper integration)
 
 ---
 
