@@ -77,6 +77,13 @@ export default function Signin({
 
   const handleAuthSuccess = () => {
     setOpen(false)
+    // A session was just established client-side (guest entry or login). The
+    // game/dashboard headers are server-rendered — GameLayout's `username`
+    // comes from getDisplayUsername() in each layout.tsx — so re-run the
+    // current route's server components to pick up the new session.
+    // Without this the header keeps showing its stale/placeholder user
+    // (e.g. "guest" default) until a hard reload.
+    router.refresh()
     if (onSuccess) {
       onSuccess()
     } else {
