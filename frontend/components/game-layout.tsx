@@ -31,7 +31,7 @@ const GAMES = [
 
 export default function GameLayout({
   title,
-  username = "pranshu",
+  username = "guest",
   children,
 }: GameLayoutProps) {
   const router = useRouter();
