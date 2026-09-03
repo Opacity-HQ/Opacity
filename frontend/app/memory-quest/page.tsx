@@ -12,7 +12,7 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type GamePhase = "intro" | "loading" | "show" | "recall" | "feedback" | "stats";
+type GamePhase = "setup" | "intro" | "loading" | "show" | "recall" | "feedback" | "stats";
 
 interface Challenge {
   id: string;
@@ -77,7 +77,13 @@ function buildEmojiBank(sequence: string[]): string[] {
 
 export default function MemoryQuestPage() {
   const { trigger } = useWebHaptics();
-  const [phase, setPhase] = useState<GamePhase>("intro");
+  const initialPlayerName = typeof window !== "undefined"
+    ? window.localStorage.getItem("opacity-player-name")?.trim() ?? ""
+    : "";
+
+  const [phase, setPhase] = useState<GamePhase>(initialPlayerName ? "intro" : "setup");
+  const [playerName, setPlayerName] = useState(initialPlayerName);
+  const [playerNameInput, setPlayerNameInput] = useState(initialPlayerName);
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [currentAnswer, setCurrentAnswer] = useState<string[]>([]);
   const [emojiBank, setEmojiBank] = useState<string[]>([]);
@@ -285,11 +291,68 @@ export default function MemoryQuestPage() {
     }
   }, [fetchChallenge, playCue, triggerHaptic]);
 
+  const savePlayerName = useCallback((nextName: string) => {
+    const cleanedName = nextName.trim();
+    if (!cleanedName) return;
+
+    setPlayerName(cleanedName);
+    setPlayerNameInput(cleanedName);
+    window.localStorage.setItem("opacity-player-name", cleanedName);
+    window.dispatchEvent(new Event("player-name-changed"));
+    setPhase("intro");
+  }, []);
+
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col items-center justify-start w-full flex-1 px-4 sm:px-6 py-8 sm:py-10">
+    <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-10">
       <AnimatePresence mode="wait">
+
+        {phase === "setup" && (
+          <motion.div
+            key="setup"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25 }}
+            className="flex flex-col items-center justify-center w-full max-w-sm gap-5 px-4 py-8 text-center"
+          >
+            <div className="flex flex-col items-center gap-2">
+              <span className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d]">sign in to play</span>
+              <p className="font-sauce text-[15px] text-[#5e5e5e] leading-[22px]">
+                Before we start, tell us who is playing.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-start w-full gap-2">
+              <label htmlFor="memory-player-name" className="font-pixel text-[13px] text-[#5e5e5e]">
+                your name
+              </label>
+              <input
+                id="memory-player-name"
+                value={playerNameInput}
+                onChange={(event) => setPlayerNameInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    savePlayerName(playerNameInput);
+                  }
+                }}
+                placeholder="e.g. Sam"
+                className="font-pixel h-[42px] w-full rounded-[13px] px-[15px] text-[16px] bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus:outline-none"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => savePlayerName(playerNameInput)}
+              disabled={!playerNameInput.trim()}
+              className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full"
+            >
+              let us play
+            </button>
+          </motion.div>
+        )}
 
         {/* ── INTRO ──────────────────────────────────────────────────────── */}
         {phase === "intro" && (
@@ -302,22 +365,22 @@ export default function MemoryQuestPage() {
             className="flex flex-col items-center w-full gap-6 sm:gap-8"
           >
             {/* Decorative forest path */}
-            <div className="flex flex-row items-center justify-center gap-1.5 sm:gap-2 text-[36px] sm:text-[48px] mt-2">
-              {["🌳", "🐰", "⭐", "🏠"].map((e, i) => (
+            <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 text-[36px] sm:text-[48px] mt-2">
+              {["Star", "Home", "Moon", "Sun"].map((key, i) => (
                 <motion.span
-                  key={i}
+                  key={key}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1, type: "spring", stiffness: 200 }}
                 >
-                  {getIcon(e, "w-10 h-10 sm:w-12 sm:h-12 text-[#1d1d1d]")}
+                  {getIcon(key, "w-10 h-10 sm:w-12 sm:h-12 text-[#1d1d1d]")}
                 </motion.span>
               ))}
             </div>
 
             <div className="flex flex-col items-center gap-2 text-center">
               <h1 className="font-pixel text-[28px] sm:text-[36px] text-[#1d1d1d]">
-                Memory Quest
+                {playerName ? `${playerName}’s memory quest` : "Memory Quest"}
               </h1>
               <p className="font-sauce text-[15px] sm:text-[17px] text-[#5e5e5e] max-w-[300px] leading-[22px]">
                 Remember the path and find the hidden treasure!
