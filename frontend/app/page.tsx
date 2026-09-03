@@ -465,7 +465,7 @@ export default function Home() {
           <div className="relative w-full overflow-hidden mt-2 -mb-1 sm:-mb-2 pt-3">
             <div className="absolute inset-x-0 bottom-0 mx-auto w-full h-full max-h-64 rounded-full blur-[100px] pointer-events-none"></div>
             <motion.h1 
-              className="text-center font-extrabold leading-[0.88] text-transparent text-[clamp(3rem,17.5vw,8.2rem)] [-webkit-text-stroke:1px_#D4D4D4] select-none pt-1"
+              className="text-center font-extrabold leading-[0.88] text-[#fcfcfc] text-[clamp(3rem,17.5vw,8.2rem)] [-webkit-text-stroke:1px_#E5E5E5] select-none pt-1"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
