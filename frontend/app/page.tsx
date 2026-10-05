@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Signin from "@/components/signin";
+import { DiagonalBoxPattern } from "@/components/background-pattern/diagonal-box-pattern";
 import { motion } from "motion/react";
 import {
   Avatar,
@@ -68,8 +69,8 @@ const gameCards = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen">
-      <div className="flex flex-col items-center w-full max-w-2xl min-h-screen border-x-0 sm:border-x-2 border-[#efefef]">
+    <DiagonalBoxPattern className="flex flex-col items-center justify-center w-full min-h-screen">
+      <div className="flex flex-col items-center w-full max-w-2xl min-h-screen bg-white border-x-0 sm:border-x-2 border-[#efefef]">
         
         {/* Header */}
         <motion.div 
@@ -476,6 +477,6 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
-    </div>
+    </DiagonalBoxPattern>
   );
 }

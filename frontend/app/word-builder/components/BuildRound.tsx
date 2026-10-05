@@ -16,7 +16,7 @@ export default function BuildRound({
 }: {
   trial: WBTrial;
   onAnswer: (outcome: TrialOutcome) => void;
-  playCue: (sound: "tick" | "success" | "error" | "droplet") => void;
+  playCue: (sound: "select" | "success" | "error" | "close") => void;
   triggerHaptic: (preset: "nudge" | "success" | "error") => void;
 }) {
   const reducedMotion = usePrefersReducedMotion();
@@ -94,7 +94,7 @@ export default function BuildRound({
     if (filledRef.current.length >= trial.word.length) return;
 
     markFirstMove(e.timeStamp);
-    playCue("tick");
+    playCue("select");
     triggerHaptic("nudge");
 
     const next = [...filledRef.current, tileIndex];
@@ -108,7 +108,7 @@ export default function BuildRound({
 
   function backspace() {
     if (answeredRef.current || filledRef.current.length === 0) return;
-    playCue("droplet");
+    playCue("close");
     const next = filledRef.current.slice(0, -1);
     filledRef.current = next;
     setFilled(next);

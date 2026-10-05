@@ -51,7 +51,7 @@ export default function WordBuilderPage() {
   }, []);
 
   const playCue = useCallback(
-    (sound: "tick" | "success" | "error" | "droplet" | "loading") => {
+    (sound: "select" | "success" | "error" | "close" | "loading") => {
       play(sound);
     },
     [],

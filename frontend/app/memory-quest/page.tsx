@@ -119,7 +119,7 @@ export default function MemoryQuestPage() {
   );
 
   const playCue = useCallback(
-    (sound: "loading" | "pulse" | "tick" | "success" | "error" | "droplet" | "release", volume?: number) => {
+    (sound: "loading" | "tap" | "select" | "success" | "error" | "close", volume?: number) => {
       play(sound, volume !== undefined ? { volume } : undefined);
     },
     [],
@@ -258,7 +258,7 @@ export default function MemoryQuestPage() {
     if (!c) return;
     setCurrentAnswer((prev) => {
       if (prev.length >= c.sequence.length) return prev;
-      playCue("tick", 0.7);
+      playCue("select", 0.7);
       triggerHaptic("nudge");
       return [...prev, symbol];
     });
@@ -268,7 +268,7 @@ export default function MemoryQuestPage() {
     setCurrentAnswer((prev) => {
       if (prev.length === 0) return prev;
       setMistakes((m) => m + 1);
-      playCue("droplet", 0.7);
+      playCue("close", 0.7);
       triggerHaptic("nudge");
       return prev.slice(0, -1);
     });
@@ -276,7 +276,7 @@ export default function MemoryQuestPage() {
 
   const handleNextRound = useCallback(() => {
     const rc = roundCountRef.current;
-    playCue("pulse", 0.8);
+    playCue("tap", 0.8);
     triggerHaptic("nudge");
     if (rc > 0 && rc % 3 === 0 && summaryRef.current) {
       setPhase("stats");
@@ -349,7 +349,7 @@ export default function MemoryQuestPage() {
               <button
                 id="memory-quest-start"
                 onClick={() => {
-                  playCue("pulse", 0.8);
+                  playCue("tap", 0.8);
                   triggerHaptic("nudge");
                   fetchChallenge();
                 }}
@@ -778,7 +778,7 @@ export default function MemoryQuestPage() {
             <button
               id="memory-quest-continue"
               onClick={() => {
-                playCue("pulse", 0.8);
+                playCue("tap", 0.8);
                 triggerHaptic("nudge");
                 fetchChallenge();
               }}
