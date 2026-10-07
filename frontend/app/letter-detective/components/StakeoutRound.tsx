@@ -58,7 +58,7 @@ export default function StakeoutRound({
     <div className="flex flex-col items-center justify-center w-full gap-6">
       <p className="font-pixel text-[18px] sm:text-[22px] text-[#1d1d1d] text-center">
         Tap only when you see{" "}
-        <span className="inline-block px-2 rounded-md bg-[#f9f6fe] border-2 border-[#e4d9f9]">
+        <span className="inline-block px-1 align-baseline text-[32px] sm:text-[40px]">
           {targetLetter}
         </span>
       </p>

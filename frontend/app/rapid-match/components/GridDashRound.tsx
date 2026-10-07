@@ -81,9 +81,9 @@ export default function GridDashRound({
       </div>
 
       {/* Target symbol indicator */}
-      <div className="flex flex-row items-center gap-3 bg-white border-[2px] border-[#efefef] rounded-[15px] px-4 py-2">
+      <div className="flex flex-row items-center gap-3 bg-white border-[2px] border-[#efefef] rounded-[15px] px-5 py-3">
         <span className="font-sauce text-[14px] text-[#5e5e5e]">Target:</span>
-        <span className="font-pixel text-[28px] text-[#1d1d1d]">
+        <span className="font-pixel text-[36px] sm:text-[44px] leading-none text-[#1d1d1d] select-none">
           {trial.targetSymbol}
         </span>
       </div>
@@ -95,7 +95,7 @@ export default function GridDashRound({
           const isCorrect = i === correctIndex;
 
           let cellClasses =
-            "bg-white border-[2px] border-[#efefef] hover:border-[#1d1d1d]";
+            "bg-white border-[#d4d4d4] hover:border-[#1d1d1d]";
           let iconNode = null;
 
           if (answered) {
@@ -122,12 +122,12 @@ export default function GridDashRound({
               animate={isSelected && !isCorrect ? { x: [-4, 4, -4, 4, 0] } : {}}
               transition={{ duration: 0.3 }}
               data-cuelume-press
-              className={`relative flex items-center justify-center h-[75px] sm:h-[85px] rounded-[14px] transition-all duration-150 cursor-pointer disabled:cursor-default ${cellClasses}`}
+              className={`relative flex items-center justify-center h-[75px] sm:h-[85px] rounded-[14px] border shadow-[0_4px_14px_rgba(0,0,0,0.07)] transition-all duration-150 cursor-pointer disabled:cursor-default ${cellClasses}`}
             >
               <span className="font-pixel text-[30px] sm:text-[36px] select-none">
                 {symbol}
               </span>
-              <span className="font-pixel text-[10px] text-[#a0a0a0] absolute bottom-1 left-1.5">
+              <span className="font-pixel text-[10px] text-[#6b6b6b] absolute bottom-1 left-1.5">
                 {i + 1}
               </span>
               {iconNode}

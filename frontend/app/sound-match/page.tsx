@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { bind } from "cuelume";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { ApiError } from "@/lib/queries/api-error";
@@ -20,9 +20,11 @@ import RhymeRound from "./components/RhymeRound";
 import MinimalPairRound from "./components/MinimalPairRound";
 import PhonemeLetterRound from "./components/PhonemeLetterRound";
 import LevelUpTransition from "./components/LevelUpTransition";
+import ResultsLoading from "@/components/results-loading";
 import type { TrialOutcome } from "./components/types";
 
 const FLUSH_BATCH_SIZE = 5;
+const MIN_RESULTS_LOADING_MS = 1800;
 
 const PRIMARY_BUTTON_CLASSES =
   "font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer";
@@ -49,6 +51,7 @@ export default function SoundMatchPage() {
   const submitTrialsMutation = useSubmitSoundMatchTrialsMutation();
   const completeSessionMutation = useCompleteSoundMatchSessionMutation();
   const feedback = useGameFeedback();
+  const [isFinishing, setIsFinishing] = useState(false);
 
   useEffect(() => {
     bind();
@@ -102,6 +105,26 @@ export default function SoundMatchPage() {
     }
   }
 
+  async function finishSession() {
+    setIsFinishing(true);
+    // Hold the loading screen briefly so it never just flashes on fast networks
+    const minDisplay = new Promise((resolve) =>
+      setTimeout(resolve, MIN_RESULTS_LOADING_MS),
+    );
+    await Promise.all(pendingFlushesRef.current);
+    try {
+      const [result] = await Promise.all([
+        completeSessionMutation.mutateAsync(sessionIdRef.current!),
+        minDisplay,
+      ]);
+      feedback.onCaseSolved();
+      setCompleted(result);
+      setIsFinishing(false);
+    } catch {
+      // Surfaced via completeSessionMutation.error on the loading screen
+    }
+  }
+
   const handleAnswer = useCallback(
     async (outcome: TrialOutcome) => {
       if (outcome.localCorrect) {
@@ -118,16 +141,7 @@ export default function SoundMatchPage() {
       }
 
       if (isLastTrial) {
-        await Promise.all(pendingFlushesRef.current);
-        try {
-          const result = await completeSessionMutation.mutateAsync(
-            sessionIdRef.current!,
-          );
-          feedback.onCaseSolved();
-          setCompleted(result);
-        } catch {
-          // Surfaced via completeSessionMutation.error
-        }
+        await finishSession();
         return;
       }
 
@@ -216,7 +230,18 @@ export default function SoundMatchPage() {
         </div>
       )}
 
-      {(phase === "playing" || phase === "levelup") && currentTrial && (
+      {phase === "playing" && isFinishing && (
+        <ResultsLoading
+          error={
+            completeSessionMutation.isError
+              ? completeSessionMutation.error.message
+              : null
+          }
+          onRetry={finishSession}
+        />
+      )}
+
+      {(phase === "playing" || phase === "levelup") && !isFinishing && currentTrial && (
         <div className="flex flex-col items-center justify-center w-full gap-8">
           <div className="flex flex-col items-center gap-2">
             <span className="font-pixel text-[12px] uppercase tracking-wide text-[#a0a0a0]">

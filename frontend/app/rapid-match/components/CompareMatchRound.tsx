@@ -88,7 +88,7 @@ export default function CompareMatchRound({
           </span>
         </div>
 
-        <span className="font-pixel text-[20px] text-[#a0a0a0]">vs</span>
+        <span className="font-sauce text-[20px] text-[#a0a0a0]">vs</span>
 
         <div className="flex flex-col items-center justify-center flex-1 max-w-[140px] h-[110px] sm:h-[130px] bg-white border-[3px] border-[#1d1d1d] rounded-[20px] shadow-sm">
           <span className="font-pixel text-[46px] sm:text-[56px] text-[#1d1d1d] select-none">
@@ -107,7 +107,7 @@ export default function CompareMatchRound({
           const isCorrect = btn.value === trial.isMatch;
 
           let btnClasses =
-            "bg-white border-[2px] border-[#efefef] hover:border-[#1d1d1d] text-[#1d1d1d]";
+            "bg-white border-[#d4d4d4] hover:border-[#1d1d1d] text-[#1d1d1d]";
           let iconNode = null;
 
           if (answered) {
@@ -128,14 +128,14 @@ export default function CompareMatchRound({
               disabled={answered}
               onClick={(e) => handleSelect(btn.value, e.timeStamp)}
               data-cuelume-press
-              className={`relative flex-1 flex flex-col items-center justify-center py-4 rounded-[16px] transition-all duration-150 cursor-pointer disabled:cursor-default ${btnClasses}`}
+              className={`relative flex-1 flex flex-col items-center justify-center py-4 rounded-[16px] border shadow-[0_4px_14px_rgba(0,0,0,0.07)] transition-all duration-150 cursor-pointer disabled:cursor-default ${btnClasses}`}
             >
               <div className="flex flex-row items-center gap-2">
-                <span className="font-pixel text-[18px] sm:text-[20px]">
+                <span className="font-sauce text-[18px] sm:text-[20px]">
                   {btn.label}
                 </span>
               </div>
-              <span className="font-sauce text-[12px] text-[#a0a0a0] mt-0.5">
+              <span className="font-sauce text-[12px] text-[#6b6b6b] mt-0.5">
                 {btn.keyHint}
               </span>
               {iconNode}

@@ -5,6 +5,7 @@ import { bind, play } from "cuelume";
 import { useWebHaptics } from "web-haptics/react";
 import { motion, AnimatePresence } from "motion/react";
 import GameIntro from "@/components/game-intro";
+import ResultsLoading from "@/components/results-loading";
 import {
   Star, Home, TreePine, Moon, Book, Sun, Key, Cloud,
   Heart, Flower, Umbrella, Music, Anchor, Bell, Rocket,
@@ -13,7 +14,9 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type GamePhase = "intro" | "loading" | "show" | "recall" | "feedback" | "stats";
+type GamePhase = "intro" | "loading" | "show" | "recall" | "feedback" | "results" | "stats";
+
+const MIN_RESULTS_LOADING_MS = 1800;
 
 interface Challenge {
   id: string;
@@ -59,9 +62,16 @@ const ALL_SYMBOLS = [
 ];
 const PLAYER_ID = "pranshu";
 
+// Column widths for the recall bank (flex-wrap so a partial last row stays centered)
+function bankItemWidth(count: number): string {
+  if (count <= 6) return "w-[calc((100%-1.5rem)/3)] sm:w-[calc((100%-2rem)/3)]";
+  if (count <= 8) return "w-[calc((100%-2.25rem)/4)] sm:w-[calc((100%-3rem)/4)]";
+  return "w-[calc((100%-2.25rem)/4)] sm:w-[calc((100%-4rem)/5)]";
+}
+
 function getIcon(symbol: string, className: string = "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]") {
   const Icon = ICON_MAP[symbol] || HelpCircle;
-  return <Icon className={className} strokeWidth={2.5} />;
+  return <Icon className={className} strokeWidth={1.75} />;
 }
 
 /** Build a shuffled bank of emojis: sequence items + random distractors. */
@@ -280,16 +290,23 @@ export default function MemoryQuestPage() {
     playCue("tap", 0.8);
     triggerHaptic("nudge");
     if (rc > 0 && rc % 3 === 0 && summaryRef.current) {
-      setPhase("stats");
+      setPhase("results");
     } else {
       fetchChallenge();
     }
   }, [fetchChallenge, playCue, triggerHaptic]);
 
+  // Brief "loading results" beat before the stats card
+  useEffect(() => {
+    if (phase !== "results") return;
+    const t = setTimeout(() => setPhase("stats"), MIN_RESULTS_LOADING_MS);
+    return () => clearTimeout(t);
+  }, [phase]);
+
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col items-center justify-start w-full flex-1 px-4 sm:px-6 py-8 sm:py-10">
+    <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-10">
       <AnimatePresence mode="wait">
 
         {/* ── INTRO ──────────────────────────────────────────────────────── */}
@@ -306,7 +323,7 @@ export default function MemoryQuestPage() {
               ]}
               note={
                 roundCount > 0 ? (
-                  <p className="font-sauce text-[13px] text-[#a0a0a0]">
+                  <p className="font-sauce text-[13px] text-[#6b6b6b]">
                     level {currentLevel} · {currentLevel + 2} items
                   </p>
                 ) : null
@@ -322,7 +339,7 @@ export default function MemoryQuestPage() {
               pressCue={false}
               footer={
                 totalScore > 0 ? (
-                  <p className="font-pixel text-[13px] text-[#a0a0a0]">
+                  <p className="font-pixel text-[13px] text-[#6b6b6b]">
                     total score: {totalScore}
                   </p>
                 ) : null
@@ -338,14 +355,14 @@ export default function MemoryQuestPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center flex-1 gap-4 pt-16"
+            className="flex flex-col items-center justify-center flex-1 gap-4"
           >
             <motion.span
               animate={{ rotate: 360 }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
               className="text-[44px] block"
             >
-              <Sparkles className="w-10 h-10 text-[#1d1d1d]" strokeWidth={2} />
+              <Sparkles className="w-10 h-10 text-[#1d1d1d]" strokeWidth={1.5} />
             </motion.span>
             <span className="font-pixel text-[16px] text-[#5e5e5e]">loading path...</span>
           </motion.div>
@@ -364,14 +381,14 @@ export default function MemoryQuestPage() {
               <h2 className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d]">
                 {challenge.type === "position" ? "the map" : "the path"}
               </h2>
-              <p className="font-sauce text-[14px] text-[#5e5e5e] flex items-center justify-center gap-1">
-                {challenge.type === "position" ? <>Remember where {getIcon(challenge.target || "", "w-5 h-5 text-[#1d1d1d]")} is!</> : "Remember this sequence!"}
+              <p className="font-pixel text-[16px] sm:text-[20px] text-center text-[#5e5e5e] flex items-center justify-center gap-2">
+                {challenge.type === "position" ? <>Remember where {getIcon(challenge.target || "", "w-9 h-9 sm:w-10 sm:h-10 text-[#1d1d1d]")} is!</> : "Remember this sequence!"}
               </p>
             </div>
 
             {challenge.type === "position" && challenge.gridSize ? (
               <div 
-                className="grid gap-2 p-2"
+                className="grid gap-3 sm:gap-4 p-2"
                 style={{ gridTemplateColumns: `repeat(${challenge.gridSize}, minmax(0, 1fr))` }}
               >
                 {challenge.sequence.map((symbol, i) => (
@@ -380,10 +397,10 @@ export default function MemoryQuestPage() {
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05, type: "spring", stiffness: 250 }}
-                    className="flex items-center justify-center w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] bg-[#f9f0f0] border-[2px] border-[#efefef] rounded-[14px]"
+                    className="flex items-center justify-center w-[68px] h-[68px] sm:w-[88px] sm:h-[88px] bg-white border-[2px] border-[#e0e0e0] rounded-[14px]"
                   >
                     <span className="text-[30px] sm:text-[34px] select-none">
-                      {symbol ? getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]") : ""}
+                      {symbol ? getIcon(symbol, "w-9 h-9 sm:w-12 sm:h-12 text-[#1d1d1d]") : ""}
                     </span>
                   </motion.div>
                 ))}
@@ -398,13 +415,13 @@ export default function MemoryQuestPage() {
                     transition={{ delay: i * 0.1, type: "spring", stiffness: 250 }}
                     className="flex flex-row items-center gap-1.5 sm:gap-2"
                   >
-                    <div className="flex items-center justify-center w-[62px] h-[62px] sm:w-[70px] sm:h-[70px] bg-[#f9f0f0] border-[2px] border-[#efefef] rounded-[14px]">
+                    <div className="flex items-center justify-center w-[68px] h-[68px] sm:w-[88px] sm:h-[88px] bg-white border-[2px] border-[#e0e0e0] rounded-[14px]">
                       <span className="text-[30px] sm:text-[34px] select-none">
-                        {getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}
+                        {getIcon(symbol, "w-9 h-9 sm:w-12 sm:h-12 text-[#1d1d1d]")}
                       </span>
                     </div>
                     {i < challenge.sequence.length - 1 && (
-                      <span className="font-pixel text-[14px] sm:text-[16px] text-[#d0d0d0]">
+                      <span className="font-pixel text-[14px] sm:text-[16px] text-[#6b6b6b]">
                         →
                       </span>
                     )}
@@ -416,10 +433,10 @@ export default function MemoryQuestPage() {
             {/* Progress bar */}
             <div className="flex flex-col items-center w-full max-w-[340px] gap-2 px-2">
               <div className="flex flex-row items-center justify-between w-full">
-                <span className="font-pixel text-[12px] text-[#a0a0a0]">
+                <span className="font-pixel text-[12px] text-[#6b6b6b]">
                   level {challenge.level}
                 </span>
-                <span className="font-pixel text-[12px] text-[#a0a0a0]">
+                <span className="font-pixel text-[12px] text-[#6b6b6b]">
                   {challenge.sequence.length} items
                 </span>
               </div>
@@ -429,7 +446,7 @@ export default function MemoryQuestPage() {
                   style={{ width: `${displayProgress}%` }}
                 />
               </div>
-              <span className="font-sauce text-[12px] text-[#c0c0c0]">
+              <span className="font-sauce text-[12px] text-[#6b6b6b]">
                 memorise before the bar runs out
               </span>
             </div>
@@ -449,14 +466,14 @@ export default function MemoryQuestPage() {
               <h2 className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d]">
                 your turn!
               </h2>
-              <p className="font-sauce text-[14px] text-[#5e5e5e] flex items-center justify-center gap-1">
-                {challenge.type === "position" ? <>Where was {getIcon(challenge.target || "", "w-5 h-5 text-[#1d1d1d]")}?</> : "Tap the emojis in the correct order"}
+              <p className="font-pixel text-[16px] sm:text-[20px] text-center text-[#5e5e5e] flex items-center justify-center gap-2">
+                {challenge.type === "position" ? <>Where was {getIcon(challenge.target || "", "w-9 h-9 sm:w-10 sm:h-10 text-[#1d1d1d]")}?</> : "Tap the emojis in the correct order"}
               </p>
             </div>
 
             {challenge.type === "position" && challenge.gridSize ? (
               <div 
-                className="grid gap-2 p-2 mt-4"
+                className="grid gap-3 sm:gap-4 p-2 mt-4"
                 style={{ gridTemplateColumns: `repeat(${challenge.gridSize}, minmax(0, 1fr))` }}
               >
                 {Array.from({ length: challenge.gridSize * challenge.gridSize }).map((_, i) => (
@@ -473,8 +490,8 @@ export default function MemoryQuestPage() {
                     }}
                     className={`flex items-center justify-center w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] rounded-[12px] border-[2px] transition-all duration-150 cursor-pointer ${
                       currentAnswer[0] === i.toString()
-                        ? "bg-[#f9f0f0] border-[#e0c0c0]"
-                        : "bg-white border-dashed border-[#e0e0e0] hover:bg-[#fdf5f5]"
+                        ? "bg-white border-[#5e5e5e]"
+                        : "bg-white border-dashed border-[#a8a8a8] hover:border-[#5e5e5e] hover:bg-[#f9f9f9]"
                     }`}
                   />
                 ))}
@@ -490,10 +507,10 @@ export default function MemoryQuestPage() {
                       transition={{ delay: i * 0.04 }}
                       className={`flex items-center justify-center w-[52px] h-[52px] sm:w-[60px] sm:h-[60px] rounded-[12px] border-[2px] transition-all duration-150 ${
                         currentAnswer[i]
-                          ? "bg-[#f9f0f0] border-[#e0c0c0]"
+                          ? "bg-white border-[#a8a8a8]"
                           : i === currentAnswer.length
-                          ? "bg-white border-[#a0a0a0] border-dashed"
-                          : "bg-white border-dashed border-[#e0e0e0]"
+                          ? "bg-white border-[#5e5e5e] border-dashed"
+                          : "bg-white border-dashed border-[#a8a8a8]"
                       }`}
                     >
                       {currentAnswer[i] ? (
@@ -505,7 +522,7 @@ export default function MemoryQuestPage() {
                           {getIcon(currentAnswer[i], "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}
                         </motion.span>
                       ) : (
-                        <span className="font-pixel text-[11px] text-[#d0d0d0]">
+                        <span className="font-pixel text-[11px] text-[#6b6b6b]">
                           {i + 1}
                         </span>
                       )}
@@ -515,13 +532,7 @@ export default function MemoryQuestPage() {
 
                 <div className="flex flex-col items-center w-full gap-3 px-4 mt-2">
                   <div
-                    className={`grid gap-2 sm:gap-2.5 w-full max-w-[380px] ${
-                      emojiBank.length <= 6
-                        ? "grid-cols-3"
-                        : emojiBank.length <= 8
-                        ? "grid-cols-4"
-                        : "grid-cols-4 sm:grid-cols-5"
-                    }`}
+                    className="flex flex-row flex-wrap justify-center gap-3 sm:gap-4 w-full max-w-[540px]"
                   >
                     {emojiBank.map((symbol, i) => (
                       <motion.button
@@ -536,10 +547,10 @@ export default function MemoryQuestPage() {
                           currentAnswer.length >= challenge.sequence.length ||
                           isSubmitting
                         }
-                        className="flex items-center justify-center aspect-square bg-white border-[2px] border-[#efefef] rounded-[12px] hover:bg-[#fdf5f5] hover:border-[#e8d0d0] transition-all duration-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                        className={`flex items-center justify-center aspect-square ${bankItemWidth(emojiBank.length)} bg-white border-[2px] border-[#efefef] rounded-[14px] shadow-[0_4px_14px_rgba(0,0,0,0.07)] hover:bg-[#f9f9f9] hover:border-[#d4d4d4] transition-all duration-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed`}
                       >
                         <span className="text-[26px] sm:text-[30px] select-none">
-                          {getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}
+                          {getIcon(symbol, "w-10 h-10 sm:w-14 sm:h-14 text-[#1d1d1d]")}
                         </span>
                       </motion.button>
                     ))}
@@ -563,7 +574,7 @@ export default function MemoryQuestPage() {
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="font-pixel text-[13px] text-[#a0a0a0]"
+                className="font-pixel text-[13px] text-[#6b6b6b]"
               >
                 checking...
               </motion.p>
@@ -590,7 +601,7 @@ export default function MemoryQuestPage() {
               transition={{ duration: 0.55 }}
               className="text-[64px] sm:text-[72px] block"
             >
-              {feedbackResult.correct ? <Trophy className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={2} /> : <Frown className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={2} />}
+              {feedbackResult.correct ? <Trophy className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={1.5} /> : <Frown className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={1.5} />}
             </motion.span>
 
             <div className="flex flex-col items-center gap-1 text-center">
@@ -629,7 +640,7 @@ export default function MemoryQuestPage() {
                   <span className="font-pixel text-[15px] sm:text-[17px] text-[#1d1d1d]">
                     {value}
                   </span>
-                  <span className="font-sauce text-[12px] text-[#a0a0a0] mt-0.5">
+                  <span className="font-sauce text-[12px] text-[#6b6b6b] mt-0.5">
                     {label}
                   </span>
                 </div>
@@ -639,38 +650,38 @@ export default function MemoryQuestPage() {
             {/* Reveal correct sequence on wrong answer */}
             {!feedbackResult.correct && challenge && (
               <div className="flex flex-col items-center gap-2 w-full max-w-[340px]">
-                <span className="font-pixel text-[12px] sm:text-[13px] text-[#a0a0a0]">
+                <span className="font-pixel text-[12px] sm:text-[13px] text-[#6b6b6b]">
                   {challenge.type === "position" ? "the correct spot was:" : "the correct path was:"}
                 </span>
                 
                 {challenge.type === "position" && challenge.gridSize ? (
                   <div 
-                    className="grid gap-1.5"
+                    className="grid gap-2"
                     style={{ gridTemplateColumns: `repeat(${challenge.gridSize}, minmax(0, 1fr))` }}
                   >
                     {Array.from({ length: challenge.gridSize * challenge.gridSize }).map((_, i) => (
                       <div
                         key={i}
-                        className={`flex items-center justify-center w-[40px] h-[40px] rounded-[10px] border-[2px] ${
+                        className={`flex items-center justify-center w-[52px] h-[52px] rounded-[12px] border-[2px] ${
                           i === challenge.targetIndex
-                            ? "bg-[#f9f0f0] border-[#e8c8c8]"
+                            ? "bg-white border-[#a8a8a8]"
                             : "bg-white border-[#efefef]"
                         }`}
                       >
-                        <span className="text-[20px] select-none">
-                          {i === challenge.targetIndex ? getIcon(challenge.target || "", "w-6 h-6 inline-block align-text-bottom text-[#1d1d1d]") : ""}
+                        <span className="leading-none select-none">
+                          {i === challenge.targetIndex ? getIcon(challenge.target || "", "w-8 h-8 inline-block text-[#1d1d1d]") : ""}
                         </span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-row flex-wrap items-center justify-center gap-1.5">
+                  <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2.5">
                     {challenge.sequence.map((symbol, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-center w-[44px] h-[44px] bg-[#f9f0f0] border-[2px] border-[#e8c8c8] rounded-[10px]"
+                        className="flex items-center justify-center w-[64px] h-[64px] sm:w-[76px] sm:h-[76px] bg-white border-[2px] border-[#e0e0e0] rounded-[14px]"
                       >
-                        <span className="text-[22px] select-none">{getIcon(symbol, "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]")}</span>
+                        <span className="leading-none select-none">{getIcon(symbol, "w-9 h-9 sm:w-11 sm:h-11 text-[#1d1d1d]")}</span>
                       </div>
                     ))}
                   </div>
@@ -687,6 +698,19 @@ export default function MemoryQuestPage() {
                 {roundCount > 0 && roundCount % 3 === 0 ? "see stats" : "next round"}
               </span>
             </button>
+          </motion.div>
+        )}
+
+        {/* ── RESULTS LOADING ─────────────────────────────────────────────── */}
+        {phase === "results" && (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center justify-center flex-1"
+          >
+            <ResultsLoading />
           </motion.div>
         )}
 

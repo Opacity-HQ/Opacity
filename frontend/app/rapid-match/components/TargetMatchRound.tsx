@@ -98,7 +98,7 @@ export default function TargetMatchRound({
           const isCorrect = i === correctIndex;
 
           let cardClasses =
-            "bg-white border-[2px] border-[#efefef] hover:border-[#1d1d1d] hover:bg-[#f9f9f9]";
+            "bg-white border-[#d4d4d4] hover:border-[#1d1d1d] hover:bg-[#f9f9f9]";
           let iconNode = null;
 
           if (answered) {
@@ -125,12 +125,12 @@ export default function TargetMatchRound({
               animate={isSelected && !isCorrect ? { x: [-4, 4, -4, 4, 0] } : {}}
               transition={{ duration: 0.3 }}
               data-cuelume-press
-              className={`relative flex flex-col items-center justify-center h-[90px] sm:h-[100px] rounded-[16px] transition-all duration-150 cursor-pointer disabled:cursor-default ${cardClasses}`}
+              className={`relative flex flex-col items-center justify-center h-[90px] sm:h-[100px] rounded-[16px] border shadow-[0_4px_14px_rgba(0,0,0,0.07)] transition-all duration-150 cursor-pointer disabled:cursor-default ${cardClasses}`}
             >
               <span className="font-pixel text-[32px] sm:text-[38px] select-none">
                 {option}
               </span>
-              <span className="font-pixel text-[11px] text-[#a0a0a0] absolute bottom-1.5 left-2">
+              <span className="font-pixel text-[11px] text-[#6b6b6b] absolute bottom-1.5 left-2">
                 {i + 1}
               </span>
               {iconNode}

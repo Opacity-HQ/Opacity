@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { bind } from "cuelume";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { ApiError } from "@/lib/queries/api-error";
@@ -18,9 +18,11 @@ import TargetMatchRound from "./components/TargetMatchRound";
 import CompareMatchRound from "./components/CompareMatchRound";
 import GridDashRound from "./components/GridDashRound";
 import MatchCompleted from "./components/MatchCompleted";
+import ResultsLoading from "@/components/results-loading";
 import type { TrialOutcome } from "./components/types";
 
 const FLUSH_BATCH_SIZE = 5;
+const MIN_RESULTS_LOADING_MS = 1800;
 
 const PRIMARY_BUTTON_CLASSES =
   "font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer";
@@ -44,6 +46,7 @@ export default function RapidMatchPage() {
   const submitTrialsMutation = useSubmitRapidMatchTrialsMutation();
   const completeSessionMutation = useCompleteRapidMatchSessionMutation();
   const feedback = useGameFeedback();
+  const [isFinishing, setIsFinishing] = useState(false);
 
   useEffect(() => {
     bind();
@@ -96,6 +99,26 @@ export default function RapidMatchPage() {
     }
   }
 
+  async function finishSession() {
+    setIsFinishing(true);
+    // Hold the loading screen briefly so it never just flashes on fast networks
+    const minDisplay = new Promise((resolve) =>
+      setTimeout(resolve, MIN_RESULTS_LOADING_MS),
+    );
+    await Promise.all(pendingFlushesRef.current);
+    try {
+      const [result] = await Promise.all([
+        completeSessionMutation.mutateAsync(sessionIdRef.current!),
+        minDisplay,
+      ]);
+      feedback.onCaseSolved();
+      setCompleted(result);
+      setIsFinishing(false);
+    } catch {
+      // Surfaced via completeSessionMutation.error on the loading screen
+    }
+  }
+
   const handleAnswer = useCallback(
     async (outcome: TrialOutcome) => {
       if (outcome.localCorrect) {
@@ -112,16 +135,7 @@ export default function RapidMatchPage() {
       }
 
       if (isLastTrial) {
-        await Promise.all(pendingFlushesRef.current);
-        try {
-          const result = await completeSessionMutation.mutateAsync(
-            sessionIdRef.current!,
-          );
-          feedback.onCaseSolved();
-          setCompleted(result);
-        } catch {
-          // Surfaced via completeSessionMutation.error
-        }
+        await finishSession();
         return;
       }
 
@@ -200,22 +214,38 @@ export default function RapidMatchPage() {
         </div>
       )}
 
-      {phase === "playing" && currentTrial && (
+      {phase === "playing" && isFinishing && (
+        <ResultsLoading
+          error={
+            completeSessionMutation.isError
+              ? completeSessionMutation.error.message
+              : null
+          }
+          onRetry={finishSession}
+        />
+      )}
+
+      {phase === "playing" && !isFinishing && currentTrial && (
         <div className="flex flex-col items-center justify-center w-full gap-8">
-          <div
-            role="progressbar"
-            aria-valuenow={trialCursor + 1}
-            aria-valuemin={1}
-            aria-valuemax={trials.length}
-            aria-label="Game progress"
-            className="flex flex-row gap-1.5"
-          >
-            {trials.map((t, i) => (
-              <span
-                key={t.index}
-                className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d]" : "bg-[#e0e0e0]"}`}
-              />
-            ))}
+          <div className="flex flex-col items-center gap-2.5">
+            <span className="font-pixel text-[14px] text-[#6b6b6b]">
+              {trialCursor + 1}/{trials.length}
+            </span>
+            <div
+              role="progressbar"
+              aria-valuenow={trialCursor + 1}
+              aria-valuemin={1}
+              aria-valuemax={trials.length}
+              aria-label="Game progress"
+              className="flex flex-row gap-1.5"
+            >
+              {trials.map((t, i) => (
+                <span
+                  key={t.index}
+                  className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d]" : "bg-[#e0e0e0]"}`}
+                />
+              ))}
+            </div>
           </div>
 
           {currentTrial.roundType === "target" && (
