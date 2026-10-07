@@ -16,7 +16,9 @@ import {
 
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
+import { useQueryClient } from "@tanstack/react-query"
 import { useSigninMutation, useLoginMutation } from "@/lib/queries/auth"
+import { onboardingKeys } from "@/lib/queries/onboarding"
 import { ApiError } from "@/lib/queries/api-error"
 
 function subscribeMobile(callback: () => void) {
@@ -60,6 +62,7 @@ export default function Signin({
   onSuccess?: () => void
 }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<"email" | "password">("email")
   const [email, setEmail] = useState("")
@@ -84,6 +87,10 @@ export default function Signin({
     // Without this the header keeps showing its stale/placeholder user
     // (e.g. "guest" default) until a hard reload.
     router.refresh()
+    // The app-wide onboarding gate cached "signed out / nothing to do" before
+    // this login — make it re-ask now that there's a session, so a first-time
+    // user sees the form right away instead of on a later page load.
+    queryClient.invalidateQueries({ queryKey: onboardingKeys.all })
     if (onSuccess) {
       onSuccess()
     } else {
