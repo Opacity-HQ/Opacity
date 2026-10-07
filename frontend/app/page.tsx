@@ -5,6 +5,7 @@ import Link from "next/link";
 import Signin from "@/components/signin";
 import { DiagonalBoxPattern } from "@/components/background-pattern/diagonal-box-pattern";
 import { motion } from "motion/react";
+import { HairlineFigure, type HairlineFigureName } from "@/components/hairline-figure";
 import {
   Avatar,
   AvatarFallback,
@@ -24,7 +25,15 @@ import {
   MessageFooter,
 } from "@/components/ui/message"
 
-const gameCards = [
+const gameCards: {
+  title: string;
+  description: string;
+  accent: string;
+  icon: string;
+  href: string;
+  figure: HairlineFigureName;
+  figureLabel: string;
+}[] = [
   {
     title: "Sound Match",
     description:
@@ -32,6 +41,8 @@ const gameCards = [
     accent: "bg-[#F7FCEC]",
     icon: "/sound.svg",
     href: "/sound-match",
+    figure: "sound-match",
+    figureLabel: "A line drawing of a speaker sending sound waves to a tile with a dot code",
   },
   {
     title: "Letter Detective",
@@ -40,6 +51,8 @@ const gameCards = [
     accent: "bg-[#f9f6fe]",
     icon: "/letter.svg",
     href: "/letter-detective",
+    figure: "letter-detective",
+    figureLabel: "A line drawing of a magnifying glass over a mirrored b and d",
   },
   {
     title: "Word Builder",
@@ -48,6 +61,8 @@ const gameCards = [
     accent: "bg-[#fefcea]",
     icon: "/block.svg",
     href: "/word-builder",
+    figure: "word-builder",
+    figureLabel: "A line drawing of three blocks with one, two and three dots, one lifted from its slot",
   },
   {
     title: "Memory Quest",
@@ -56,6 +71,8 @@ const gameCards = [
     accent: "bg-[#f9f0f0]",
     icon: "/memory.svg",
     href: "/memory-quest",
+    figure: "memory-quest",
+    figureLabel: "A line drawing of six face-down cards with one turned face up",
   },
   {
     title: "Rapid match",
@@ -64,6 +81,8 @@ const gameCards = [
     accent: "bg-[#F5f8fe]",
     icon: "/rapid.svg",
     href: "/rapid-match",
+    figure: "rapid-match",
+    figureLabel: "A line drawing of a stopwatch with streaks behind it",
   },
 ];
 
@@ -396,7 +415,8 @@ export default function Home() {
 
         {/* Game Cards Grid with Stagger */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-[20px] items-stretch justify-center w-full px-4 sm:px-5 mb-8 sm:mb-[30px] mt-5 sm:mt-[20px]">
-          {gameCards.map((game, index) => (
+          {gameCards.map((game, index) => {
+            return (
             <motion.div
               key={`${game.title}-${game.accent}`}
               className="flex flex-col items-start justify-between w-full bg-[#fefefe] rounded-[15px] border-[2px] border-[#efefef] min-h-[200px]"
@@ -422,30 +442,38 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href={game.href}
-                  className="flex flex-row items-center justify-center w-fit h-fit bg-white hover:bg-[#f7f7f7] transition-all duration-200 rounded-[10px] px-[10px] py-[5px] border-[2px] border-[#efefef] ml-[10px] mb-[10px] mt-3"
-                >
-                  <Image
-                    src="/play.svg"
-                    alt="Play Icon"
-                    width={15}
-                    height={15}
-                    className=""
-                  />
-                  <span className="font-pixel text-[15px] ml-[5px]">play</span>
-                </Link>
-              </motion.div>
+              <div className="flex flex-row items-end justify-between w-full">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href={game.href}
+                    className="flex flex-row items-center justify-center w-fit h-fit bg-white hover:bg-[#f7f7f7] transition-all duration-200 rounded-[10px] px-[10px] py-[5px] border-[2px] border-[#efefef] ml-[10px] mb-[10px] mt-3"
+                  >
+                    <Image
+                      src="/play.svg"
+                      alt="Play Icon"
+                      width={15}
+                      height={15}
+                      className=""
+                    />
+                    <span className="font-pixel text-[15px] ml-[5px]">play</span>
+                  </Link>
+                </motion.div>
+                <HairlineFigure
+                  name={game.figure}
+                  label={game.figureLabel}
+                  className="w-[150px] sm:w-[170px] shrink-0 mr-[6px] mb-[4px] [--hairline-plate:#fefefe]"
+                />
+              </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="dashed-line w-full"></div>
 
         {/* Footer & Opacity Title */}
         <motion.div 
-          className="flex flex-col items-start justify-between w-full pt-5 pb-0 gap-3"
+          className="flex flex-col items-start justify-between w-full pt-5 pb-0 gap-2"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -463,16 +491,15 @@ export default function Home() {
               />
               by Saket rama, Atharv remeshan, Ritwik gupta, Saatvik Das, Zaid Khan and Pranshu Thakkar </span>
           </div>
-          <div className="relative w-full overflow-hidden mt-2 -mb-1 sm:-mb-2 pt-3">
-            <div className="absolute inset-x-0 bottom-0 mx-auto w-full h-full max-h-64 rounded-full blur-[100px] pointer-events-none"></div>
-            <motion.h1 
-              className="text-center font-extrabold leading-[0.88] text-[#fcfcfc] text-[clamp(3rem,17.5vw,8.2rem)] [-webkit-text-stroke:1px_#E5E5E5] select-none pt-1"
+          <div className="[--wm:clamp(3.5rem,24vw,10.5rem)] flex w-full justify-center overflow-hidden h-[calc(var(--wm)*0.66)] mt-2">
+            <motion.h1
+              className="font-pixel leading-[1.15] text-[#f8f8f8] text-(length:--wm) [-webkit-text-stroke:1px_#e0e0e0] select-none"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
-              Opacity
+              opacity
             </motion.h1>
           </div>
         </motion.div>

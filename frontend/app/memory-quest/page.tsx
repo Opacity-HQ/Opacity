@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { bind, play } from "cuelume";
 import { useWebHaptics } from "web-haptics/react";
 import { motion, AnimatePresence } from "motion/react";
+import GameIntro from "@/components/game-intro";
 import {
   Star, Home, TreePine, Moon, Book, Sun, Key, Cloud,
   Heart, Flower, Umbrella, Music, Anchor, Bell, Rocket,
@@ -293,80 +294,41 @@ export default function MemoryQuestPage() {
 
         {/* ── INTRO ──────────────────────────────────────────────────────── */}
         {phase === "intro" && (
-          <motion.div
-            key="intro"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25 }}
-            className="flex flex-col items-center w-full gap-6 sm:gap-8"
-          >
-            {/* Decorative forest path */}
-            <div className="flex flex-row items-center justify-center gap-1.5 sm:gap-2 text-[36px] sm:text-[48px] mt-2">
-              {["🌳", "🐰", "⭐", "🏠"].map((e, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.1, type: "spring", stiffness: 200 }}
-                >
-                  {getIcon(e, "w-10 h-10 sm:w-12 sm:h-12 text-[#1d1d1d]")}
-                </motion.span>
-              ))}
-            </div>
-
-            <div className="flex flex-col items-center gap-2 text-center">
-              <h1 className="font-pixel text-[28px] sm:text-[36px] text-[#1d1d1d]">
-                Memory Quest
-              </h1>
-              <p className="font-sauce text-[15px] sm:text-[17px] text-[#5e5e5e] max-w-[300px] leading-[22px]">
-                Remember the path and find the hidden treasure!
-              </p>
-            </div>
-
-            {/* How to play */}
-            <div className="w-full max-w-[340px] bg-white border-[2px] border-[#efefef] rounded-[15px] p-4">
-              {[
-                { icon: "Eye", text: "Watch the path or map carefully" },
-                { icon: "Brain", text: "Remember the order or treasure spot" },
-                { icon: "Hand", text: "Tap to reproduce the memory" },
-              ].map(({ icon, text }) => (
-                <div key={text} className="flex flex-row items-center gap-3 py-1.5">
-                  <span className="text-[18px]">{getIcon(icon, "w-5 h-5 text-[#5e5e5e]")}</span>
-                  <span className="font-sauce text-[14px] sm:text-[15px] text-[#5e5e5e]">
-                    {text}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col items-center gap-2">
-              {roundCount > 0 && (
-                <p className="font-sauce text-[13px] text-[#a0a0a0]">
-                  level {currentLevel} · {currentLevel + 2} items
-                </p>
-              )}
-              <button
-                id="memory-quest-start"
-                onClick={() => {
-                  playCue("tap", 0.8);
-                  triggerHaptic("nudge");
-                  fetchChallenge();
-                }}
-                className="button-shadow flex flex-row items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-4px] transition-all duration-200 rounded-[20px] px-[24px] py-[10px] cursor-pointer"
-              >
-                <span className="font-pixel text-[18px] sm:text-[20px] text-white">
-                  {roundCount > 0 ? "next round" : "start"}
-                </span>
-              </button>
-            </div>
-
-            {totalScore > 0 && (
-              <p className="font-pixel text-[13px] text-[#a0a0a0]">
-                total score: {totalScore}
-              </p>
-            )}
-          </motion.div>
+          <div key="intro" className="flex flex-col items-center justify-center w-full flex-1">
+            <GameIntro
+              icon="/memory.svg"
+              title="Memory Quest"
+              description="Remember the path and find the hidden treasure!"
+              steps={[
+                { icon: Eye, text: "Watch the path or map carefully" },
+                { icon: Brain, text: "Remember the order or treasure spot" },
+                { icon: Hand, text: "Tap to reproduce the memory" },
+              ]}
+              note={
+                roundCount > 0 ? (
+                  <p className="font-sauce text-[13px] text-[#a0a0a0]">
+                    level {currentLevel} · {currentLevel + 2} items
+                  </p>
+                ) : null
+              }
+              loading={false}
+              onStart={() => {
+                playCue("tap", 0.8);
+                triggerHaptic("nudge");
+                fetchChallenge();
+              }}
+              startLabel={roundCount > 0 ? "next round" : "start game"}
+              startId="memory-quest-start"
+              pressCue={false}
+              footer={
+                totalScore > 0 ? (
+                  <p className="font-pixel text-[13px] text-[#a0a0a0]">
+                    total score: {totalScore}
+                  </p>
+                ) : null
+              }
+            />
+          </div>
         )}
 
         {/* ── LOADING ─────────────────────────────────────────────────────── */}

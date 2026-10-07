@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Blobatar } from "@blobatar/react";
 import { surprised } from "blobatar/expression";
+import { DiagonalBoxPattern } from "@/components/background-pattern/diagonal-box-pattern";
 import {
   ChevronDown,
   Check,
@@ -60,8 +61,8 @@ export default function GameLayout({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen">
-      <div className="flex flex-col items-center w-full max-w-5xl min-h-screen border-x-0 sm:border-x-2 border-[#efefef]">
+    <DiagonalBoxPattern className="flex flex-col items-center justify-center w-full min-h-screen">
+      <div className="flex flex-col items-center w-full max-w-5xl min-h-screen bg-white border-x-0 sm:border-x-2 border-[#efefef]">
         <div className="flex flex-row items-center justify-between w-full px-4 sm:px-5 py-3 border-b-2 border-[#efefef]">
           <div className="flex flex-row items-center justify-start min-w-0 pr-2">
             <Link
@@ -201,6 +202,6 @@ export default function GameLayout({
         </div>
         {children}
       </div>
-    </div>
+    </DiagonalBoxPattern>
   );
 }
