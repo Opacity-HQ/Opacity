@@ -238,20 +238,28 @@ export default function WordBuilderPage() {
 
       {phase === "playing" && !isFinishing && currentTrial && (
         <div className="flex flex-col items-center justify-center w-full gap-8">
-          <div
-            role="progressbar"
-            aria-valuenow={trialCursor + 1}
-            aria-valuemin={1}
-            aria-valuemax={trials.length}
-            aria-label="Round progress"
-            className="flex flex-row gap-1.5"
-          >
-            {trials.map((t, i) => (
-              <span
-                key={t.index}
-                className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d]" : "bg-[#e0e0e0]"}`}
-              />
-            ))}
+          <div className="flex flex-col items-center gap-3">
+            <p
+              aria-hidden="true"
+              className="font-pixel text-[14px] text-[#5e5e5e]"
+            >
+              {trialCursor + 1}/{trials.length}
+            </p>
+            <div
+              role="progressbar"
+              aria-valuenow={trialCursor + 1}
+              aria-valuemin={1}
+              aria-valuemax={trials.length}
+              aria-label="Round progress"
+              className="flex flex-row gap-1.5"
+            >
+              {trials.map((t, i) => (
+                <span
+                  key={t.index}
+                  className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d]" : "bg-[#e0e0e0]"}`}
+                />
+              ))}
+            </div>
           </div>
 
           <BuildRound

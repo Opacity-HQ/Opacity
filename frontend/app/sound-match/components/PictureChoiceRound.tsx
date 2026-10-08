@@ -102,7 +102,7 @@ export default function PictureChoiceRound({
             onPlay={() => speak(trial.spokenText)}
             label={`Play the word "${trial.targetWord}" again`}
           />
-          <span className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d] px-3 py-1 rounded-md bg-[#f9f6fe] border-2 border-[#e4d9f9]">
+          <span className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d] px-3 py-1 rounded-md bg-white border-2 border-[#e0e0e0]">
             {trial.targetWord}
           </span>
         </div>
@@ -157,7 +157,7 @@ export default function PictureChoiceRound({
               <span className="font-pixel text-[14px] sm:text-[16px]">
                 {opt.label}
               </span>
-              <span className="font-pixel text-[10px] text-[#a0a0a0] absolute bottom-1.5 left-2">
+              <span className="font-pixel text-[10px] text-[#4a4a4a] absolute bottom-1.5 left-2">
                 {i + 1}
               </span>
               {showCorrect && (

@@ -162,6 +162,11 @@ export default function SoundMatchPage() {
   );
 
   const currentTrial = trials[trialCursor];
+  // Warm-ups run first and are counted separately from the scored 1-15.
+  const warmupCount = trials.filter((t) => t.isWarmup).length;
+  const inWarmup = currentTrial?.isWarmup ?? false;
+  const questionNumber = inWarmup ? trialCursor + 1 : trialCursor + 1 - warmupCount;
+  const questionTotal = inWarmup ? warmupCount : trials.length - warmupCount;
 
   if (dashboardQuery.isPending) {
     return (
@@ -248,6 +253,12 @@ export default function SoundMatchPage() {
               {currentTrial.isWarmup
                 ? "warm-up"
                 : `level ${currentTrial.level}`}
+            </span>
+            <span
+              className="font-pixel text-[14px] text-[#1d1d1d]"
+              aria-label={`Question ${questionNumber} of ${questionTotal}`}
+            >
+              {questionNumber}/{questionTotal}
             </span>
             <div
               role="progressbar"

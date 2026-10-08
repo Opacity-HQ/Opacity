@@ -168,7 +168,7 @@ export default function MinimalPairRound({
                 <span className="font-pixel text-[15px] sm:text-[17px]">
                   {isSupported && selected === null ? `Sound ${i + 1}` : word}
                 </span>
-                <span className="font-pixel text-[11px] text-[#a0a0a0] ml-auto">
+                <span className="font-pixel text-[11px] text-[#4a4a4a] ml-auto">
                   {i + 1}
                 </span>
                 {showCorrect && (
