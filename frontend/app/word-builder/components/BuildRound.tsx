@@ -16,7 +16,7 @@ export default function BuildRound({
 }: {
   trial: WBTrial;
   onAnswer: (outcome: TrialOutcome) => void;
-  playCue: (sound: "tick" | "success" | "error" | "droplet") => void;
+  playCue: (sound: "select" | "success" | "error" | "close") => void;
   triggerHaptic: (preset: "nudge" | "success" | "error") => void;
 }) {
   const reducedMotion = usePrefersReducedMotion();
@@ -94,7 +94,7 @@ export default function BuildRound({
     if (filledRef.current.length >= trial.word.length) return;
 
     markFirstMove(e.timeStamp);
-    playCue("tick");
+    playCue("select");
     triggerHaptic("nudge");
 
     const next = [...filledRef.current, tileIndex];
@@ -108,7 +108,7 @@ export default function BuildRound({
 
   function backspace() {
     if (answeredRef.current || filledRef.current.length === 0) return;
-    playCue("droplet");
+    playCue("close");
     const next = filledRef.current.slice(0, -1);
     filledRef.current = next;
     setFilled(next);
@@ -131,7 +131,7 @@ export default function BuildRound({
             {trial.word.split("").map((letter, i) => (
               <div
                 key={i}
-                className="font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 border-[#e0e0e0] bg-[#f9f6fe] flex items-center justify-center"
+                className="font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 border-[#e0e0e0] bg-white flex items-center justify-center"
               >
                 {letter}
               </div>
@@ -161,7 +161,7 @@ export default function BuildRound({
                     "font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
                     letter
                       ? "border-[#1d1d1d] bg-[#f7f7f7]"
-                      : "border-dashed border-[#e0e0e0] bg-white",
+                      : "border-dashed border-[#9a9a9a] bg-white",
                     result === true && "border-emerald-500 bg-emerald-50",
                     result === false &&
                       (reducedMotion
@@ -170,7 +170,7 @@ export default function BuildRound({
                   )}
                 >
                   {letter ?? (
-                    <span className="font-pixel text-[13px] text-[#d0d0d0]">{i + 1}</span>
+                    <span className="font-pixel text-[13px] text-[#7a7a7a]">{i + 1}</span>
                   )}
                 </div>
               );

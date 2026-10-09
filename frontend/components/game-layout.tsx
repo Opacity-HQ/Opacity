@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Blobatar } from "@blobatar/react";
 import { surprised } from "blobatar/expression";
+import { DiagonalBoxPattern } from "@/components/background-pattern/diagonal-box-pattern";
 import {
   ChevronDown,
   Check,
@@ -31,7 +32,7 @@ const GAMES = [
 
 export default function GameLayout({
   title,
-  username = "pranshu",
+  username = "guest",
   children,
 }: GameLayoutProps) {
   const router = useRouter();
@@ -77,9 +78,9 @@ export default function GameLayout({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen">
-      <div className="flex flex-col items-center w-full max-w-5xl min-h-screen border-x-0 sm:border-x-2 border-[#efefef]">
-        <div className="flex flex-row items-center justify-between w-full px-4 sm:px-5 py-3 border-b-2 border-[#efefef]">
+    <DiagonalBoxPattern className="flex flex-col items-center justify-center w-full min-h-screen">
+      <div className="flex flex-col items-center w-full max-w-5xl min-h-screen bg-white border-x-0 sm:border-x-2 border-[#efefef]">
+        <div className="flex flex-row items-center justify-between w-full px-3 sm:px-4 py-1 border-b-2 border-[#efefef]">
           <div className="flex flex-row items-center justify-start min-w-0 pr-2">
             <Link
               href="/"
@@ -150,7 +151,7 @@ export default function GameLayout({
             <button
               type="button"
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex flex-row items-center justify-left px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-[10px] bg-white hover:bg-[#f5f5f5] transition-all duration-200 cursor-pointer shrink-0 outline-none"
+              className="flex flex-row items-center justify-left px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] bg-white hover:bg-[#f5f5f5] transition-all duration-200 cursor-pointer shrink-0 outline-none"
             >
               <Blobatar name={displayName} size={30} animate="always" expression={surprised} className="shrink-0" />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px]">{displayName}</span>
@@ -218,6 +219,6 @@ export default function GameLayout({
         </div>
         {children}
       </div>
-    </div>
+    </DiagonalBoxPattern>
   );
 }

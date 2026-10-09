@@ -70,7 +70,7 @@ export default function LineupRound({
     <div className="flex flex-col items-center justify-center w-full gap-6">
       <p className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d] text-center">
         Find the letter{" "}
-        <span className="inline-block px-2 rounded-md bg-[#f9f6fe] border-2 border-[#e4d9f9]">
+        <span className="inline-block px-1 align-baseline text-[32px] sm:text-[40px]">
           {trial.targetLetter}
         </span>
       </p>
@@ -107,7 +107,7 @@ export default function LineupRound({
               data-cuelume-press
               data-cuelume-release
               className={cn(
-                "relative font-pixel text-[24px] sm:text-[28px] aspect-square rounded-[14px] border-2 flex items-center justify-center transition-all duration-150",
+                "relative font-pixel text-[24px] sm:text-[28px] aspect-square rounded-[14px] border-2 shadow-[0_4px_14px_rgba(0,0,0,0.07)] flex items-center justify-center transition-all duration-150",
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
                 isCorrectAnswer && "border-emerald-500 bg-emerald-50 text-emerald-900",
                 isWrongPick &&

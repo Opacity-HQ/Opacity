@@ -104,7 +104,7 @@ export default function ImpostorRound({
               data-cuelume-press
               data-cuelume-release
               className={cn(
-                "relative font-pixel text-[26px] sm:text-[30px] aspect-square rounded-[14px] border-2 flex items-center justify-center transition-all duration-150",
+                "relative font-pixel text-[26px] sm:text-[30px] aspect-square rounded-[14px] border-2 shadow-[0_4px_14px_rgba(0,0,0,0.07)] flex items-center justify-center transition-all duration-150",
                 "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
                 isCorrectAnswer && "border-emerald-500 bg-emerald-50 text-emerald-900",
                 isWrongPick &&

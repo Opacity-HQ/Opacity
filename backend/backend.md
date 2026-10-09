@@ -39,6 +39,15 @@ frontend/app/api/login/
 
 Use `frontend/app/api/signin/` for sign-in or account-entry flows. Use `frontend/app/api/login/` for login-session flows. Keep auth route handlers in these folders and do not mix auth API code into dashboard or game API folders.
 
+### Onboarding contract
+
+`frontend/app/api/signin/onboarding/route.ts` is the one-time onboarding a confirmed (non-guest) user completes on their first signed-in session. It can't run at sign-up time because Supabase email confirmation means no session exists yet, so the client gates on it instead (`components/onboarding-gate.tsx`, mounted in `app/providers.tsx`).
+
+- `GET` returns `{ signedIn, needsOnboarding, hasChildren, displayName }`. Always `200`, including for signed-out visitors (`needsOnboarding: false`), because the gate runs on every route and a `401` would spam logged-out page loads. Guests never need onboarding.
+- `POST { fullName, birthYear?, gradeLevel? }` upserts `profiles.display_name` with the full name and, only if the account has no child yet, creates the first child (named by first name) so games can skip their own setup form. `birthYear` (1990 to the current year) is required in that case. Guests get `403`. Invalid input writes nothing.
+
+The header shows the first name only: `lib/auth/get-display-username.ts` reads `profiles.display_name` and takes the first word via `lib/auth/first-name.ts`. Accounts that haven't onboarded yet fall back to the email's local part; guests show "guest".
+
 ## Game API Routes
 
 Each game must use only its own API folder:
