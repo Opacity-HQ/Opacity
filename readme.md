@@ -2,7 +2,7 @@
 
 Opacity is a web-based platform that screens for early signs of dyslexia through interactive browser games. Designed for children, parents, and teachers, it uses evidence-based cognitive assessments delivered through engaging gameplay.
 
-**Status**: Backend + Letter Detective complete (Phase 7); other games (Sound Match, Word Builder, Memory Quest, Rapid Match) in development against this API contract.
+**Status**: All five game API/UI implementations are present. The dashboard UI is a placeholder. An external-data Random Forest research baseline lives under `ml/research/rello/`; live Opacity ML scoring and report generation are not implemented.
 
 ---
 
@@ -47,7 +47,7 @@ Next.js Route Handlers (frontend/app/api/**/route.ts)
 Supabase (Postgres + Auth + RLS)
 ```
 
-**No standalone backend server.** Route handlers *are* the backend. The one service that can't live in Vercel functions — Whisper transcription + ML scoring — is reserved for a separate Python service (under `backend/`, owned by Saatvik), called server-to-server from route handlers.
+**No implemented standalone backend server.** Route handlers *are* the backend. The one service that can't live in Vercel functions — Whisper transcription + product ML scoring — is planned as a separate Python service (under `backend/`, owned by Saatvik), called server-to-server from route handlers. Current research training is under `ml/`; its Rello features cannot be substituted with gameplay scores.
 
 ### Security Model
 
@@ -68,7 +68,7 @@ Supabase (Postgres + Auth + RLS)
 | **Validation** | Zod |
 | **Animations** | Motion, Cuelume (haptics), tw-animate-css |
 | **Auth** | Supabase Auth (email/password + anonymous) |
-| **ML** | Python (Gradient Boosted Decision Trees + SHAP), reserved for `backend/` |
+| **ML** | Python research baseline (Random Forest / Logistic Regression) under `ml/`; product scoring, XGBoost/SHAP and Whisper remain planned |
 
 ---
 
@@ -143,8 +143,7 @@ Opacity/
 │   │       ├── 11-seed_games.sql
 │   │       ├── 12-seed_letter_detective_content.sql
 │   │       └── 13-harden_access_functions.sql
-│   ├── backend.md                    # API route specification & secrets management
-│   └── ml.md                         # ML service placeholder
+│   └── backend.md                    # API contract; Python service not implemented
 │
 ├── docs/                              # Design & specification documents
 │   └── saket/
@@ -155,8 +154,10 @@ Opacity/
 │       ├── BACKEND_SCHEMA.md         # Database schema & RLS policies
 │       └── MEMORY_QUEST_AUDIO_HAPTICS.md
 │
-├── ml/                                # Machine learning service (reserved)
-│   └── ml.md
+├── ml/                                # ML research and feature-alignment contract
+│   ├── README.md
+│   ├── FEATURE_ALIGNMENT.md
+│   └── research/rello/                # Audited external-data baseline
 │
 ├── implementation_plan.md             # Phase-by-phase completion checklist
 └── README.md                          # This file
@@ -168,7 +169,7 @@ Opacity/
 
 ### Prerequisites
 
-- **Node.js 18+** (check with `node --version`)
+- **Node.js 20.9+** (check with `node --version`)
 - **A Supabase project** (free tier available at https://supabase.com)
   - Get keys from Project Settings → API
   - Ask Saket for organization access if needed
@@ -204,7 +205,7 @@ Opacity/
 4. **Apply database migrations**
    ```bash
    # In Supabase dashboard, go to SQL Editor
-   # Run migrations from backend/supabase/migrations/ in order (01 → 13)
+   # Run migrations from backend/supabase/migrations/ in timestamp order, including new migrations
    # Or use Supabase CLI if you have it set up
    ```
 
@@ -268,26 +269,26 @@ Each game follows this pattern:
 
 **Start Session**
 ```
-GET /api/games/{game}/route.ts
+POST /api/games/{game}
 ```
 
 **Submit Trials (Batched)**
 ```
-POST /api/games/{game}/trial/route.ts
+POST /api/games/{game}/trial
 ```
 
 **Complete Session & Compute Score**
 ```
-POST /api/games/{game}/complete/route.ts
+POST /api/games/{game}/complete
 ```
 
 #### Letter Detective (Complete)
 
-- `GET /api/games/letter-detective/` — Start session, returns first trial
+- `POST /api/games/letter-detective` — Start session, returns first trial
 - `POST /api/games/letter-detective/trial/` — Batch submit trials
 - `POST /api/games/letter-detective/complete/` — End session, returns score + difficulty update
 
-#### Other Games (In Development)
+#### Other Games (API/UI implementations present)
 
 - Memory Quest
 - Rapid Match
@@ -334,13 +335,13 @@ Children identify the odd letter or letter pair in a group (The Lineup), spot an
 **API Routes**: `frontend/app/api/games/letter-detective/`  
 **Game UI**: `frontend/app/letter-detective/`
 
-### Memory Quest (In Development)
+### Memory Quest (Implemented; live persistence requires matching schema)
 
 Children remember and replay a sequence of items that grows in length.
 
-**API Contract**: `GET /api/games/memory-quest?playerId=<id>&type=sequence|position` + `POST /api/games/memory-quest` (see [backend/backend.md](backend/backend.md))
+**API Contract**: `POST /api/games/memory-quest` starts a sitting using `childId`; `/trial` records raw responses and `/complete` scores it (see [backend/backend.md](backend/backend.md)). Apply the Memory Quest error-type migration before testing incorrect answers.
 
-### Other Games (Planned)
+### Other Games (Implementations present)
 
 - **Sound Match** — Acoustic matching
 - **Word Builder** — Word formation under time pressure
@@ -516,12 +517,12 @@ All PRs to `main` require review. Watch for:
 | **5** | ✅ Complete | Letter Detective API |
 | **6** | ✅ Complete | Letter Detective game UI |
 | **7** | ✅ Complete | Adaptive difficulty |
-| **8** | 🔄 In Progress | Memory Quest API + UI |
-| **9** | 🔄 In Progress | Sound Match API + UI |
-| **10** | 🔄 In Progress | Rapid Match API + UI |
-| **11** | 🔄 In Progress | Word Builder API + UI |
+| **8** | Implemented; live verification pending | Memory Quest API + UI |
+| **9** | Implemented; live verification pending | Sound Match API + UI |
+| **10** | Implemented; live verification pending | Rapid Match API + UI |
+| **11** | Implemented; live verification pending | Word Builder API + UI |
 | **12** | ⏳ Planned | Parent/teacher dashboard UI |
-| **13** | ⏳ Planned | ML scoring service (Python backend) |
+| **13** | Research baseline implemented; product scoring planned | Rello Random Forest baseline in `ml/`; no live classifier |
 
 ---
 

@@ -14,8 +14,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project Snapshot
 
-- Framework: Next.js `16.3.1` with the App Router.
-- Runtime UI: React `19.2.8`.
+- Framework: Next.js `16.3.8` with the App Router (current lockfile).
+- Runtime UI: React `19.3.0` (current lockfile).
 - Language: TypeScript with `strict` enabled.
 - Server State & API: `@tanstack/react-query` (TanStack Query).
 - Client Global State: Zustand (`zustand`).
