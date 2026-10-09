@@ -64,30 +64,32 @@ Use the matching folder for each game's route handlers, scoring logic, submissio
 
 ### Memory Quest contract
 
-Memory Quest exposes one route at:
+Memory Quest follows the same three-endpoint pattern as the other games, persisted to Supabase:
 
 ```text
-GET/POST frontend/app/api/games/memory-quest/route.ts
+POST frontend/app/api/games/memory-quest/route.ts            start a sitting
+POST frontend/app/api/games/memory-quest/trial/route.ts      batched round answers
+POST frontend/app/api/games/memory-quest/complete/route.ts   score the sitting
+     frontend/app/api/games/memory-quest/plan.ts             generation, grading, adaptive level
 ```
 
-`GET /api/games/memory-quest?playerId=<id>&type=sequence|position` creates a challenge. The response includes an opaque challenge ID, the sequence to display, the display duration, and the current adaptive level. The expected answer is retained server-side until submission.
+`POST /api/games/memory-quest` takes `{ "childId": "uuid", "device": { ... } }` and checks access with `requireChildAccess(childId)`. It reads the child's `working_memory` level from `skill_states` (default 1), generates three rounds (path, path, map), stores them in `game_sessions.config`, and returns `{ sessionId, level, trials }`.
 
-`POST /api/games/memory-quest` accepts:
+`POST /api/games/memory-quest/trial` accepts raw answers only, never correctness:
 
 ```json
 {
-	"challengeId": "uuid",
-	"playerId": "user-id",
-	"response": ["apple", "dog", "star"],
-	"responseTimeMs": 1800,
-	"attempts": 1,
-	"mistakes": 0
+	"sessionId": "uuid",
+	"trials": [
+		{ "trialIndex": 0, "response": { "kind": "sequence", "items": ["Star", "Moon", "Key"], "corrections": 1 }, "reactionTimeMs": 1800, "timeToFirstMoveMs": 450 },
+		{ "trialIndex": 2, "response": { "kind": "position", "selectedIndex": 4 }, "reactionTimeMs": 900 }
+	]
 }
 ```
 
-The response returns correctness, score, the next level, and the measured summary: accuracy, maximum sequence length, average response time, attempts, errors, and difficulty reached. The adaptive policy advances after three strong recent rounds and eases the level after low accuracy or repeated mistakes. This is an explainable baseline model, so it needs no AI API.
+Each answer is graded against `game_sessions.config` and upserted into `game_trials` (`stimulus`, `response`, `is_correct`, `error_type` of `order`, `item`, `location` or `timeout`, and timings). Sequence rounds also earn partial credit per position.
 
-The current route uses an in-memory store as a development fallback. A Supabase project URL and server-only service role key are needed later for durable challenge and performance storage across deployments. Never expose the service role key to the browser.
+`POST /api/games/memory-quest/complete` takes `{ "sessionId": "uuid" }`. It marks the session completed and writes `session_scores`: accuracy (mean partial accuracy), mean/median RT, RT coefficient of variation, throughput, and `raw_features` (`maxSequenceLength`, `longestRecalledSequence`, `attempts`, `errors`, `corrections`, `score`, `errorTypeCounts`). It then upserts `skill_states` for `working_memory`. The adaptive rule advances one level after three strong rounds in a row (85%+ accuracy within 2x the display time; the streak carries across sittings in `skill_states.streak`), drops one level after a round under 40% accuracy or with 3+ backspaces, and otherwise holds. This is an explainable baseline model, so it needs no AI API.
 
 ## Route Handler Rules
 
