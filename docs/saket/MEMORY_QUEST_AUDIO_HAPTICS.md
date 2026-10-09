@@ -9,12 +9,13 @@ This implementation uses:
 - `cuelume` for synthesized sound effects
 - `web-haptics/react` for vibration feedback
 
-The behaviors are implemented in the game page itself so the feedback stays local to the interaction flow and does not affect other routes.
+The behaviors live in a small hook inside the game's own folder, so the feedback stays local to Memory Quest and does not affect other routes.
 
 ## Files involved
 
-- [frontend/app/memory-quest/page.tsx](../../frontend/app/memory-quest/page.tsx)
-- [frontend/components/game-layout.tsx](../../frontend/components/game-layout.tsx)
+- [frontend/app/memory-quest/components/useGameFeedback.ts](../../frontend/app/memory-quest/components/useGameFeedback.ts): the cue map
+- [frontend/app/memory-quest/page.tsx](../../frontend/app/memory-quest/page.tsx): calls `bind()` once and fires the start, next-round and result cues
+- [frontend/app/memory-quest/components/RecallRound.tsx](../../frontend/app/memory-quest/components/RecallRound.tsx): fires the select and backspace cues
 
 ## Goals
 
@@ -55,40 +56,30 @@ This provides feedback such as a subtle nudge, success pulse, and error vibratio
 
 | Game event | Sound | Haptic | Purpose |
 | --- | --- | --- | --- |
-| Start new round | `loading` | `nudge` | Signals the game is beginning |
-| Tap emoji | `tick` | `nudge` | Confirms input selection |
-| Backspace | `droplet` | `nudge` | Indicates a removed answer |
+| Start a sitting | `loading` | `nudge` | Signals the game is beginning |
+| Tap a picture in the bank | `select` (volume 0.7) | `nudge` | Confirms input selection |
+| Backspace | `close` (volume 0.7) | `nudge` | Indicates a removed answer |
 | Correct answer | `success` | `success` | Reinforces a correct memory recall |
 | Incorrect answer | `error` | `error` | Signals a wrong answer without being harsh |
-| Continue / next round | `pulse` | `nudge` | Moves to the next stage |
+| Next round / see stats / keep going | `tap` (volume 0.8) | `nudge` | Moves to the next stage |
 
 ## Implementation notes
 
-The sound helpers are defined as a small local utility layer in the game page:
+The cues are wrapped in a `useGameFeedback()` hook (same shape as Letter Detective's), so components call intent-named functions instead of raw sound names:
 
 ```ts
-const triggerHaptic = useCallback(
-  (preset: "nudge" | "success" | "error" | "buzz") => {
-    trigger(preset);
-  },
-  [trigger],
-);
-
-const playCue = useCallback(
-  (sound: "loading" | "pulse" | "tick" | "success" | "error" | "droplet" | "release", volume?: number) => {
-    play(sound, volume !== undefined ? { volume } : undefined);
-  },
-  [],
-);
+const feedback = useGameFeedback();
+feedback.onSelect();   // play("select", { volume: 0.7 }) + trigger("nudge")
+feedback.onCorrect();  // play("success") + trigger("success")
 ```
 
-These helpers are then called when the game transitions between states:
+They fire:
 
-- before a challenge starts
-- when a tile or emoji is chosen
+- when a sitting starts
+- when a picture is chosen
 - when the user removes their last answer
-- after the server evaluates the result
-- before moving to the next round
+- as soon as a round is answered (from the client's local grade; the server regrades independently)
+- before moving to the next round or the stats card
 
 ## UX intent
 
