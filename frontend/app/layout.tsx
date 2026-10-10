@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn("h-full", "antialiased", GeistPixelSquare.variable, openSauce.variable, "font-sans")}
     >
       <body className="font-sauce min-h-full flex flex-col items-center justify-center">

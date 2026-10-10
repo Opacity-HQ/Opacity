@@ -62,8 +62,8 @@ export default function GameLayout({
 
   return (
     <DiagonalBoxPattern className="flex flex-col items-center justify-center w-full min-h-screen">
-      <div className="flex flex-col items-center w-full max-w-5xl min-h-screen bg-white border-x-0 sm:border-x-2 border-[#efefef]">
-        <div className="flex flex-row items-center justify-between w-full px-3 sm:px-4 py-1 border-b-2 border-[#efefef]">
+      <div className="flex flex-col items-center w-full max-w-5xl min-h-screen bg-background border-x-0 sm:border-x-2 border-[#efefef] dark:border-[#262626]">
+        <div className="flex flex-row items-center justify-between w-full px-3 sm:px-4 py-1 border-b-2 border-[#efefef] dark:border-[#262626]">
           <div className="flex flex-row items-center justify-start min-w-0 pr-2">
             <Link
               href="/"
@@ -75,27 +75,27 @@ export default function GameLayout({
                 width={20}
                 height={20}
                 loading="eager"
-                className="shrink-0"
+                className="shrink-0 dark:invert"
               />
-              <span className="font-pixel text-[16px] sm:text-[20px] ml-2 text-[#1d1d1d]">
+              <span className="font-pixel text-[16px] sm:text-[20px] ml-2 text-[#1d1d1d] dark:text-[#f2f2f2]">
                 opacity
               </span>
             </Link>
-            <span className="font-pixel text-[16px] sm:text-[20px] ml-1 text-[#1d1d1d] shrink-0">
+            <span className="font-pixel text-[16px] sm:text-[20px] ml-1 text-[#1d1d1d] dark:text-[#f2f2f2] shrink-0">
               /
             </span>
             <div className="relative ml-1" ref={dropdownRef}>
               <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="flex flex-row items-center gap-1 font-pixel text-[16px] sm:text-[20px] text-[#1d1d1d] hover:bg-[#f5f5f5] px-2 py-1 rounded-[8px] transition-colors cursor-pointer outline-none border border-transparent hover:border-[#e0e0e0]"
+                className="flex flex-row items-center gap-1 font-pixel text-[16px] sm:text-[20px] text-[#1d1d1d] dark:text-[#f2f2f2] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-[8px] transition-colors cursor-pointer outline-none border border-transparent hover:border-[#e0e0e0] dark:hover:border-[#333333]"
               >
                 <span className="truncate">{title}</span>
-                <ChevronDown className={`w-4 h-4 text-[#5e5e5e] transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-4 h-4 text-[#5e5e5e] dark:text-[#a3a3a3] transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
               </button>
 
               {open && (
-                <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-56 bg-white border border-[#e0e0e0] rounded-[14px] shadow-xl p-1.5 flex flex-col animate-in fade-in-0 zoom-in-95">
+                <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-56 bg-white dark:bg-[#141414] border border-[#e0e0e0] dark:border-[#333333] rounded-[14px] shadow-xl p-1.5 flex flex-col animate-in fade-in-0 zoom-in-95">
                   <div className="max-h-60 overflow-y-auto flex flex-col gap-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                     {GAMES.map((game) => {
                       const isSelected = game.label.toLowerCase() === title.toLowerCase();
@@ -106,8 +106,8 @@ export default function GameLayout({
                           onClick={() => handleSelect(game.href)}
                           className={`flex items-center justify-between w-full px-2.5 py-2 rounded-[8px] font-pixel text-sm text-left transition-colors cursor-pointer ${
                             isSelected
-                              ? "bg-[#f0f0f0] text-[#1d1d1d]"
-                              : "text-[#4a4a4a] hover:bg-[#f7f7f7] hover:text-[#1d1d1d]"
+                              ? "bg-[#f0f0f0] dark:bg-[#2a2a2a] text-[#1d1d1d] dark:text-[#f2f2f2]"
+                              : "text-[#4a4a4a] dark:text-[#bdbdbd] hover:bg-[#f7f7f7] dark:hover:bg-[#2a2a2a] hover:text-[#1d1d1d] dark:hover:text-[#f2f2f2]"
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
@@ -116,11 +116,11 @@ export default function GameLayout({
                               alt={`${game.label} icon`}
                               width={16}
                               height={16}
-                              className="shrink-0"
+                              className="shrink-0 dark:invert"
                             />
                             <span className="truncate">{game.label}</span>
                           </div>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-[#1d1d1d] shrink-0 ml-2" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 text-[#1d1d1d] dark:text-[#f2f2f2] shrink-0 ml-2" />}
                         </button>
                       );
                     })}
@@ -134,17 +134,17 @@ export default function GameLayout({
             <button
               type="button"
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex flex-row items-center justify-left px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] bg-white hover:bg-[#f5f5f5] transition-all duration-200 cursor-pointer shrink-0 outline-none"
+              className="flex flex-row items-center justify-left px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] bg-white dark:bg-[#141414] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 cursor-pointer shrink-0 outline-none"
             >
               <Blobatar name={username} size={30} animate="always" expression={surprised} className="shrink-0" />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px]">{username}</span>
             </button>
 
             {userMenuOpen && (
-              <div className="absolute top-[calc(100%+6px)] right-0 z-50 w-52 bg-white border border-[#e0e0e0] rounded-[14px] shadow-xl p-1.5 flex flex-col gap-0.5 animate-in fade-in-0 zoom-in-95">
-                <div className="px-2.5 py-2 border-b border-[#efefef] mb-0.5">
+              <div className="absolute top-[calc(100%+6px)] right-0 z-50 w-52 bg-white dark:bg-[#141414] border border-[#e0e0e0] dark:border-[#333333] rounded-[14px] shadow-xl p-1.5 flex flex-col gap-0.5 animate-in fade-in-0 zoom-in-95">
+                <div className="px-2.5 py-2 border-b border-[#efefef] dark:border-[#262626] mb-0.5">
                   <p className="font-pixel text-[11px] text-[#8e8e8e] uppercase tracking-wider">Signed in as</p>
-                  <p className="font-pixel text-sm text-[#1d1d1d] truncate mt-0.5">{username}</p>
+                  <p className="font-pixel text-sm text-[#1d1d1d] dark:text-[#f2f2f2] truncate mt-0.5">{username}</p>
                 </div>
 
                 <button
@@ -153,9 +153,9 @@ export default function GameLayout({
                     setUserMenuOpen(false);
                     router.push("/dashboard");
                   }}
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] hover:bg-[#f7f7f7] hover:text-[#1d1d1d] transition-colors cursor-pointer text-left"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] dark:text-[#bdbdbd] hover:bg-[#f7f7f7] dark:hover:bg-[#2a2a2a] hover:text-[#1d1d1d] dark:hover:text-[#f2f2f2] transition-colors cursor-pointer text-left"
                 >
-                  <LayoutDashboard className="w-4 h-4 text-[#5e5e5e]" />
+                  <LayoutDashboard className="w-4 h-4 text-[#5e5e5e] dark:text-[#a3a3a3]" />
                   <span>Dashboard</span>
                 </button>
 
@@ -165,9 +165,9 @@ export default function GameLayout({
                     setUserMenuOpen(false);
                     router.push("/dashboard");
                   }}
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] hover:bg-[#f7f7f7] hover:text-[#1d1d1d] transition-colors cursor-pointer text-left"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] dark:text-[#bdbdbd] hover:bg-[#f7f7f7] dark:hover:bg-[#2a2a2a] hover:text-[#1d1d1d] dark:hover:text-[#f2f2f2] transition-colors cursor-pointer text-left"
                 >
-                  <User className="w-4 h-4 text-[#5e5e5e]" />
+                  <User className="w-4 h-4 text-[#5e5e5e] dark:text-[#a3a3a3]" />
                   <span>Profile & Settings</span>
                 </button>
 
@@ -177,13 +177,13 @@ export default function GameLayout({
                     setUserMenuOpen(false);
                     router.push("/dashboard");
                   }}
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] hover:bg-[#f7f7f7] hover:text-[#1d1d1d] transition-colors cursor-pointer text-left"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] dark:text-[#bdbdbd] hover:bg-[#f7f7f7] dark:hover:bg-[#2a2a2a] hover:text-[#1d1d1d] dark:hover:text-[#f2f2f2] transition-colors cursor-pointer text-left"
                 >
-                  <BarChart2 className="w-4 h-4 text-[#5e5e5e]" />
+                  <BarChart2 className="w-4 h-4 text-[#5e5e5e] dark:text-[#a3a3a3]" />
                   <span>Progress Stats</span>
                 </button>
 
-                <div className="h-px bg-[#efefef] my-1" />
+                <div className="h-px bg-[#efefef] dark:bg-[#2a2a2a] my-1" />
 
                 <button
                   type="button"
@@ -191,7 +191,7 @@ export default function GameLayout({
                     setUserMenuOpen(false);
                     router.push("/");
                   }}
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#e53e3e] hover:bg-[#fff5f5] transition-colors cursor-pointer text-left"
+                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#e53e3e] hover:bg-[#fff5f5] dark:hover:bg-[#2a1a1a] transition-colors cursor-pointer text-left"
                 >
                   <LogOut className="w-4 h-4 text-[#e53e3e]" />
                   <span>Sign Out</span>

@@ -25,7 +25,7 @@ export default function CaseIntro({
       ]}
       note={
         pair ? (
-          <p className="font-pixel text-[15px] text-[#5e5e5e]">
+          <p className="font-pixel text-[15px] text-[#5e5e5e] dark:text-[#a3a3a3]">
             today&apos;s case: {pair.letterA} vs {pair.letterB}
           </p>
         ) : null

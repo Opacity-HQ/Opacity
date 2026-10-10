@@ -58,6 +58,15 @@
 		0 4px 8px 0 rgba(143, 143, 143, 0.10);
 }
 
+/* The light-mode shadow is a pale gray glow, which reads as a white halo on
+   dark surfaces. Swap it for a deep black drop shadow plus a faint edge. */
+.dark .button-shadow {
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
+		0 2px 4px 0 rgba(0, 0, 0, 0.5),
+		0 8px 16px -2px rgba(0, 0, 0, 0.6),
+		0 20px 32px -8px rgba(0, 0, 0, 0.7);
+}
+
 @keyframes wiggle {
 	0%, 100% { transform: translateX(0); }
 	20% { transform: translateX(-4px); }
@@ -71,8 +80,8 @@
   height: 2px;
   background: repeating-linear-gradient(
     to right,
-    #e7e7e7 0px,
-    #e7e7e7 15px,
+    var(--dash-color) 0px,
+    var(--dash-color) 15px,
     transparent 15px,
     transparent 24px
   );
@@ -95,6 +104,8 @@
 }
 
 :root {
+	color-scheme: light;
+	--dash-color: #e7e7e7;
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
 	--card: oklch(1 0 0);
@@ -130,6 +141,8 @@
 }
 
 .dark {
+	color-scheme: dark;
+	--dash-color: #2a2a2a;
 	--background: oklch(0.145 0 0);
 	--foreground: oklch(0.985 0 0);
 	--card: oklch(0.205 0 0);
@@ -161,6 +174,10 @@
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(1 0 0 / 10%);
 	--sidebar-ring: oklch(0.556 0 0);
+}
+
+.dark .dashed-border::before {
+  background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='1' y='1' width='calc(100% - 2px)' height='calc(100% - 2px)' rx='15' fill='none' stroke='%232a2a2a' stroke-width='2' stroke-dasharray='12 8'/%3E%3C/svg%3E");
 }
 
 @layer base {

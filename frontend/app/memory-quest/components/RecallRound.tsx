@@ -130,12 +130,12 @@ export default function RecallRound({
       className="flex flex-col items-center w-full gap-5"
     >
       <div className="flex flex-col items-center gap-1 mt-2">
-        <h2 className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d]">your turn!</h2>
-        <p className="font-pixel text-[16px] sm:text-[20px] text-center text-[#5e5e5e] flex items-center justify-center gap-2">
+        <h2 className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d] dark:text-[#f2f2f2]">your turn!</h2>
+        <p className="font-pixel text-[16px] sm:text-[20px] text-center text-[#5e5e5e] dark:text-[#a3a3a3] flex items-center justify-center gap-2">
           {trial.roundType === "position" ? (
             <>
               Where was
-              <SymbolIcon symbol={trial.target} className="w-9 h-9 sm:w-10 sm:h-10 text-[#1d1d1d]" />
+              <SymbolIcon symbol={trial.target} className="w-9 h-9 sm:w-10 sm:h-10 text-[#1d1d1d] dark:text-[#f2f2f2]" />
               <span className="sr-only">{trial.target}</span>?
             </>
           ) : (
@@ -159,10 +159,10 @@ export default function RecallRound({
               transition={{ delay: i * 0.04 }}
               onClick={(e) => handleCellTap(i, e)}
               disabled={selectedCell !== null}
-              className={`flex items-center justify-center w-[56px] h-[56px] sm:w-[70px] sm:h-[70px] rounded-[12px] border-[2px] bg-white transition-all duration-150 cursor-pointer disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-[#1d1d1d] ${
+              className={`flex items-center justify-center w-[56px] h-[56px] sm:w-[70px] sm:h-[70px] rounded-[12px] border-[2px] bg-white dark:bg-[#141414] transition-all duration-150 cursor-pointer disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-[#1d1d1d] dark:focus-visible:outline-[#f2f2f2] ${
                 selectedCell === i
-                  ? "border-[#1d1d1d]"
-                  : "border-dashed border-[#a8a8a8] hover:border-[#5e5e5e] hover:bg-[#f9f9f9]"
+                  ? "border-[#1d1d1d] dark:border-[#f2f2f2]"
+                  : "border-dashed border-[#a8a8a8] hover:border-[#5e5e5e] dark:hover:border-[#a3a3a3] hover:bg-[#f9f9f9] dark:hover:bg-[#2a2a2a]"
               }`}
             />
           ))}
@@ -176,21 +176,21 @@ export default function RecallRound({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.04 }}
-                className={`flex items-center justify-center w-[52px] h-[52px] sm:w-[60px] sm:h-[60px] rounded-[12px] border-[2px] bg-white transition-all duration-150 ${
+                className={`flex items-center justify-center w-[52px] h-[52px] sm:w-[60px] sm:h-[60px] rounded-[12px] border-[2px] bg-white dark:bg-[#141414] transition-all duration-150 ${
                   items[i]
                     ? "border-[#a8a8a8]"
                     : i === items.length
-                      ? "border-[#5e5e5e] border-dashed"
+                      ? "border-[#5e5e5e] dark:border-[#a3a3a3] border-dashed"
                       : "border-dashed border-[#a8a8a8]"
                 }`}
               >
                 {items[i] ? (
                   <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                    <SymbolIcon symbol={items[i]} className="w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]" />
+                    <SymbolIcon symbol={items[i]} className="w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d] dark:text-[#f2f2f2]" />
                     <span className="sr-only">{items[i]}</span>
                   </motion.span>
                 ) : (
-                  <span className="font-pixel text-[11px] text-[#6b6b6b]">{i + 1}</span>
+                  <span className="font-pixel text-[11px] text-[#6b6b6b] dark:text-[#a3a3a3]">{i + 1}</span>
                 )}
               </motion.div>
             ))}
@@ -209,9 +209,9 @@ export default function RecallRound({
                   whileTap={{ scale: 0.88 }}
                   onClick={(e) => handleBankTap(symbol, e)}
                   disabled={isFull}
-                  className={`flex items-center justify-center aspect-square ${bankItemWidth(bank.length)} bg-white border-[2px] border-[#efefef] rounded-[14px] shadow-[0_4px_14px_rgba(0,0,0,0.07)] hover:bg-[#f9f9f9] hover:border-[#d4d4d4] transition-all duration-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed`}
+                  className={`flex items-center justify-center aspect-square ${bankItemWidth(bank.length)} bg-white dark:bg-[#141414] border-[2px] border-[#efefef] dark:border-[#262626] rounded-[14px] shadow-[0_4px_14px_rgba(0,0,0,0.07)] hover:bg-[#f9f9f9] dark:hover:bg-[#2a2a2a] hover:border-[#d4d4d4] dark:hover:border-[#3a3a3a] transition-all duration-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed`}
                 >
-                  <SymbolIcon symbol={symbol} className="w-10 h-10 sm:w-14 sm:h-14 text-[#1d1d1d]" />
+                  <SymbolIcon symbol={symbol} className="w-10 h-10 sm:w-14 sm:h-14 text-[#1d1d1d] dark:text-[#f2f2f2]" />
                 </motion.button>
               ))}
             </div>
@@ -221,9 +221,9 @@ export default function RecallRound({
               id="memory-quest-backspace"
               onClick={handleBackspace}
               disabled={items.length === 0 || isFull}
-              className="flex flex-row items-center gap-2 px-4 py-2 bg-white border-[2px] border-[#efefef] rounded-[12px] hover:bg-[#f5f5f5] disabled:opacity-30 transition-all duration-150 cursor-pointer disabled:cursor-not-allowed"
+              className="flex flex-row items-center gap-2 px-4 py-2 bg-white dark:bg-[#141414] border-[2px] border-[#efefef] dark:border-[#262626] rounded-[12px] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] disabled:opacity-30 transition-all duration-150 cursor-pointer disabled:cursor-not-allowed"
             >
-              <span className="font-pixel text-[13px] sm:text-[14px] text-[#5e5e5e]">
+              <span className="font-pixel text-[13px] sm:text-[14px] text-[#5e5e5e] dark:text-[#a3a3a3]">
                 ← backspace
               </span>
             </button>

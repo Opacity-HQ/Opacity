@@ -56,7 +56,7 @@ export default function StakeoutRound({
 
   return (
     <div className="flex flex-col items-center justify-center w-full gap-6">
-      <p className="font-pixel text-[18px] sm:text-[22px] text-[#1d1d1d] text-center">
+      <p className="font-pixel text-[18px] sm:text-[22px] text-[#1d1d1d] dark:text-[#f2f2f2] text-center">
         Tap only when you see{" "}
         <span className="inline-block px-1 align-baseline text-[32px] sm:text-[40px]">
           {targetLetter}
@@ -83,8 +83,8 @@ export default function StakeoutRound({
         data-cuelume-release
         className={cn(
           "font-pixel text-[64px] sm:text-[80px] w-[160px] h-[160px] rounded-[24px] border-2 flex items-center justify-center transition-all duration-150",
-          "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
-          tapped && "border-[#1d1d1d] bg-[#f7f7f7]",
+          "bg-white dark:bg-[#141414] border-[#e0e0e0] dark:border-[#333333] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] dark:focus-visible:ring-[#f2f2f2] focus-visible:ring-offset-2",
+          tapped && "border-[#1d1d1d] dark:border-[#f2f2f2] bg-[#f7f7f7] dark:bg-[#1f1f1f]",
         )}
       >
         {trial.streamLetter}

@@ -1,60 +1,19 @@
-import { useCallback } from "react";
-import { play } from "cuelume";
-import { useWebHaptics } from "web-haptics/react";
+import { useMemo } from "react";
+import { useSharedGameFeedback } from "@/lib/game-feedback";
 
+// Rapid Match's names for the shared cue map in lib/game-feedback.ts.
+// Do not call cuelume/web-haptics directly here: every game must sound the
+// same for the same moment.
 export function useGameFeedback() {
-  const { trigger } = useWebHaptics();
-
-  const onCaseStart = useCallback(() => {
-    try {
-      play("pulse", { volume: 0.8 });
-      trigger("nudge");
-    } catch {
-      // Audio/haptic fallback
-    }
-  }, [trigger]);
-
-  const onCorrect = useCallback(() => {
-    try {
-      play("success");
-      trigger("success");
-    } catch {
-      // Audio/haptic fallback
-    }
-  }, [trigger]);
-
-  const onWrong = useCallback(() => {
-    try {
-      play("error");
-      trigger("error");
-    } catch {
-      // Audio/haptic fallback
-    }
-  }, [trigger]);
-
-  const onCaseSolved = useCallback(() => {
-    try {
-      play("pulse", { volume: 1 });
-      trigger("success");
-    } catch {
-      // Audio/haptic fallback
-    }
-  }, [trigger]);
-
-  const onTick = useCallback(() => {
-    try {
-      play("tick", { volume: 0.6 });
-      trigger("nudge");
-    } catch {
-      // Audio/haptic fallback
-    }
-  }, [trigger]);
-
-  return {
-    onCaseStart,
-    onCorrect,
-    onWrong,
-    onCaseSolved,
-    onTick,
-  };
+  const shared = useSharedGameFeedback();
+  return useMemo(
+    () => ({
+      onCaseStart: shared.onStart,
+      onCorrect: shared.onCorrect,
+      onWrong: shared.onWrong,
+      onCaseSolved: shared.onComplete,
+      onTick: shared.onSelect,
+    }),
+    [shared],
+  );
 }

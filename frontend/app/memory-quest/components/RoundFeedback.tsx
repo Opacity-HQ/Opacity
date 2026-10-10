@@ -41,17 +41,17 @@ export default function RoundFeedback({
         className="block"
       >
         {correct ? (
-          <Trophy className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={1.5} aria-hidden />
+          <Trophy className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d] dark:text-[#f2f2f2]" strokeWidth={1.5} aria-hidden />
         ) : (
-          <Frown className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d]" strokeWidth={1.5} aria-hidden />
+          <Frown className="w-16 h-16 sm:w-20 sm:h-20 text-[#1d1d1d] dark:text-[#f2f2f2]" strokeWidth={1.5} aria-hidden />
         )}
       </motion.span>
 
       <div role="status" className="flex flex-col items-center gap-1 text-center">
-        <h2 className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d]">
+        <h2 className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d] dark:text-[#f2f2f2]">
           {correct ? "perfect!" : "good try!"}
         </h2>
-        <p className="font-sauce text-[14px] sm:text-[15px] text-[#5e5e5e]">
+        <p className="font-sauce text-[14px] sm:text-[15px] text-[#5e5e5e] dark:text-[#a3a3a3]">
           {correct
             ? "You remembered the path!"
             : outcome.localAccuracy >= 0.5
@@ -68,17 +68,17 @@ export default function RoundFeedback({
         ].map(({ label, value }) => (
           <div
             key={label}
-            className="flex flex-col items-center flex-1 bg-white border-[2px] border-[#efefef] rounded-[12px] py-3"
+            className="flex flex-col items-center flex-1 bg-white dark:bg-[#141414] border-[2px] border-[#efefef] dark:border-[#262626] rounded-[12px] py-3"
           >
-            <span className="font-pixel text-[15px] sm:text-[17px] text-[#1d1d1d]">{value}</span>
-            <span className="font-sauce text-[12px] text-[#6b6b6b] mt-0.5">{label}</span>
+            <span className="font-pixel text-[15px] sm:text-[17px] text-[#1d1d1d] dark:text-[#f2f2f2]">{value}</span>
+            <span className="font-sauce text-[12px] text-[#6b6b6b] dark:text-[#a3a3a3] mt-0.5">{label}</span>
           </div>
         ))}
       </div>
 
       {!correct && (
         <div className="flex flex-col items-center gap-2 w-full max-w-[340px]">
-          <span className="font-pixel text-[12px] sm:text-[13px] text-[#6b6b6b]">
+          <span className="font-pixel text-[12px] sm:text-[13px] text-[#6b6b6b] dark:text-[#a3a3a3]">
             {trial.roundType === "position" ? "the correct spot was:" : "the correct path was:"}
           </span>
 
@@ -90,13 +90,13 @@ export default function RoundFeedback({
               {trial.grid.map((_, i) => (
                 <div
                   key={i}
-                  className={`flex items-center justify-center w-[44px] h-[44px] sm:w-[52px] sm:h-[52px] rounded-[12px] border-[2px] bg-white ${
-                    i === targetCell ? "border-[#1d1d1d]" : "border-[#efefef]"
+                  className={`flex items-center justify-center w-[44px] h-[44px] sm:w-[52px] sm:h-[52px] rounded-[12px] border-[2px] bg-white dark:bg-[#141414] ${
+                    i === targetCell ? "border-[#1d1d1d] dark:border-[#f2f2f2]" : "border-[#efefef] dark:border-[#262626]"
                   }`}
                 >
                   {i === targetCell && (
                     <>
-                      <SymbolIcon symbol={trial.target} className="w-7 h-7 sm:w-8 sm:h-8 text-[#1d1d1d]" />
+                      <SymbolIcon symbol={trial.target} className="w-7 h-7 sm:w-8 sm:h-8 text-[#1d1d1d] dark:text-[#f2f2f2]" />
                       <span className="sr-only">{trial.target}</span>
                     </>
                   )}
@@ -108,9 +108,9 @@ export default function RoundFeedback({
               {trial.sequence.map((symbol, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-center w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] bg-white border-[2px] border-[#e0e0e0] rounded-[14px]"
+                  className="flex items-center justify-center w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] bg-white dark:bg-[#141414] border-[2px] border-[#e0e0e0] dark:border-[#333333] rounded-[14px]"
                 >
-                  <SymbolIcon symbol={symbol} className="w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]" />
+                  <SymbolIcon symbol={symbol} className="w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d] dark:text-[#f2f2f2]" />
                   <span className="sr-only">{symbol}</span>
                 </div>
               ))}
@@ -123,9 +123,9 @@ export default function RoundFeedback({
         type="button"
         id="memory-quest-next"
         onClick={onNext}
-        className="button-shadow flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-4px] transition-all duration-200 rounded-[20px] px-[24px] py-[10px] cursor-pointer"
+        className="button-shadow flex items-center justify-center bg-[#1b1b1b] dark:bg-[#f2f2f2] hover:bg-[#323232] dark:hover:bg-white hover:translate-y-[-4px] transition-all duration-200 rounded-[20px] px-[24px] py-[10px] cursor-pointer"
       >
-        <span className="font-pixel text-[17px] sm:text-[20px] text-white">
+        <span className="font-pixel text-[17px] sm:text-[20px] text-white dark:text-[#1b1b1b]">
           {isLastRound ? "see stats" : "next round"}
         </span>
       </button>

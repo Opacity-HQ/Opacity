@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { ThemeProvider } from "next-themes";
 import OnboardingGate from "@/components/onboarding-gate";
 
 // Per frontend/AGENTS.md: TanStack Query is the exclusive client-side data
@@ -35,9 +36,16 @@ function getQueryClient() {
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(getQueryClient);
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <OnboardingGate />
-    </QueryClientProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <QueryClientProvider client={queryClient}>
+        {children}
+        <OnboardingGate />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

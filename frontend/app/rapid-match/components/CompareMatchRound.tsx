@@ -75,23 +75,23 @@ export default function CompareMatchRound({
         <span className="font-pixel text-[13px] text-[#a0a0a0]">
           {trial.isWarmup ? "warm-up trial" : "same or different"}
         </span>
-        <h2 className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d]">
+        <h2 className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d] dark:text-[#f2f2f2]">
           are these two symbols identical?
         </h2>
       </div>
 
       {/* Side by side comparison */}
       <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 w-full">
-        <div className="flex flex-col items-center justify-center flex-1 max-w-[140px] h-[110px] sm:h-[130px] bg-white border-[3px] border-[#1d1d1d] rounded-[20px] shadow-sm">
-          <span className="font-pixel text-[46px] sm:text-[56px] text-[#1d1d1d] select-none">
+        <div className="flex flex-col items-center justify-center flex-1 max-w-[140px] h-[110px] sm:h-[130px] bg-white dark:bg-[#141414] border-[3px] border-[#1d1d1d] dark:border-[#f2f2f2] rounded-[20px] shadow-sm">
+          <span className="font-pixel text-[46px] sm:text-[56px] text-[#1d1d1d] dark:text-[#f2f2f2] select-none">
             {trial.leftSymbol}
           </span>
         </div>
 
         <span className="font-sauce text-[20px] text-[#a0a0a0]">vs</span>
 
-        <div className="flex flex-col items-center justify-center flex-1 max-w-[140px] h-[110px] sm:h-[130px] bg-white border-[3px] border-[#1d1d1d] rounded-[20px] shadow-sm">
-          <span className="font-pixel text-[46px] sm:text-[56px] text-[#1d1d1d] select-none">
+        <div className="flex flex-col items-center justify-center flex-1 max-w-[140px] h-[110px] sm:h-[130px] bg-white dark:bg-[#141414] border-[3px] border-[#1d1d1d] dark:border-[#f2f2f2] rounded-[20px] shadow-sm">
+          <span className="font-pixel text-[46px] sm:text-[56px] text-[#1d1d1d] dark:text-[#f2f2f2] select-none">
             {trial.rightSymbol}
           </span>
         </div>
@@ -107,16 +107,16 @@ export default function CompareMatchRound({
           const isCorrect = btn.value === trial.isMatch;
 
           let btnClasses =
-            "bg-white border-[#d4d4d4] hover:border-[#1d1d1d] text-[#1d1d1d]";
+            "bg-white dark:bg-[#141414] border-[#d4d4d4] dark:border-[#3a3a3a] hover:border-[#1d1d1d] dark:hover:border-[#f2f2f2] text-[#1d1d1d] dark:text-[#f2f2f2]";
           let iconNode = null;
 
           if (answered) {
             if (isCorrect) {
-              btnClasses = "bg-[#f0fbf5] border-[#a3e635] text-[#166534]";
-              iconNode = <Check className="w-4 h-4 text-[#166534] absolute top-2.5 right-2.5" />;
+              btnClasses = "bg-[#f0fbf5] dark:bg-[#0f2118] border-[#a3e635] text-[#166534] dark:text-emerald-300";
+              iconNode = <Check className="w-4 h-4 text-[#166534] dark:text-emerald-300 absolute top-2.5 right-2.5" />;
             } else if (isSelected) {
-              btnClasses = "bg-[#f9f0f0] border-[#e8c8c8] text-[#991b1b]";
-              iconNode = <XCircle className="w-4 h-4 text-[#991b1b] absolute top-2.5 right-2.5" />;
+              btnClasses = "bg-[#f9f0f0] dark:bg-[#2a1a1a] border-[#e8c8c8] dark:border-[#5c2b2b] text-[#991b1b] dark:text-[#fca5a5]";
+              iconNode = <XCircle className="w-4 h-4 text-[#991b1b] dark:text-[#fca5a5] absolute top-2.5 right-2.5" />;
             }
           }
 
@@ -135,7 +135,7 @@ export default function CompareMatchRound({
                   {btn.label}
                 </span>
               </div>
-              <span className="font-sauce text-[12px] text-[#6b6b6b] mt-0.5">
+              <span className="font-sauce text-[12px] text-[#6b6b6b] dark:text-[#a3a3a3] mt-0.5">
                 {btn.keyHint}
               </span>
               {iconNode}

@@ -177,7 +177,7 @@ export default function Signin({
       />
       <div className="flex flex-col items-start justify-center w-full px-[20px] mt-[15px]">
         <span className="text-[30px] font-pixel">Sign In</span>
-        <span className="text-[16px] text-[#5e5e5e] leading-[20px] mt-[5px] font-pixel">
+        <span className="text-[16px] text-[#5e5e5e] dark:text-[#a3a3a3] leading-[20px] mt-[5px] font-pixel">
           Dyslexia can affect reading, spelling, ancold language processing. Play a few quick games to explore how you learn.
         </span>
         
@@ -201,7 +201,7 @@ export default function Signin({
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="john@example.com"
-                  className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] px-[20px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none !ring-0 !outline-none !px-[15px] items-center justify-center"
+                  className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] px-[20px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white dark:bg-[#1a1a1a] border-[1px] border-[#e0e0e0] dark:border-[#333333] focus:border-[#949494] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none !ring-0 !outline-none !px-[15px] items-center justify-center"
                   required
                 />
               </motion.div>
@@ -222,7 +222,7 @@ export default function Signin({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
-                  className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none !ring-0 !outline-none"
+                  className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white dark:bg-[#1a1a1a] border-[1px] border-[#e0e0e0] dark:border-[#333333] focus:border-[#949494] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none !ring-0 !outline-none"
                   required
                 />
                 <button
@@ -232,7 +232,7 @@ export default function Signin({
                     setInfo(null)
                     setStep("email")
                   }}
-                  className="text-[12px] text-[#5e5e5e] hover:underline mt-[10px] font-pixel cursor-pointer px-[10px]"
+                  className="text-[12px] text-[#5e5e5e] dark:text-[#a3a3a3] hover:underline mt-[10px] font-pixel cursor-pointer px-[10px]"
                 >
                   ← back to email
                 </button>
@@ -240,12 +240,12 @@ export default function Signin({
             )}
           </AnimatePresence>
           {error ? (
-            <p role="alert" className="text-[13px] text-red-600 mt-[10px] font-pixel px-[10px]">
+            <p role="alert" className="text-[13px] text-red-600 dark:text-red-400 mt-[10px] font-pixel px-[10px]">
               {error}
             </p>
           ) : null}
           {info ? (
-            <p role="status" className="text-[13px] text-[#1d1d1d] mt-[10px] font-pixel px-[10px]">
+            <p role="status" className="text-[13px] text-[#1d1d1d] dark:text-[#f2f2f2] mt-[10px] font-pixel px-[10px]">
               {info}
             </p>
           ) : null}
@@ -278,10 +278,10 @@ export default function Signin({
           <form onSubmit={handleFormSubmit} className="contents">
             {formBody}
             <div className="flex flex-row items-center justify-between w-full px-[20px] gap-3 mt-[12px]">
-              <button type="submit" disabled={submitting} className="w-fit text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+              <button type="submit" disabled={submitting} className="w-fit text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] dark:bg-[#2a2a2a] dark:hover:bg-[#333333] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                   {submitting ? "signing in..." : "sign in"}
               </button>
-              <button type="button" onClick={enterAsGuest} className="flex-1 w-full text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] cursor-pointer whitespace-nowrap">
+              <button type="button" onClick={enterAsGuest} className="flex-1 w-full text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] dark:bg-[#1f1f1f] dark:hover:bg-[#333333] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] cursor-pointer whitespace-nowrap">
                   play without login
               </button>
             </div>
@@ -299,10 +299,10 @@ export default function Signin({
           {formBody}
 
           <div className="flex flex-row items-center justify-center w-full px-[20px] pb-[20px] gap-x-[20px] mt-[8px] sm:flex-row sm:justify-center">
-            <button type="submit" disabled={submitting} className="w-content text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px] disabled:opacity-60 disabled:cursor-not-allowed">
+            <button type="submit" disabled={submitting} className="w-content text-[16px] font-pixel flex flex-row items-center justify-center bg-[#ececec] hover:bg-[#eaeaea] dark:bg-[#2a2a2a] dark:hover:bg-[#333333] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] px-[30px] py-[10px] disabled:opacity-60 disabled:cursor-not-allowed">
                 {submitting ? "signing in..." : "sign in"}
             </button>
-            <button type="button" onClick={enterAsGuest} className="w-auto text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] px-[15px]">
+            <button type="button" onClick={enterAsGuest} className="w-auto text-[16px] font-pixel flex flex-row items-center justify-center bg-[#f7f7f7] hover:bg-[#eaeaea] dark:bg-[#1f1f1f] dark:hover:bg-[#333333] hover:translate-y-[-2px] transition-all duration-200 rounded-[15px] py-[10px] px-[15px]">
                 play without login
             </button>
           </div>
