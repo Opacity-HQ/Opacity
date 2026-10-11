@@ -7,6 +7,7 @@ Use this file as the backend contract for where API work should live, which rout
 ## API Route Location
 
 - Dashboard API work belongs in `frontend/app/api/dashboard/`.
+- Profile and settings API work belongs in `frontend/app/api/profile/`.
 - Sign-in API work belongs in `frontend/app/api/signin/`.
 - Login API work belongs in `frontend/app/api/login/`.
 - Game API work belongs in `frontend/app/api/games/`.
@@ -28,6 +29,29 @@ Examples of dashboard-level API work:
 - Dashboard cards, stats, and history.
 - Cross-game aggregate data.
 
+`GET /api/dashboard` returns every child the caller can see, each with per-game progress (`games`), skill mastery (`skills`), the latest `screening_reports` row (`latestReport`) and `history`: every completed session, oldest first, as `{ sessionId, gameId, gameName, completedAt, difficultyLevel, accuracy, meanRtMs, mirrorErrorRate }`. The charts on the dashboard page are built from `history`. Scores are embedded in the sessions query (`session_scores` is one-to-one with `game_sessions`) instead of being fetched by a long `.in("session_id", [...])` list, which breaks once a child has a few hundred sessions. Sessions are read newest first, so any row cap drops the oldest history.
+
+## Profile API
+
+The profile page (`app/profile/`) uses these routes. All of them go through `requireUser` or `requireChildAccess`; none trusts a client-sent owner id.
+
+```text
+frontend/app/api/profile/clinical/   GET, PUT, DELETE
+frontend/app/api/profile/child/      PATCH, DELETE
+frontend/app/api/profile/account/    DELETE
+```
+
+- `GET /api/profile/clinical?childId=` returns `{ profile, updatedAt }`. The profile always has every section, with empty defaults for anything not filled in (`normalizeClinicalProfile`).
+- `PUT /api/profile/clinical { childId, section, value }` replaces exactly one section (`reading`, `family`, `vision`, `hearing`, `attention`, `language`, `handedness`, `notes`), validated by the zod schema for that section in `lib/profile/clinical.ts`. It calls the `save_clinical_section` Postgres function, which merges the section into the stored JSON in one statement, so two quick saves of different sections can't overwrite each other. Returns `{ profile }`.
+- `DELETE /api/profile/clinical?childId=` removes the child's whole clinical profile.
+- `PATCH /api/profile/child { childId, displayName, age }` edits a child. `age` is stored as `birth_year` (current year minus age; the database only allows 1990 or later). If it is the account's first child on a non-guest account, `profiles.display_name` is kept in step so the header greeting matches.
+- `DELETE /api/profile/child?childId=` deletes one child. `ON DELETE CASCADE` removes their sessions, trials, scores, skill states, reports and clinical profile.
+- `DELETE /api/profile/account` permanently deletes the signed-in auth user, and with it every child and all of their data. This is the only profile route that uses the service-role client (`lib/supabase/admin.ts`), because removing an auth user can't be expressed under RLS.
+
+Only the child's owner may write the clinical profile or delete a child. The clinical profile is sensitive health data about a minor, so `child_clinical_profiles` has an owner-only RLS policy and deliberately no teacher policy: `requireChildAccess` lets a teacher resolve the child, but the table returns nothing to them and rejects their writes (`403`).
+
+Device settings (text size, sound, volume, haptics, reduce motion, session length) are not in the database. They live in the persisted `useSettingsStore` (`lib/settings/store.ts`, localStorage) because they depend on the device, not the account, so there is no settings API.
+
 ## Auth API
 
 Use these folders for authentication routes:
@@ -43,7 +67,7 @@ Use `frontend/app/api/signin/` for sign-in or account-entry flows. Use `frontend
 
 `frontend/app/api/signin/onboarding/route.ts` is the one-time onboarding a confirmed (non-guest) user completes on their first signed-in session. It can't run at sign-up time because Supabase email confirmation means no session exists yet, so the client gates on it instead (`components/onboarding-gate.tsx`, mounted in `app/providers.tsx`).
 
-- `GET` returns `{ signedIn, needsOnboarding, hasChildren, displayName }`. Always `200`, including for signed-out visitors (`needsOnboarding: false`), because the gate runs on every route and a `401` would spam logged-out page loads. Guests never need onboarding.
+- `GET` returns `{ signedIn, needsOnboarding, hasChildren, displayName }`. Always `200`, including for signed-out visitors (`needsOnboarding: false`), because the gate runs on every route and a `401` would spam logged-out page loads. Guests never need onboarding. `needsOnboarding` is also `true` for a confirmed account that has no child left (for example the parent deleted the only one on the profile page), because no game can start without a child. The same form then collects a new one.
 - `POST { fullName, birthYear?, gradeLevel? }` upserts `profiles.display_name` with the full name and, only if the account has no child yet, creates the first child (named by first name) so games can skip their own setup form. `birthYear` (1990 to the current year) is required in that case. Guests get `403`. Invalid input writes nothing.
 
 The header shows the first name only: `lib/auth/get-display-username.ts` reads `profiles.display_name` and takes the first word via `lib/auth/first-name.ts`. Accounts that haven't onboarded yet fall back to the email's local part; guests show "guest".

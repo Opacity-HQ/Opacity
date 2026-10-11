@@ -33,15 +33,21 @@ export async function GET() {
 
     const childIds = children.map((c) => c.id);
 
+    // Scores come back embedded in each session (session_scores.session_id is
+    // its primary key, so it is one-to-one). Fetching them separately with
+    // `.in("session_id", [...])` put every session id in the URL, which
+    // PostgREST rejects once a child has a few hundred sessions. Newest first,
+    // so if the row cap ever bites it drops the oldest history, not the latest.
     const [{ data: games }, { data: sessions }, { data: skillStates }, { data: reports }] =
       await Promise.all([
         supabase.from("games").select("id, name, skill_domain"),
         supabase
           .from("game_sessions")
           .select(
-            "id, child_id, game_id, status, difficulty_level, completed_at, started_at",
+            "id, child_id, game_id, status, difficulty_level, completed_at, started_at, session_scores(accuracy, mean_rt_ms, mirror_error_rate)",
           )
-          .in("child_id", childIds),
+          .in("child_id", childIds)
+          .order("started_at", { ascending: false }),
         supabase
           .from("skill_states")
           .select("child_id, skill_key, mastery, difficulty_level, streak")
@@ -54,20 +60,6 @@ export async function GET() {
           .in("child_id", childIds)
           .order("generated_at", { ascending: false }),
       ]);
-
-    // session_scores is keyed by session_id; RLS scopes it to this user's
-    // sessions, so filtering by the ids we already fetched is enough.
-    const sessionIds = (sessions ?? []).map((s) => s.id);
-    const { data: scores } =
-      sessionIds.length > 0
-        ? await supabase
-            .from("session_scores")
-            .select("session_id, accuracy, mean_rt_ms, mirror_error_rate")
-            .in("session_id", sessionIds)
-        : { data: [] };
-    const scoreBySession = new Map(
-      (scores ?? []).map((sc) => [sc.session_id, sc]),
-    );
 
     const gameNames = new Map((games ?? []).map((g) => [g.id, g.name]));
 
@@ -113,7 +105,7 @@ export async function GET() {
             new Date(b.completed_at as string).getTime(),
         )
         .map((s) => {
-          const score = scoreBySession.get(s.id);
+          const score = s.session_scores;
           return {
             sessionId: s.id,
             gameId: s.game_id,
