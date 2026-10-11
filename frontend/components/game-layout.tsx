@@ -79,7 +79,7 @@ export default function GameLayout({
                 width={20}
                 height={20}
                 loading="eager"
-                className="shrink-0 dark:invert"
+                className="size-[22px] sm:size-5 shrink-0 dark:invert"
               />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-2 text-[#1d1d1d] dark:text-[#f2f2f2]">
                 opacity
@@ -140,7 +140,7 @@ export default function GameLayout({
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className="flex flex-row items-center justify-left px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] bg-white dark:bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 cursor-pointer shrink-0 outline-none"
             >
-              <Blobatar name={avatarSeed} size={30} animate="always" className="shrink-0" />
+              <Blobatar name={avatarSeed} size={30} animate="always" palette={{ eye: "#ffffff" }} className="shrink-0" />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px]">{username}</span>
             </button>
 

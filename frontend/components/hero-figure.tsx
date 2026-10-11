@@ -590,7 +590,7 @@ export function HeroFigure({ className }: { className?: string }) {
           </g>
         </svg>
       </div>
-      <p ref={statusRef} className="hero-fig-status" aria-live="polite">
+      <p ref={statusRef} className="sr-only" aria-live="polite">
         {IDLE}
       </p>
     </div>

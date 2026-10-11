@@ -97,7 +97,7 @@ export default function Home() {
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
     >
-      <div className="flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] hover:bg-[#323232] dark:bg-[#f2f2f2] dark:hover:bg-white hover:translate-y-[-5px] transition-all duration-200 rounded-[10px] mt-6 sm:mt-[30px] px-[17px] py-[8px]">
+      <div className="flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] hover:bg-[#323232] dark:bg-[#f2f2f2] dark:hover:bg-white hover:translate-y-[-5px] transition-all duration-200 rounded-[10px] mt-3 sm:mt-[16px] px-[17px] py-[8px]">
         <Image
           src="/game2.svg"
           alt="Play Icon"
@@ -115,7 +115,7 @@ export default function Home() {
       <div className="flex flex-col items-center w-full max-w-2xl min-h-screen bg-background border-x-0 sm:border-x-2 border-[#efefef] dark:border-[#262626]">
 
         {/* First screen: header, illustration, hero copy and play button fill one viewport */}
-        <section className="flex flex-col w-full min-h-svh pb-5 sm:pb-6">
+        <section className="flex flex-col w-full min-h-svh pb-5">
 
         {/* Header */}
         <motion.div
@@ -131,7 +131,7 @@ export default function Home() {
               width={30}
               height={30}
               loading="eager"
-              className="dark:invert"
+              className="size-[25px] sm:size-[30px] dark:invert"
             />
             <span className="font-pixel text-[22px] sm:text-[26px] ml-2 text-[#1d1d1d] dark:text-[#f2f2f2]">opacity</span>
           </div>
@@ -141,7 +141,7 @@ export default function Home() {
               aria-label={`Open dashboard for ${username}`}
               className="flex flex-row items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 shrink-0 min-w-0 max-w-[50%] text-[#1d1d1d] dark:text-[#f2f2f2]"
             >
-              <Blobatar name={username} size={30} animate="always" className="shrink-0" />
+              <Blobatar name={username} size={30} animate="always" palette={{ eye: "#ffffff" }} className="shrink-0" />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px] truncate">{username}</span>
             </Link>
           )}
@@ -154,7 +154,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.05, ease: "easeOut" }}
         >
-          <HeroFigure className="flex-1 min-h-0 w-full" />
+          <HeroFigure className="flex-1 min-h-0 w-[80%] mx-auto" />
         </motion.div>
 
         {/* Hero Section */}
@@ -164,10 +164,10 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
         >
-          <span className="font-pixel text-[28px] sm:text-[36px] md:text-[40px] text-[#1d1d1d] dark:text-[#f2f2f2]">Helping Every</span>
-          <span className="font-pixel text-[28px] sm:text-[36px] md:text-[40px] text-[#1d1d1d] dark:text-[#f2f2f2] leading-tight sm:leading-[40px]">Dyslexic Mind Thrive</span>
+          <span className="font-pixel text-[28px] sm:text-[36px] md:text-[40px] text-[#1d1d1d] dark:text-[#f2f2f2] leading-[1.1]">Helping Every</span>
+          <span className="font-pixel text-[28px] sm:text-[36px] md:text-[40px] text-[#1d1d1d] dark:text-[#f2f2f2] leading-[1.1]">Dyslexic Mind Thrive</span>
           <motion.div 
-            className="font-open-sauce text-[16px] sm:text-[18px] md:text-[20px] text-[#5e5e5e] dark:text-[#a3a3a3] mt-4 sm:mt-[20px] leading-[24px] sm:leading-[28px]"
+            className="font-open-sauce text-[16px] sm:text-[18px] md:text-[20px] text-[#5e5e5e] dark:text-[#a3a3a3] mt-3 sm:mt-[16px] leading-[20px] sm:leading-[24px]"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
@@ -178,7 +178,7 @@ export default function Home() {
               alt="Gamification Icon"
               width={25}
               height={25}
-              className="inline-block align-middle dark:invert"
+              className="inline-block align-middle -my-1 dark:invert"
             />{" "}
             platform that helps identify potential learning difficulties early and
             turns gameplay into personalized {" "}
@@ -187,7 +187,7 @@ export default function Home() {
               alt="face Icon"
               width={22}
               height={22}
-              className="inline-block align-middle mb-[5px] dark:invert"
+              className="inline-block align-middle -mt-1 mb-px dark:invert"
             />{" "}
             learning activities for every child.
             <Image
@@ -195,7 +195,7 @@ export default function Home() {
               alt="Baby Icon"
               width={26}
               height={26}
-              className="inline-block align-middle dark:invert"
+              className="inline-block align-middle -my-1 dark:invert"
             />
           </motion.div>
           {isLoggedIn ? (
@@ -218,7 +218,7 @@ export default function Home() {
         <div className="dashed-line w-full"></div>
 
         {/* Chat FAQ Section with Motion Stagger */}
-        <div className="flex w-full px-[20px] flex-col gap-[20px] mt-[40px]">
+        <div className="flex w-full px-[20px] flex-col gap-[20px] mt-5">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}

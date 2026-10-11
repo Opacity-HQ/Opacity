@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Blobatar } from "@blobatar/react";
+import { ProfileAvatar } from "./ProfileAvatar";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { ClinicalSection } from "./ClinicalSection";
 import { SettingsSection } from "./SettingsSection";
@@ -30,13 +30,8 @@ export default function ProfileClient({
   return (
     <div className="flex w-full max-w-[480px] flex-col gap-8 px-4 py-8 sm:py-10">
       {child ? (
-        <header className="flex w-full flex-row flex-wrap items-center justify-center gap-5 sm:gap-8 px-1 text-center">
-          <Blobatar
-            name={child.displayName}
-            size={160}
-            animate="always"
-            className="shrink-0"
-          />
+        <header className="flex w-full flex-col items-center justify-center gap-5 sm:gap-6 px-1 text-center">
+          <ProfileAvatar name={child.displayName} size={160} />
           <div className="flex min-w-0 flex-col items-center gap-2.5">
             <h1
               // Fluid size set inline: Tailwind's preflight resets h1 to the
