@@ -2,16 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Blobatar } from "@blobatar/react";
+import { useAvatarEyeColor } from "@/lib/use-avatar-eye-color";
 import { happy, idle, sad, scared, smug, surprised, wink } from "blobatar/expression";
 import type { Expression } from "blobatar/expression";
 
-// Untinted poses only, so the eyes stay white through every reaction.
+// Untinted poses only, so the eye colour holds through every reaction.
 const REACTIONS: Expression[] = [happy, surprised, wink, smug, scared, sad];
 const HOLD_MS = 1200;
 
 // The avatar reacts when clicked: it holds a random pose briefly, then settles back.
 export function ProfileAvatar({ name, size = 160 }: { name: string; size?: number }) {
   const [pose, setPose] = useState<Expression>(idle);
+  const eye = useAvatarEyeColor();
   const last = useRef(-1);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -44,7 +46,7 @@ export function ProfileAvatar({ name, size = 160 }: { name: string; size?: numbe
         size={size}
         animate="always"
         expression={pose}
-        palette={{ eye: "#ffffff" }}
+        palette={{ eye }}
         className="pointer-events-none"
       />
     </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useAvatarEyeColor } from "@/lib/use-avatar-eye-color";
 import Link from "next/link";
 import Signin from "@/components/signin";
 import { Blobatar } from "@blobatar/react";
@@ -90,6 +91,7 @@ export default function Home() {
   // unauthorized, error) is treated as signed out.
   const { data: dashboard, isSuccess: isLoggedIn } = useDashboardQuery();
   const username = dashboard?.children[0]?.displayName ?? "guest";
+  const eyeColor = useAvatarEyeColor();
 
   const playButton = (
     <motion.div
@@ -141,7 +143,7 @@ export default function Home() {
               aria-label={`Open dashboard for ${username}`}
               className="flex flex-row items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 shrink-0 min-w-0 max-w-[50%] text-[#1d1d1d] dark:text-[#f2f2f2]"
             >
-              <Blobatar name={username} size={30} animate="always" palette={{ eye: "#ffffff" }} className="shrink-0" />
+              <Blobatar name={username} size={30} animate="always" palette={{ eye: eyeColor }} className="shrink-0" />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px] truncate">{username}</span>
             </Link>
           )}

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { useAvatarEyeColor } from "@/lib/use-avatar-eye-color";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Blobatar } from "@blobatar/react";
@@ -35,6 +36,7 @@ export default function GameLayout({
   children,
 }: GameLayoutProps) {
   const router = useRouter();
+  const eyeColor = useAvatarEyeColor();
   // The profile page seeds its blob from the active child's full name; use the
   // same seed here (default expression too) so the two avatars are identical.
   // Falls back to the username while the dashboard data loads.
@@ -140,7 +142,7 @@ export default function GameLayout({
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className="flex flex-row items-center justify-left px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] bg-white dark:bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 cursor-pointer shrink-0 outline-none"
             >
-              <Blobatar name={avatarSeed} size={30} animate="always" palette={{ eye: "#ffffff" }} className="shrink-0" />
+              <Blobatar name={avatarSeed} size={30} animate="always" palette={{ eye: eyeColor }} className="shrink-0" />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px]">{username}</span>
             </button>
 
