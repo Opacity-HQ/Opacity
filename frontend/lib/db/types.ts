@@ -448,6 +448,10 @@ export type Database = {
     }
     Functions: {
       owns_child: { Args: { child: string }; Returns: boolean }
+      save_clinical_section: {
+        Args: { p_child_id: string; p_section: string; p_value: Json }
+        Returns: Json
+      }
       teaches_child: { Args: { child: string }; Returns: boolean }
     }
     Enums: {

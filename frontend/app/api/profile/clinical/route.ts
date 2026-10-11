@@ -1,7 +1,12 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { requireChildAccess } from "@/lib/api/auth";
-import { apiSuccess, apiError, toApiErrorResponse } from "@/lib/api/response";
+import {
+  ApiRouteError,
+  apiSuccess,
+  apiError,
+  toApiErrorResponse,
+} from "@/lib/api/response";
 import type { Json } from "@/lib/db/types";
 import {
   clinicalSectionKeys,
@@ -68,31 +73,23 @@ export async function PUT(request: NextRequest) {
 
     const { supabase } = await requireChildAccess(childId);
 
-    const { data: existing, error: readError } = await supabase
-      .from("child_clinical_profiles")
-      .select("data")
-      .eq("child_id", childId)
-      .maybeSingle();
-    if (readError) throw readError;
+    // One atomic upsert in the database (see the save_clinical_section
+    // migration). Merging in JS here would let two quick saves of different
+    // sections each start from the same snapshot and drop one of them.
+    const { data: saved, error } = await supabase.rpc("save_clinical_section", {
+      p_child_id: childId,
+      p_section: section,
+      p_value: parsedValue.data as Json,
+    });
+    if (error) {
+      // RLS rejects non-owners (e.g. a teacher with read access to the child).
+      if (error.code === "42501") {
+        throw new ApiRouteError("forbidden", "Only the owner can edit this profile.");
+      }
+      throw error;
+    }
 
-    const current =
-      existing?.data &&
-      typeof existing.data === "object" &&
-      !Array.isArray(existing.data)
-        ? (existing.data as Record<string, Json>)
-        : {};
-    const next = { ...current, [section]: parsedValue.data } as Json;
-
-    const { error: writeError } = await supabase
-      .from("child_clinical_profiles")
-      .upsert({
-        child_id: childId,
-        data: next,
-        updated_at: new Date().toISOString(),
-      });
-    if (writeError) throw writeError;
-
-    return apiSuccess({ profile: normalizeClinicalProfile(next) });
+    return apiSuccess({ profile: normalizeClinicalProfile(saved) });
   } catch (err) {
     return toApiErrorResponse(err);
   }

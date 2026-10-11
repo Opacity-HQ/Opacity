@@ -49,7 +49,10 @@ export async function GET() {
 
     return apiSuccess({
       signedIn: true,
-      needsOnboarding: !profile?.display_name,
+      // Also re-asked when the account has no child left (e.g. the parent
+      // deleted the only one from the profile page): no game can start
+      // without a child, so the gate collects a fresh one.
+      needsOnboarding: !profile?.display_name || (count ?? 0) === 0,
       hasChildren: (count ?? 0) > 0,
       displayName: profile?.display_name ?? null,
     });
