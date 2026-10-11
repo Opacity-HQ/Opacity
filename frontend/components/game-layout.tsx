@@ -5,14 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Blobatar } from "@blobatar/react";
-import { surprised } from "blobatar/expression";
+import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { DiagonalBoxPattern } from "@/components/background-pattern/diagonal-box-pattern";
 import {
   ChevronDown,
   Check,
   LayoutDashboard,
   User,
-  BarChart2,
   LogOut,
 } from "lucide-react";
 
@@ -36,6 +35,11 @@ export default function GameLayout({
   children,
 }: GameLayoutProps) {
   const router = useRouter();
+  // The profile page seeds its blob from the active child's full name; use the
+  // same seed here (default expression too) so the two avatars are identical.
+  // Falls back to the username while the dashboard data loads.
+  const { data: dashboard } = useDashboardQuery();
+  const avatarSeed = dashboard?.children[0]?.displayName ?? username;
   const [open, setOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -134,9 +138,9 @@ export default function GameLayout({
             <button
               type="button"
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex flex-row items-center justify-left px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] bg-white dark:bg-[#141414] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 cursor-pointer shrink-0 outline-none"
+              className="flex flex-row items-center justify-left px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] bg-white dark:bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 cursor-pointer shrink-0 outline-none"
             >
-              <Blobatar name={username} size={30} animate="always" expression={surprised} className="shrink-0" />
+              <Blobatar name={avatarSeed} size={30} animate="always" className="shrink-0" />
               <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px]">{username}</span>
             </button>
 
@@ -163,26 +167,13 @@ export default function GameLayout({
                   type="button"
                   onClick={() => {
                     setUserMenuOpen(false);
-                    router.push("/dashboard");
+                    router.push("/profile");
                   }}
                   className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] dark:text-[#bdbdbd] hover:bg-[#f7f7f7] dark:hover:bg-[#2a2a2a] hover:text-[#1d1d1d] dark:hover:text-[#f2f2f2] transition-colors cursor-pointer text-left"
                 >
                   <User className="w-4 h-4 text-[#5e5e5e] dark:text-[#a3a3a3]" />
                   <span>Profile & Settings</span>
                 </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUserMenuOpen(false);
-                    router.push("/dashboard");
-                  }}
-                  className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[8px] font-pixel text-xs sm:text-sm text-[#4a4a4a] dark:text-[#bdbdbd] hover:bg-[#f7f7f7] dark:hover:bg-[#2a2a2a] hover:text-[#1d1d1d] dark:hover:text-[#f2f2f2] transition-colors cursor-pointer text-left"
-                >
-                  <BarChart2 className="w-4 h-4 text-[#5e5e5e] dark:text-[#a3a3a3]" />
-                  <span>Progress Stats</span>
-                </button>
-
                 <div className="h-px bg-[#efefef] dark:bg-[#2a2a2a] my-1" />
 
                 <button

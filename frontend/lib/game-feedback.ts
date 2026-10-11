@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { play } from "cuelume";
 import { useWebHaptics } from "web-haptics/react";
+import { useSettingsStore } from "@/lib/settings/store";
 
 // The one sound + haptic vocabulary every game shares, per frontend/AGENTS.md
 // ("cuelume for all game audio, web-haptics for all tactile feedback"). A
@@ -18,7 +19,16 @@ import { useWebHaptics } from "web-haptics/react";
 export type GameFeedback = ReturnType<typeof useSharedGameFeedback>;
 
 export function useSharedGameFeedback() {
-  const { trigger } = useWebHaptics();
+  const { trigger: rawTrigger } = useWebHaptics();
+
+  // Haptics follow the Settings page toggle. Read at call time so flipping
+  // the setting takes effect immediately without re-creating the callbacks.
+  const trigger = useCallback(
+    (...args: Parameters<typeof rawTrigger>) => {
+      if (useSettingsStore.getState().hapticsEnabled) rawTrigger(...args);
+    },
+    [rawTrigger],
+  );
 
   return useMemo(
     () => ({

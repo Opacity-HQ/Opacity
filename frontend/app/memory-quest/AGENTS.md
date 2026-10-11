@@ -50,3 +50,12 @@ Everything is persisted to Supabase like the other four games: the real child pl
 - **Advance** after 3 strong rounds in a row. The streak is stored in `skill_states.streak`, so it carries across sittings.
 - **Drop** one level after any round with < 40% accuracy or 3+ backspaces.
 - Otherwise **hold**. Levels run 1–20; a path has `level + 2` symbols, and display time shrinks from 3000 ms to a 500 ms floor.
+
+---
+
+## Shared Building Blocks
+
+- **Intro screen**: `components/game-intro.tsx` (`GameIntro`) renders the intro card from `{ icon, title, description, steps }`; the page supplies the content.
+- **Results loading**: `components/results-loading.tsx` (`ResultsLoading`) shows the post-session loading and retry state while `/complete` resolves.
+- **Feedback**: `useGameFeedback.ts` is a thin rename of `useSharedGameFeedback` in `lib/game-feedback.ts`; sounds and haptics follow the Settings toggles (`lib/settings/store.ts`). Do not call `cuelume` / `web-haptics` directly.
+- **Child**: signed-in accounts get their child from the app-wide `OnboardingGate`; `ChildSetup.tsx` is shown to guests only.

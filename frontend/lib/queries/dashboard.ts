@@ -17,6 +17,18 @@ export type DashboardGameProgress = {
   difficultyLevel: number;
 };
 
+export type DashboardSessionPoint = {
+  sessionId: string;
+  gameId: string;
+  gameName: string;
+  completedAt: string;
+  difficultyLevel: number;
+  // 0–1 fraction; null if the session has no computed score yet.
+  accuracy: number | null;
+  meanRtMs: number | null;
+  mirrorErrorRate: number | null;
+};
+
 export type DashboardChild = {
   id: string;
   displayName: string;
@@ -24,6 +36,7 @@ export type DashboardChild = {
   gradeLevel: string | null;
   locale: string;
   games: DashboardGameProgress[];
+  history: DashboardSessionPoint[];
   skills: {
     skillKey: string;
     mastery: number;

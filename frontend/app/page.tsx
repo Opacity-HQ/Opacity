@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import Signin from "@/components/signin";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { Blobatar } from "@blobatar/react";
+import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { DiagonalBoxPattern } from "@/components/background-pattern/diagonal-box-pattern";
 import { motion } from "motion/react";
 import { HairlineFigure, type HairlineFigureName } from "@/components/hairline-figure";
+import { HeroFigure } from "@/components/hero-figure";
 import { JustifiedText } from "@/components/justified-text";
 import { Avatar, AvatarFallback, AvatarImage } from "xiod-ui/avatar";
 import { Marker, MarkerContent } from "xiod-ui/marker";
@@ -34,7 +36,7 @@ const gameCards: {
     title: "Sound Match",
     description:
       "Helps children practice connecting sounds with letters, strengthening sound–letter associations.",
-    accent: "bg-[#F7FCEC] dark:bg-[#1b2113]",
+    accent: "bg-[#F7FCEC] dark:bg-[#2c3a17]",
     icon: "/sound.svg",
     href: "/sound-match",
     figure: "sound-match",
@@ -44,7 +46,7 @@ const gameCards: {
     title: "Letter Detective",
     description:
       "Helps children distinguish commonly confused letters such as b/d, improving visual recognition and processing.",
-    accent: "bg-[#f9f6fe] dark:bg-[#1d1828]",
+    accent: "bg-[#f9f6fe] dark:bg-[#30254a]",
     icon: "/letter.svg",
     href: "/letter-detective",
     figure: "letter-detective",
@@ -54,7 +56,7 @@ const gameCards: {
     title: "Word Builder",
     description:
       "Gives children practice building and decoding words, supporting spelling-related skills.",
-    accent: "bg-[#fefcea] dark:bg-[#26230f]",
+    accent: "bg-[#fefcea] dark:bg-[#3e3713]",
     icon: "/block.svg",
     href: "/word-builder",
     figure: "word-builder",
@@ -64,7 +66,7 @@ const gameCards: {
     title: "Memory Quest",
     description:
       "Exercises the ability to remember letters, words, and sequences, supporting short-term recall.",
-    accent: "bg-[#f9f0f0] dark:bg-[#2a1a1a]",
+    accent: "bg-[#f9f0f0] dark:bg-[#472424]",
     icon: "/memory.svg",
     href: "/memory-quest",
     figure: "memory-quest",
@@ -74,7 +76,7 @@ const gameCards: {
     title: "Rapid match",
     description:
       "Practices quickly recognizing objects, letters, and symbols, while measuring response speed.",
-    accent: "bg-[#F5f8fe] dark:bg-[#16202e]",
+    accent: "bg-[#F5f8fe] dark:bg-[#1d3452]",
     icon: "/rapid.svg",
     href: "/rapid-match",
     figure: "rapid-match",
@@ -83,13 +85,41 @@ const gameCards: {
 ];
 
 export default function Home() {
+  // The dashboard endpoint requires a session, so a successful response means
+  // the visitor is signed in (guest or full account). Anything else (loading,
+  // unauthorized, error) is treated as signed out.
+  const { data: dashboard, isSuccess: isLoggedIn } = useDashboardQuery();
+  const username = dashboard?.children[0]?.displayName ?? "guest";
+
+  const playButton = (
+    <motion.div
+      className="inline-block"
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+    >
+      <div className="flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] hover:bg-[#323232] dark:bg-[#f2f2f2] dark:hover:bg-white hover:translate-y-[-5px] transition-all duration-200 rounded-[10px] mt-6 sm:mt-[30px] px-[17px] py-[8px]">
+        <Image
+          src="/game2.svg"
+          alt="Play Icon"
+          width={25}
+          height={25}
+          className="mr-[10px] dark:invert"
+        />
+        <span className="font-pixel [-webkit-text-stroke:0.4px_currentColor] text-[18px] sm:text-[20px] text-[#ffffff] dark:text-[#1b1b1b]">lets play</span>
+      </div>
+    </motion.div>
+  );
+
   return (
     <DiagonalBoxPattern className="flex flex-col items-center justify-center w-full min-h-screen">
       <div className="flex flex-col items-center w-full max-w-2xl min-h-screen bg-background border-x-0 sm:border-x-2 border-[#efefef] dark:border-[#262626]">
-        
+
+        {/* First screen: header, illustration, hero copy and play button fill one viewport */}
+        <section className="flex flex-col w-full min-h-svh pb-5 sm:pb-6">
+
         {/* Header */}
-        <motion.div 
-          className="flex flex-row items-center justify-between w-full px-4 py-4 sm:px-5 sm:py-5"
+        <motion.div
+          className="flex flex-row items-center justify-between w-full px-4 py-3 sm:px-5 sm:py-4"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -105,12 +135,31 @@ export default function Home() {
             />
             <span className="font-pixel text-[22px] sm:text-[26px] ml-2 text-[#1d1d1d] dark:text-[#f2f2f2]">opacity</span>
           </div>
-          <ThemeToggle />
+          {isLoggedIn && (
+            <Link
+              href="/dashboard"
+              aria-label={`Open dashboard for ${username}`}
+              className="flex flex-row items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-[10px] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] transition-all duration-200 shrink-0 min-w-0 max-w-[50%] text-[#1d1d1d] dark:text-[#f2f2f2]"
+            >
+              <Blobatar name={username} size={30} animate="always" className="shrink-0" />
+              <span className="font-pixel text-[16px] sm:text-[20px] ml-[5px] truncate">{username}</span>
+            </Link>
+          )}
+        </motion.div>
+
+        {/* Illustration: takes whatever height the copy below leaves free */}
+        <motion.div
+          className="flex flex-col flex-1 w-full min-h-[270px] px-4 sm:px-5"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05, ease: "easeOut" }}
+        >
+          <HeroFigure className="flex-1 min-h-0 w-full" />
         </motion.div>
 
         {/* Hero Section */}
-        <motion.div 
-          className="flex flex-col items-start justify-center w-full px-4 sm:px-5 mt-6 sm:mt-[50px]"
+        <motion.div
+          className="flex flex-col items-start justify-center w-full px-4 sm:px-5 mt-3 sm:mt-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
@@ -149,31 +198,25 @@ export default function Home() {
               className="inline-block align-middle dark:invert"
             />
           </motion.div>
-          <Signin
-            trigger={
-              <motion.button 
-                className="cursor-pointer"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <div className="button-shadow flex flex-row items-center justify-center w-fit h-fit bg-[#1b1b1b] hover:bg-[#323232] dark:bg-[#f2f2f2] dark:hover:bg-white hover:translate-y-[-5px] transition-all duration-200 rounded-[10px] mt-6 sm:mt-[30px] px-[17px] py-[8px]">
-                  <Image
-                    src="/game2.svg"
-                    alt="Play Icon"
-                    width={25}
-                    height={25}
-                    className="mr-[10px] dark:invert"
-                  />
-                  <span className="font-pixel [-webkit-text-stroke:0.4px_currentColor] text-[18px] sm:text-[20px] text-[#ffffff] dark:text-[#1b1b1b]">lets play</span>
-                </div>
-              </motion.button>
-            }
-          />
+          {isLoggedIn ? (
+            <Link href={gameCards[0].href} className="cursor-pointer">
+              {playButton}
+            </Link>
+          ) : (
+            <Signin
+              trigger={
+                <button type="button" className="cursor-pointer">
+                  {playButton}
+                </button>
+              }
+            />
+          )}
         </motion.div>
 
-        <div className="dashed-line w-full mt-8 sm:mt-[40px]"></div>
+        </section>
 
-        
+        <div className="dashed-line w-full"></div>
+
         {/* Chat FAQ Section with Motion Stagger */}
         <div className="flex w-full px-[20px] flex-col gap-[20px] mt-[40px]">
           <motion.div

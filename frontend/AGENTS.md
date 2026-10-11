@@ -14,14 +14,17 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project Snapshot
 
-- Framework: Next.js `16.3.1` with the App Router.
-- Runtime UI: React `19.2.8`.
+- Framework: Next.js `^16.3` with the App Router (see `package.json` for the exact version).
+- Runtime UI: React `^19.3`.
 - Language: TypeScript with `strict` enabled.
 - Server State & API: `@tanstack/react-query` (TanStack Query).
 - Client Global State: Zustand (`zustand`).
-- Styling: Tailwind CSS v4 through `app/globals.css`, plus shadcn/base-ui components.
+- Backend: Supabase (`@supabase/ssr`, `@supabase/supabase-js`); schema migrations live in `../backend/supabase/migrations/`.
+- Validation: `zod`.
+- Styling: Tailwind CSS v4 through `app/globals.css`, plus shadcn/base-ui components. Dark mode via `next-themes`.
 - Icons: `lucide-react`.
 - Motion: `motion/react`.
+- Charts: in-repo visx-based chart kit in `components/charts/`.
 - Sound: `cuelume`.
 - Haptics: `web-haptics`.
 - Import alias: use `@/` for project-root imports.
@@ -42,9 +45,16 @@ Use `npm run lint` for quick validation after edits. Use `npm run build` before 
 ## Directory Conventions
 
 - `app/` contains routes, layouts, loading states, global CSS, and font assets.
-- `components/` contains reusable application components.
+- `app/api/` contains route handlers: `games/<game>/` (plan, start, trial, complete), `dashboard/`, `profile/{account,child,clinical}/`, and `signin/`, `login/`.
+- `app/dashboard/` is the progress dashboard (`components/DashboardView.tsx`, `charts.tsx`, and the pure view-model helpers in `transform.ts`).
+- `app/profile/` is the profile page: account, child, clinical-history and device-settings sections (`components/`).
+- `components/` contains reusable application components, including `game-layout.tsx`, `game-intro.tsx`, `results-loading.tsx`, `onboarding-gate.tsx`, `settings-applier.tsx`, `signin.tsx`, `theme-toggle.tsx`, `hero-figure.tsx`, and `shimmering-text.tsx`.
 - `components/ui/` contains shadcn/base-ui primitives. Keep these generic and reusable.
-- `lib/` contains shared helpers such as `cn`.
+- `components/charts/` is the shared chart kit (area, bar, radar, ring, gauge, heatmap, tooltip). Use it for any chart; do not add another chart library.
+- `components/hairline/` holds the isometric line-art figures (one per game) used by `hairline-figure.tsx` and the hero.
+- `lib/api/` has server helpers (`requireUser`, `requireChildAccess`, response helpers). `lib/supabase/` has the server, browser, and admin clients. `lib/db/types.ts` has the database types.
+- `lib/queries/` has the shared TanStack Query hooks and key factories (`dashboard`, `onboarding`, `profile`, `auth`), plus `fetchJson` and `ApiError`.
+- `lib/settings/store.ts` is the persisted device-preferences store; `lib/profile/clinical.ts` holds the zod schema for the clinical profile; `lib/game-feedback.ts` is the shared sound/haptic cue map.
 - `public/` contains static images and SVGs referenced from the app.
 
 Add new game routes under `app/<route-name>/` with `page.tsx`; include `layout.tsx` and `loading.tsx` when the route needs its own shell or loading treatment.
@@ -67,9 +77,11 @@ Add new game routes under `app/<route-name>/` with `page.tsx`; include `layout.t
 - Put `rapid-match` endpoints only in `app/api/games/rapid-match/`.
 - Put `sound-match` endpoints only in `app/api/games/sound-match/`.
 - Put `word-builder` endpoints only in `app/api/games/word-builder/`.
+- Game endpoints are server-authoritative: the server writes the plan to `game_sessions.config`, grades every response itself, and the client never sends correctness.
 - If a new game is created, make a new `app/<game-name>/` folder for it and keep that game's route-specific files there.
 - Move code out of a game folder only when it is genuinely shared by multiple routes.
-- Every game folder under `app/<game-name>/` MUST contain an `AGENTS.md` file that explains that game's frontend files and corresponding backend endpoints.
+- Every game folder under `app/<game-name>/` MUST contain an `AGENTS.md` file that explains that game's frontend files and corresponding backend endpoints. Update it in the same PR whenever the game's files, endpoints, or behavior change.
+- Games reuse shared pieces instead of copying them: `GameLayout`, `GameIntro`, `ResultsLoading`, `Signin`, `useDashboardQuery`, and `useSharedGameFeedback` (via each game's thin `useGameFeedback.ts`).
 
 ## Git Workflow
 
@@ -130,6 +142,14 @@ npm run build
 
 - **In-Game Sound Effects & Audio**: All game sounds and audio effects must be implemented using the pre-installed `cuelume` library.
 - **Web Haptics & Vibration**: All tactile and vibrational feedback across games must be implemented using the pre-installed `web-haptics` library.
+- **Shared cue map**: the cue vocabulary lives in `lib/game-feedback.ts` (`useSharedGameFeedback`). Each game's `useGameFeedback.ts` only renames those cues; do not call `cuelume` or `web-haptics` directly in a game, so a moment sounds and feels the same everywhere.
+- **Spoken words** are the one exception to cuelume-only audio and are specific to Sound Match (browser `SpeechSynthesis` behind `useSpeech.ts`).
+
+## Settings, Onboarding & Profile
+
+- **Device settings** (text size, sound, volume, haptics, reduce motion, session length) live in the persisted `useSettingsStore` (`lib/settings/store.ts`, localStorage key `opacity-settings`). `SettingsApplier` pushes them into cuelume and `<html>`; haptics are gated in `lib/game-feedback.ts`. Theme is owned by `next-themes`. Honor these settings in new game UI.
+- **Onboarding**: `OnboardingGate` (mounted in `app/providers.tsx`) blocks a confirmed user's first session until the child profile exists. Per-game `ChildSetup` forms are only the fallback for guests.
+- **Profile page** (`app/profile/`): account deletion, child edit/delete, and the optional clinical profile (`child_clinical_profiles`, owner-only RLS, validated by `lib/profile/clinical.ts`). Every API route must go through `requireUser` or `requireChildAccess`.
 
 ## TypeScript And React
 
@@ -142,6 +162,7 @@ npm run build
 ## Styling And UI
 
 - Use Tailwind utilities and the tokens defined in `app/globals.css` before adding custom CSS.
+- Support both light and dark mode (use the theme tokens and `dark:` variants), and respect the reduce-motion setting.
 - Use only the existing `font-pixel` and `font-sauce` font utilities. Do not introduce or rely on any other font family for game UI.
 - Keep each game's visual theme consistent with the rest of the website.
 - Keep the visual tone playful but readable for dyslexic users: clear spacing, strong hierarchy, predictable controls, and simple copy.

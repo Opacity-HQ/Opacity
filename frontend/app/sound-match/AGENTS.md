@@ -169,3 +169,12 @@ to shared only when multiple routes genuinely need it"), not done unilaterally.
   reached and XP inside `raw_features` (no new top-level columns). Upserts
   `skill_states` (`skill_key = "phonological_awareness"`) with the same
   advance / hold / drop-by-accuracy logic as Rapid Match.
+
+---
+
+## Shared Building Blocks
+
+- **Intro screen**: `components/game-intro.tsx` (`GameIntro`) renders the intro card from `{ icon, title, description, steps }`; `SoundMatchIntro.tsx` only supplies the content.
+- **Results loading**: `components/results-loading.tsx` (`ResultsLoading`) shows the post-session loading and retry state while `/complete` resolves.
+- **Feedback**: `useGameFeedback.ts` is a thin rename of `useSharedGameFeedback` in `lib/game-feedback.ts`; sounds and haptics follow the Settings toggles (`lib/settings/store.ts`). Do not call `cuelume` / `web-haptics` directly.
+- **Child**: signed-in accounts get their child from the app-wide `OnboardingGate`; `ChildSetup.tsx` is shown to guests only.
