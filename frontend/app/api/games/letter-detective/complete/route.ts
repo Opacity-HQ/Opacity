@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireUser } from "@/lib/api/auth";
 import { apiSuccess, apiError, toApiErrorResponse } from "@/lib/api/response";
 import type { LDPlan } from "../plan";
+import { confusionErrorRates } from "../feature-statistics";
 
 const SKILL_KEY = "letter_discrimination";
 const MIN_DIFFICULTY = 1;
@@ -79,12 +80,9 @@ export async function POST(request: NextRequest) {
       .map((t) => t.reaction_time_ms)
       .filter((v): v is number => v !== null);
 
-    const confusionErrors = scored.filter(
-      (t) =>
-        t.error_type === "mirror" ||
-        t.error_type === "rotation" ||
-        t.error_type === "visual_similar",
-    ).length;
+    const { mirrorErrorRate, confusionErrorRate } = confusionErrorRates(
+      scored.map((t) => t.error_type),
+    );
 
     const completedAt = new Date();
     const startedAt = new Date(session.started_at);
@@ -93,8 +91,6 @@ export async function POST(request: NextRequest) {
     const meanRt = mean(reactionTimes);
     const medianRt = median(reactionTimes);
     const rtCv = coefficientOfVariation(reactionTimes);
-    const mirrorErrorRate =
-      scored.length > 0 ? confusionErrors / scored.length : 0;
     const throughput =
       durationMs > 0 ? correctCount / (durationMs / 60000) : 0;
 
@@ -120,9 +116,10 @@ export async function POST(request: NextRequest) {
       mirror_error_rate: mirrorErrorRate,
       throughput,
       raw_features: {
-        version: 1,
+        version: 2,
         pair: plan.pair,
         trialsScored: scored.length,
+        confusionErrorRate,
         errorTypeCounts: countBy(scored.map((t) => t.error_type)),
       },
     });

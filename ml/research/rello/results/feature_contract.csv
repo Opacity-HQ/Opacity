@@ -1,0 +1,43 @@
+feature,question,formula,units,task_group,zero_clicks,missing_or_invalid_count_tuple,deployment_status
+q01_log_clicks,1,log1p(Clicks1),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q01_hit_rate,1,Hits1 / Clicks1,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q01_miss_rate,1,Misses1 / Clicks1,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q02_log_clicks,2,log1p(Clicks2),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q02_hit_rate,2,Hits2 / Clicks2,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q02_miss_rate,2,Misses2 / Clicks2,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q03_log_clicks,3,log1p(Clicks3),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q03_hit_rate,3,Hits3 / Clicks3,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q03_miss_rate,3,Misses3 / Clicks3,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q04_log_clicks,4,log1p(Clicks4),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q04_hit_rate,4,Hits4 / Clicks4,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q05_log_clicks,5,log1p(Clicks5),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q05_hit_rate,5,Hits5 / Clicks5,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q06_log_clicks,6,log1p(Clicks6),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q06_hit_rate,6,Hits6 / Clicks6,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q07_log_clicks,7,log1p(Clicks7),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q07_hit_rate,7,Hits7 / Clicks7,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q08_log_clicks,8,log1p(Clicks8),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q08_hit_rate,8,Hits8 / Clicks8,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q09_log_clicks,9,log1p(Clicks9),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q09_hit_rate,9,Hits9 / Clicks9,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q10_log_clicks,10,log1p(Clicks10),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q10_hit_rate,10,Hits10 / Clicks10,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q11_log_clicks,11,log1p(Clicks11),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q11_hit_rate,11,Hits11 / Clicks11,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q12_log_clicks,12,log1p(Clicks12),log count,letter/sound discrimination,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q12_hit_rate,12,Hits12 / Clicks12,fraction,letter/sound discrimination,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q14_log_clicks,14,log1p(Clicks14),log count,visual search,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q14_hit_rate,14,Hits14 / Clicks14,fraction,visual search,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q15_log_clicks,15,log1p(Clicks15),log count,visual search,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q15_hit_rate,15,Hits15 / Clicks15,fraction,visual search,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q16_log_clicks,16,log1p(Clicks16),log count,visual search,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q16_hit_rate,16,Hits16 / Clicks16,fraction,visual search,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q17_log_clicks,17,log1p(Clicks17),log count,visual search,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q17_hit_rate,17,Hits17 / Clicks17,fraction,visual search,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q22_log_clicks,22,log1p(Clicks22),log count,word correction,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q22_hit_rate,22,Hits22 / Clicks22,fraction,word correction,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q23_log_clicks,23,log1p(Clicks23),log count,word correction,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q23_hit_rate,23,Hits23 / Clicks23,fraction,word correction,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q30_log_clicks,30,log1p(Clicks30),log count,sequential memory,0 exposure,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q30_hit_rate,30,Hits30 / Clicks30,fraction,sequential memory,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated
+q30_miss_rate,30,Misses30 / Clicks30,fraction,sequential memory,missing rate,missing feature,Rello research only; Opacity measurement equivalence unvalidated

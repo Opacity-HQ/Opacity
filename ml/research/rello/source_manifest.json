@@ -1,0 +1,62 @@
+[
+  {
+    "file": "Dyt-desktop.csv",
+    "url": "https://www.kaggle.com/api/v1/datasets/download/luzrello/dyslexia",
+    "bytes": 2034159,
+    "sha256": "bca215d3f234182790fdb2de1607ccf1ea4ae1399237a62476c04779397165c4",
+    "source": "official author Kaggle archive"
+  },
+  {
+    "file": "Dyt-tablet.csv",
+    "url": "https://www.kaggle.com/api/v1/datasets/download/luzrello/dyslexia",
+    "bytes": 992412,
+    "sha256": "261f535e8c0ba4f8b2e38c6f085360d95c661004abd415b5de2837eeefde28bf",
+    "source": "official author Kaggle archive"
+  },
+  {
+    "file": "musvis_metadata.json",
+    "url": "https://api.figshare.com/v2/articles/17714708",
+    "bytes": 22149,
+    "sha256": "a810e9a0a7deec3aa2116aaedf8b3ea4f693a36c8d7595cc70eb87f89c9b7410"
+  },
+  {
+    "file": "DataSheet4_A Universal Screening Tool for Dyslexia by a Web-Game and Machine Learning.CSV",
+    "url": "https://ndownloader.figshare.com/files/32420342",
+    "bytes": 308482,
+    "sha256": "437a239bcc2b4ba4221b2554b5f031e450163270ce5e1c6a64cd914ffe41a140",
+    "figshare_version": 1,
+    "license": {
+      "value": 1,
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  {
+    "file": "dataset_dgames.csv",
+    "url": "https://raw.githubusercontent.com/Rauschii/DGamesDataSet/0d821e972c4540b3f9c37482356cc7dbe3942133/dataset_dgames.csv",
+    "bytes": 215795,
+    "sha256": "96f7dae55c284d87788e14edbdd06467c246a73456c9875194dae69e1f5de5b2",
+    "commit": "0d821e972c4540b3f9c37482356cc7dbe3942133"
+  },
+  {
+    "file": "feature_description_Dgames.xlsx",
+    "url": "https://raw.githubusercontent.com/Rauschii/DGamesDataSet/0d821e972c4540b3f9c37482356cc7dbe3942133/feature_description_Dgames.xlsx",
+    "bytes": 13421,
+    "sha256": "a02744988b93480e25d4edb03f94e8496ff00674d88b2425ea532dc43875d2b8",
+    "commit": "0d821e972c4540b3f9c37482356cc7dbe3942133"
+  },
+  {
+    "file": "README.md",
+    "url": "https://raw.githubusercontent.com/Rauschii/DGamesDataSet/0d821e972c4540b3f9c37482356cc7dbe3942133/README.md",
+    "bytes": 501,
+    "sha256": "3dd6dea23cc057182a41efd7906e9a7536dfb984dd16e84978337e53e4c807e2",
+    "commit": "0d821e972c4540b3f9c37482356cc7dbe3942133"
+  },
+  {
+    "file": "LICENSE",
+    "url": "https://raw.githubusercontent.com/Rauschii/DGamesDataSet/0d821e972c4540b3f9c37482356cc7dbe3942133/LICENSE",
+    "bytes": 1077,
+    "sha256": "942b21abb68816e5742eb7946f2c767d0ce207456a9f77d1885a64a3c782f017",
+    "commit": "0d821e972c4540b3f9c37482356cc7dbe3942133"
+  }
+]

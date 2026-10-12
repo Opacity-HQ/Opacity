@@ -153,3 +153,7 @@ Rules for the service role key:
 - If you think you need the service role key inside a Client Component, you almost certainly don't — RLS through the anon key with `requireUser()` / `requireChildAccess()` is the default. Ask before reaching for the service role key.
 
 Get keys from the Supabase dashboard: Project Settings → API. Ask Saket for org access if you don't have it yet — invites are per-organization, so one invite gives you every project in it.
+
+## ML integration status
+
+The external-data baseline is under `ml/research/rello/`. The preliminary Python service is under `ml/service/`, reached from the signed-in `/api/research/rello` route and `/research/rello` demo page. See [service setup](../ml/service/README.md). It accepts explicit Rello counts and does not classify Opacity sessions or generate child reports. Completion handlers write typed score columns plus game-specific `raw_features`, not the Rello feature vector. See [FEATURE_ALIGNMENT.md](../ml/FEATURE_ALIGNMENT.md). Apply `20261009150000_allow_memory_quest_error_types.sql` to accept the Memory Quest taxonomy before live persistence testing.

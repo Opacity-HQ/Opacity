@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+service/artifacts/
+research/rello/data/
+research/rello/models/
+research/rello/results/split_manifest.csv
+research/rello/results/predictions.csv
+research/rello/results/development_oof.csv

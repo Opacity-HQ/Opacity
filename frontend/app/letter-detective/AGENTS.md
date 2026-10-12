@@ -54,6 +54,9 @@ Letter Detective is Opacity's reference implementation for visual discrimination
 - **[complete/route.ts](../api/games/letter-detective/complete/route.ts)**: `POST /api/games/letter-detective/complete`
   - Session completion handler: computes `accuracy`, `mean_rt_ms`, `median_rt_ms`, `rt_cv`, `mirror_error_rate`, `throughput`, upserts `session_scores`, and updates adaptive difficulty in `skill_states`.
 
+### Feature definition version
+
+`complete/route.ts` writes `raw_features.version = 2`: `mirror_error_rate` counts mirror errors only, and `raw_features.confusionErrorRate` counts mirror/rotation/visual-similarity errors together. Older v1 rows retain the combined definition in `mirror_error_rate`; recompute from recorded trials before mixing versions. Pure rate calculations live in `feature-statistics.ts`; regression tests are in `frontend/tests/letter-detective-features.test.mjs`.
 ---
 
 ## Shared Building Blocks
