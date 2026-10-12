@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
 .venv/
+.env
+service/artifacts/
 research/rello/data/
 research/rello/models/
 research/rello/results/split_manifest.csv

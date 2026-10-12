@@ -1,7 +1,14 @@
+import Link from "next/link";
+
 export default function DashboardPage() {
     return (
         <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12 text-center">
             <h1 className="font-pixel text-[28px] sm:text-[36px] md:text-[40px] text-[#1d1d1d] leading-tight">Dashboard</h1>
+            {process.env.OPACITY_RESEARCH_DEMO_ENABLED === "true" && (
+                <Link href="/research/rello" className="mt-6 rounded-2xl border border-border px-5 py-3 font-sauce text-sm underline underline-offset-4">
+                    Open the ML research demo
+                </Link>
+            )}
         </div>
     );
 }
