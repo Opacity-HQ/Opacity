@@ -1,0 +1,13 @@
+{
+  "model_id": "rello-rf-2026-10-09",
+  "schema_version": "rello-counts-v1",
+  "sha256": "8b4bf4f06f270d3d5141fb19836479f3e318da3275b9931a5b1564c30f142528",
+  "model_file": "rello_baseline.joblib",
+  "versions": {
+    "scikit-learn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scipy": "1.17.0",
+    "joblib": "1.5.3"
+  }
+}

@@ -2,7 +2,7 @@
 
 Opacity is a web-based platform that screens for early signs of dyslexia through interactive browser games. Designed for children, parents, and teachers, it uses evidence-based cognitive assessments delivered through engaging gameplay.
 
-**Status**: All five game API/UI implementations are present. The dashboard UI is a placeholder. An external-data Random Forest research baseline lives under `ml/research/rello/`; live Opacity ML scoring and report generation are not implemented.
+**Status**: All five game API/UI implementations are present. The dashboard's main UI is a placeholder. The Rello Random Forest now has an optional website research demo at `/research/rello`, backed by `ml/service/`. Actual Opacity gameplay classification and child report generation are not implemented.
 
 ---
 
@@ -47,7 +47,7 @@ Next.js Route Handlers (frontend/app/api/**/route.ts)
 Supabase (Postgres + Auth + RLS)
 ```
 
-**No implemented standalone backend server.** Route handlers *are* the backend. The one service that can't live in Vercel functions — Whisper transcription + product ML scoring — is planned as a separate Python service (under `backend/`, owned by Saatvik), called server-to-server from route handlers. Current research training is under `ml/`; its Rello features cannot be substituted with gameplay scores.
+Route handlers provide the game and account backend. A standalone FastAPI research service under `ml/service/` serves the frozen Rello benchmark to `/api/research/rello`. [Setup instructions](ml/service/README.md) cover model installation and the optional demo flag. Product ML scoring and Whisper transcription remain planned; Rello features cannot be substituted with gameplay scores.
 
 ### Security Model
 
@@ -68,7 +68,7 @@ Supabase (Postgres + Auth + RLS)
 | **Validation** | Zod |
 | **Animations** | Motion, Cuelume (haptics), tw-animate-css |
 | **Auth** | Supabase Auth (email/password + anonymous) |
-| **ML** | Python research baseline (Random Forest / Logistic Regression) under `ml/`; product scoring, XGBoost/SHAP and Whisper remain planned |
+| **ML** | Python research baseline and FastAPI demo under `ml/`; product scoring, XGBoost/SHAP and Whisper remain planned |
 
 ---
 
@@ -143,7 +143,7 @@ Opacity/
 │   │       ├── 11-seed_games.sql
 │   │       ├── 12-seed_letter_detective_content.sql
 │   │       └── 13-harden_access_functions.sql
-│   └── backend.md                    # API contract; Python service not implemented
+│   └── backend.md                    # API contract; research Python service is under ml/
 │
 ├── docs/                              # Design & specification documents
 │   └── saket/
@@ -157,7 +157,8 @@ Opacity/
 ├── ml/                                # ML research and feature-alignment contract
 │   ├── README.md
 │   ├── FEATURE_ALIGNMENT.md
-│   └── research/rello/                # Audited external-data baseline
+│   ├── research/rello/                # Audited external-data baseline
+│   └── service/                       # Frozen-model research prediction API
 │
 ├── implementation_plan.md             # Phase-by-phase completion checklist
 └── README.md                          # This file
@@ -522,7 +523,7 @@ All PRs to `main` require review. Watch for:
 | **10** | Implemented; live verification pending | Rapid Match API + UI |
 | **11** | Implemented; live verification pending | Word Builder API + UI |
 | **12** | ⏳ Planned | Parent/teacher dashboard UI |
-| **13** | Research baseline implemented; product scoring planned | Rello Random Forest baseline in `ml/`; no live classifier |
+| **13** | Research baseline + demo implemented; product scoring planned | Rello Random Forest API and optional website page; no Opacity gameplay classifier |
 
 ---
 

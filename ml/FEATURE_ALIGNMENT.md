@@ -22,7 +22,7 @@ Completion handlers can score a partial sitting without enforcing all planned su
 
 Inputs are `qXX_log_clicks`, `qXX_hit_rate`, and selected `qXX_miss_rate` for Q1–Q12, Q14–Q17, Q22–Q23, Q30. There are 42 deterministic features plus train-fitted missingness indicators. None of these `qXX` values is recorded by the current application. Rello hit-per-click rates and Opacity trial accuracy have different denominators and tasks; there is no validated direct mapping.
 
-No columns, missing values or labels should be invented to make the web app fit this research model. Keep the Rello scripts and model separate from product prediction. `screening_reports` has a read path but no implemented generator; dashboard UI is still a placeholder.
+No columns, missing values or labels should be invented to make the web app fit this research model. Keep the Rello scripts and model separate from product prediction. The optional `/research/rello` page now serves the frozen benchmark from explicit Rello counts via `ml/service/`; it does not query game sessions or write reports. `screening_reports` has a read path but no implemented generator; the dashboard's main UI is still a placeholder with an optional research-demo link.
 
 ## Database correction
 

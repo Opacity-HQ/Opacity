@@ -22,6 +22,8 @@ The scripts resolve data, result and model paths relative to their own folder, s
 
 ## Product integration boundary
 
-The web backend lives in `frontend/app/api/`. It stores trials, typed score columns and game-specific `session_scores.raw_features`. It has no Python prediction call and no report-generation service yet. A future server-to-server Python service may live under `backend/`; do not load this research model into the web app or convert its scores into `screening_reports.risk_band`.
+The web backend lives in `frontend/app/api/`. It stores trials, typed score columns and game-specific `session_scores.raw_features`. The optional `/research/rello` page now calls a frozen-model FastAPI service through `/api/research/rello`. It accepts Rello counts only, requires an existing user session and a server secret, and creates no child screening reports. See [service/README.md](service/README.md) for Windows setup, model installation, tests and hosting.
+
+Actual Opacity gameplay classification and report generation still require an Opacity-trained model. Do not convert this research score into `screening_reports.risk_band`.
 
 Read [FEATURE_ALIGNMENT.md](FEATURE_ALIGNMENT.md) for the actual game contract and pending collection work. XGBoost/SHAP remain proposed experiments, not implemented dependencies or validated product behavior.
