@@ -75,14 +75,14 @@ export default function TargetMatchRound({
         <span className="font-pixel text-[13px] text-[#a0a0a0]">
           {trial.isWarmup ? "warm-up trial" : "target match"}
         </span>
-        <h2 className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d]">
+        <h2 className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d] dark:text-[#f2f2f2]">
           find the matching symbol
         </h2>
       </div>
 
       {/* Target Box */}
-      <div className="flex flex-col items-center justify-center w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] bg-white border-[3px] border-[#1d1d1d] rounded-[20px] shadow-sm">
-        <span className="font-pixel text-[42px] sm:text-[52px] text-[#1d1d1d] select-none">
+      <div className="flex flex-col items-center justify-center w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] bg-white dark:bg-[#141414] border-[3px] border-[#1d1d1d] dark:border-[#f2f2f2] rounded-[20px] shadow-sm">
+        <span className="font-pixel text-[42px] sm:text-[52px] text-[#1d1d1d] dark:text-[#f2f2f2] select-none">
           {trial.targetSymbol}
         </span>
       </div>
@@ -98,19 +98,19 @@ export default function TargetMatchRound({
           const isCorrect = i === correctIndex;
 
           let cardClasses =
-            "bg-white border-[#d4d4d4] hover:border-[#1d1d1d] hover:bg-[#f9f9f9]";
+            "bg-white dark:bg-[#141414] border-[#d4d4d4] dark:border-[#3a3a3a] hover:border-[#1d1d1d] dark:hover:border-[#f2f2f2] hover:bg-[#f9f9f9] dark:hover:bg-[#2a2a2a]";
           let iconNode = null;
 
           if (answered) {
             if (isCorrect) {
-              cardClasses = "bg-[#f0fbf5] border-[#a3e635] text-[#166534]";
+              cardClasses = "bg-[#f0fbf5] dark:bg-[#0f2118] border-[#a3e635] text-[#166534] dark:text-emerald-300";
               iconNode = (
-                <Check className="w-4 h-4 text-[#166534] absolute top-2.5 right-2.5" />
+                <Check className="w-4 h-4 text-[#166534] dark:text-emerald-300 absolute top-2.5 right-2.5" />
               );
             } else if (isSelected) {
-              cardClasses = "bg-[#f9f0f0] border-[#e8c8c8] text-[#991b1b]";
+              cardClasses = "bg-[#f9f0f0] dark:bg-[#2a1a1a] border-[#e8c8c8] dark:border-[#5c2b2b] text-[#991b1b] dark:text-[#fca5a5]";
               iconNode = (
-                <XCircle className="w-4 h-4 text-[#991b1b] absolute top-2.5 right-2.5" />
+                <XCircle className="w-4 h-4 text-[#991b1b] dark:text-[#fca5a5] absolute top-2.5 right-2.5" />
               );
             }
           }
@@ -130,7 +130,7 @@ export default function TargetMatchRound({
               <span className="font-pixel text-[32px] sm:text-[38px] select-none">
                 {option}
               </span>
-              <span className="font-pixel text-[11px] text-[#6b6b6b] absolute bottom-1.5 left-2">
+              <span className="font-pixel text-[11px] text-[#6b6b6b] dark:text-[#a3a3a3] absolute bottom-1.5 left-2">
                 {i + 1}
               </span>
               {iconNode}

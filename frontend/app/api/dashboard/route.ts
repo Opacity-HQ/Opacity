@@ -33,13 +33,21 @@ export async function GET() {
 
     const childIds = children.map((c) => c.id);
 
+    // Scores come back embedded in each session (session_scores.session_id is
+    // its primary key, so it is one-to-one). Fetching them separately with
+    // `.in("session_id", [...])` put every session id in the URL, which
+    // PostgREST rejects once a child has a few hundred sessions. Newest first,
+    // so if the row cap ever bites it drops the oldest history, not the latest.
     const [{ data: games }, { data: sessions }, { data: skillStates }, { data: reports }] =
       await Promise.all([
         supabase.from("games").select("id, name, skill_domain"),
         supabase
           .from("game_sessions")
-          .select("child_id, game_id, status, difficulty_level, completed_at, started_at")
-          .in("child_id", childIds),
+          .select(
+            "id, child_id, game_id, status, difficulty_level, completed_at, started_at, session_scores(accuracy, mean_rt_ms, mirror_error_rate)",
+          )
+          .in("child_id", childIds)
+          .order("started_at", { ascending: false }),
         supabase
           .from("skill_states")
           .select("child_id, skill_key, mastery, difficulty_level, streak")
@@ -87,6 +95,29 @@ export async function GET() {
         };
       });
 
+      // Completed sessions, oldest first, with their computed scores — the
+      // source for the dashboard's time-series and per-game charts.
+      const history = childSessions
+        .filter((s) => s.status === "completed" && s.completed_at)
+        .sort(
+          (a, b) =>
+            new Date(a.completed_at as string).getTime() -
+            new Date(b.completed_at as string).getTime(),
+        )
+        .map((s) => {
+          const score = s.session_scores;
+          return {
+            sessionId: s.id,
+            gameId: s.game_id,
+            gameName: gameNames.get(s.game_id) ?? s.game_id,
+            completedAt: s.completed_at as string,
+            difficultyLevel: s.difficulty_level,
+            accuracy: score?.accuracy ?? null,
+            meanRtMs: score?.mean_rt_ms ?? null,
+            mirrorErrorRate: score?.mirror_error_rate ?? null,
+          };
+        });
+
       const skills = (skillStates ?? [])
         .filter((s) => s.child_id === child.id)
         .map((s) => ({
@@ -105,6 +136,7 @@ export async function GET() {
         gradeLevel: child.grade_level,
         locale: child.locale,
         games: gameProgress,
+        history,
         skills,
         latestReport: report
           ? {

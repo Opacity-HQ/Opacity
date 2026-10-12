@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import type { GameFeedback } from "@/lib/game-feedback";
 import { useTrialClock } from "./useTrialClock";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 import type { WBTrial, TrialOutcome } from "./types";
@@ -11,13 +12,11 @@ type Stage = "preview" | "build";
 export default function BuildRound({
   trial,
   onAnswer,
-  playCue,
-  triggerHaptic,
+  feedback,
 }: {
   trial: WBTrial;
   onAnswer: (outcome: TrialOutcome) => void;
-  playCue: (sound: "select" | "success" | "error" | "close") => void;
-  triggerHaptic: (preset: "nudge" | "success" | "error") => void;
+  feedback: GameFeedback;
 }) {
   const reducedMotion = usePrefersReducedMotion();
   const [stage, setStage] = useState<Stage>("preview");
@@ -38,8 +37,8 @@ export default function BuildRound({
     const localCorrect = submittedWord === trial.word.toLowerCase();
 
     setResult(localCorrect);
-    playCue(localCorrect ? "success" : "error");
-    triggerHaptic(localCorrect ? "success" : "error");
+    if (localCorrect) feedback.onCorrect();
+    else feedback.onWrong();
 
     window.setTimeout(
       () => {
@@ -94,8 +93,7 @@ export default function BuildRound({
     if (filledRef.current.length >= trial.word.length) return;
 
     markFirstMove(e.timeStamp);
-    playCue("select");
-    triggerHaptic("nudge");
+    feedback.onSelect();
 
     const next = [...filledRef.current, tileIndex];
     filledRef.current = next;
@@ -108,7 +106,7 @@ export default function BuildRound({
 
   function backspace() {
     if (answeredRef.current || filledRef.current.length === 0) return;
-    playCue("close");
+    feedback.onBackspace();
     const next = filledRef.current.slice(0, -1);
     filledRef.current = next;
     setFilled(next);
@@ -120,7 +118,7 @@ export default function BuildRound({
     <div className="flex flex-col items-center justify-center w-full gap-6">
       {stage === "preview" ? (
         <>
-          <p className="font-pixel text-[18px] sm:text-[22px] text-[#1d1d1d] text-center">
+          <p className="font-pixel text-[18px] sm:text-[22px] text-[#1d1d1d] dark:text-[#f2f2f2] text-center">
             Remember this word
           </p>
           <div
@@ -131,22 +129,22 @@ export default function BuildRound({
             {trial.word.split("").map((letter, i) => (
               <div
                 key={i}
-                className="font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 border-[#e0e0e0] bg-white flex items-center justify-center"
+                className="font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 border-[#e0e0e0] dark:border-[#333333] bg-white dark:bg-[#141414] flex items-center justify-center"
               >
                 {letter}
               </div>
             ))}
           </div>
-          <div className="w-full max-w-[300px] h-[5px] bg-[#efefef] rounded-full overflow-hidden">
+          <div className="w-full max-w-[300px] h-[5px] bg-[#efefef] dark:bg-[#2a2a2a] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#1d1d1d] rounded-full transition-none"
+              className="h-full bg-[#1d1d1d] dark:bg-[#f2f2f2] rounded-full transition-none"
               style={{ width: `${previewProgress}%` }}
             />
           </div>
         </>
       ) : (
         <>
-          <p className="font-pixel text-[18px] sm:text-[22px] text-[#1d1d1d] text-center">
+          <p className="font-pixel text-[18px] sm:text-[22px] text-[#1d1d1d] dark:text-[#f2f2f2] text-center">
             Now build it!
           </p>
 
@@ -160,13 +158,13 @@ export default function BuildRound({
                   className={cn(
                     "font-pixel text-[26px] sm:text-[32px] w-[50px] h-[60px] sm:w-[60px] sm:h-[70px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
                     letter
-                      ? "border-[#1d1d1d] bg-[#f7f7f7]"
-                      : "border-dashed border-[#9a9a9a] bg-white",
-                    result === true && "border-emerald-500 bg-emerald-50",
+                      ? "border-[#1d1d1d] dark:border-[#f2f2f2] bg-[#f7f7f7] dark:bg-[#1f1f1f]"
+                      : "border-dashed border-[#9a9a9a] bg-white dark:bg-[#141414]",
+                    result === true && "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40",
                     result === false &&
                       (reducedMotion
-                        ? "border-red-400 bg-red-50"
-                        : "border-red-400 bg-red-50 animate-[wiggle_0.4s_ease-in-out]"),
+                        ? "border-red-400 bg-red-50 dark:bg-red-950/40"
+                        : "border-red-400 bg-red-50 dark:bg-red-950/40 animate-[wiggle_0.4s_ease-in-out]"),
                   )}
                 >
                   {letter ?? (
@@ -195,7 +193,7 @@ export default function BuildRound({
                   aria-label={`Letter ${letter}`}
                   className={cn(
                     "font-pixel text-[22px] sm:text-[26px] w-[46px] h-[52px] sm:w-[54px] sm:h-[60px] rounded-[12px] border-2 flex items-center justify-center transition-all duration-150",
-                    "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
+                    "bg-white dark:bg-[#141414] border-[#e0e0e0] dark:border-[#333333] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] dark:focus-visible:ring-[#f2f2f2] focus-visible:ring-offset-2",
                     used && "opacity-30 cursor-not-allowed",
                   )}
                 >
@@ -209,7 +207,7 @@ export default function BuildRound({
             type="button"
             onClick={backspace}
             disabled={filled.length === 0}
-            className="font-pixel text-[13px] sm:text-[14px] flex flex-row items-center gap-2 px-4 py-2 bg-white border-2 border-[#efefef] rounded-[12px] hover:bg-[#f5f5f5] disabled:opacity-30 transition-all duration-150 cursor-pointer disabled:cursor-not-allowed text-[#5e5e5e]"
+            className="font-pixel text-[13px] sm:text-[14px] flex flex-row items-center gap-2 px-4 py-2 bg-white dark:bg-[#141414] border-2 border-[#efefef] dark:border-[#262626] rounded-[12px] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] disabled:opacity-30 transition-all duration-150 cursor-pointer disabled:cursor-not-allowed text-[#5e5e5e] dark:text-[#a3a3a3]"
           >
             ← backspace
           </button>

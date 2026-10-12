@@ -33,11 +33,11 @@ export default function ChildSetup({
       onSubmit={handleSubmit}
       className="flex flex-col items-center justify-center w-full max-w-sm gap-4 px-4"
     >
-      <p className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d] text-center">
+      <p className="font-pixel text-[20px] sm:text-[24px] text-[#1d1d1d] dark:text-[#f2f2f2] text-center">
         Before we start, what should we call you?
       </p>
       <div className="flex flex-col items-start w-full gap-1">
-        <label htmlFor="child-name" className="font-pixel text-[13px] text-[#5e5e5e]">
+        <label htmlFor="child-name" className="font-pixel text-[13px] text-[#5e5e5e] dark:text-[#a3a3a3]">
           your name
         </label>
         <Input
@@ -46,11 +46,11 @@ export default function ChildSetup({
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="e.g. Sam"
           required
-          className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus-visible:ring-0 focus-visible:outline-none"
+          className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] bg-white dark:bg-[#141414] border-[1px] border-[#e0e0e0] dark:border-[#333333] focus:border-[#949494] focus-visible:ring-0 focus-visible:outline-none"
         />
       </div>
       <div className="flex flex-col items-start w-full gap-1">
-        <label htmlFor="child-year" className="font-pixel text-[13px] text-[#5e5e5e]">
+        <label htmlFor="child-year" className="font-pixel text-[13px] text-[#5e5e5e] dark:text-[#a3a3a3]">
           birth year
         </label>
         <Input
@@ -62,18 +62,18 @@ export default function ChildSetup({
           onChange={(e) => setBirthYear(e.target.value)}
           placeholder={String(currentYear - 8)}
           required
-          className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus-visible:ring-0 focus-visible:outline-none"
+          className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] bg-white dark:bg-[#141414] border-[1px] border-[#e0e0e0] dark:border-[#333333] focus:border-[#949494] focus-visible:ring-0 focus-visible:outline-none"
         />
       </div>
       {createChild.isError && (
-        <p role="alert" className="font-pixel text-[13px] text-red-600">
+        <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400">
           {createChild.error.message}
         </p>
       )}
       <button
         type="submit"
         disabled={createChild.isPending}
-        className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] dark:bg-[#f2f2f2] hover:bg-[#323232] dark:hover:bg-white transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white dark:text-[#1b1b1b] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full"
       >
         {createChild.isPending ? "saving..." : "let's go"}
       </button>

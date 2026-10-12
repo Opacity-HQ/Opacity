@@ -18,6 +18,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      child_clinical_profiles: {
+        Row: {
+          child_id: string
+          data: Json
+          updated_at: string
+        }
+        Insert: {
+          child_id: string
+          data?: Json
+          updated_at?: string
+        }
+        Update: {
+          child_id?: string
+          data?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_clinical_profiles_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children: {
         Row: {
           birth_year: number
@@ -422,6 +448,10 @@ export type Database = {
     }
     Functions: {
       owns_child: { Args: { child: string }; Returns: boolean }
+      save_clinical_section: {
+        Args: { p_child_id: string; p_section: string; p_value: Json }
+        Returns: Json
+      }
       teaches_child: { Args: { child: string }; Returns: boolean }
     }
     Enums: {

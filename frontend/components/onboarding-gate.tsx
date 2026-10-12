@@ -15,7 +15,7 @@ import {
 } from "@/lib/queries/onboarding";
 
 const INPUT_CLASSES =
-  "font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] bg-white border-[1px] border-[#e0e0e0] focus:border-[#949494] focus-visible:ring-0 focus-visible:outline-none";
+  "font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] bg-white dark:bg-[#1a1a1a] border-[1px] border-[#e0e0e0] dark:border-[#333333] focus:border-[#949494] focus-visible:ring-0 focus-visible:outline-none";
 
 // One-time "tell us about you" form for a confirmed (non-guest) user's first
 // signed-in session. Mounted once in app/providers.tsx so it appears on
@@ -60,15 +60,15 @@ export default function OnboardingGate() {
         className="w-[380px] max-w-[calc(100%-2rem)] p-5 sm:p-6 gap-0"
       >
         <form onSubmit={handleSubmit} className="contents">
-          <DialogTitle className="font-pixel text-[24px] sm:text-[28px] text-[#1d1d1d] leading-tight">
+          <DialogTitle className="font-pixel text-[24px] sm:text-[28px] text-[#1d1d1d] dark:text-[#f2f2f2] leading-tight">
             let&apos;s get to know you
           </DialogTitle>
-          <DialogDescription className="font-pixel text-[14px] text-[#5e5e5e] leading-[18px] mt-2">
+          <DialogDescription className="font-pixel text-[14px] text-[#5e5e5e] dark:text-[#a3a3a3] leading-[18px] mt-2">
             A few quick details so the games can greet the player by name.
           </DialogDescription>
 
           <div className="flex flex-col items-start w-full gap-1 mt-5">
-            <label htmlFor="onboarding-name" className="font-pixel text-[13px] text-[#5e5e5e]">
+            <label htmlFor="onboarding-name" className="font-pixel text-[13px] text-[#5e5e5e] dark:text-[#a3a3a3]">
               full name
             </label>
             <Input
@@ -86,7 +86,7 @@ export default function OnboardingGate() {
           {askForChild && (
             <>
               <div className="flex flex-col items-start w-full gap-1 mt-3">
-                <label htmlFor="onboarding-year" className="font-pixel text-[13px] text-[#5e5e5e]">
+                <label htmlFor="onboarding-year" className="font-pixel text-[13px] text-[#5e5e5e] dark:text-[#a3a3a3]">
                   birth year
                 </label>
                 <Input
@@ -102,7 +102,7 @@ export default function OnboardingGate() {
                 />
               </div>
               <div className="flex flex-col items-start w-full gap-1 mt-3">
-                <label htmlFor="onboarding-grade" className="font-pixel text-[13px] text-[#5e5e5e]">
+                <label htmlFor="onboarding-grade" className="font-pixel text-[13px] text-[#5e5e5e] dark:text-[#a3a3a3]">
                   grade (optional)
                 </label>
                 <Input
@@ -118,7 +118,7 @@ export default function OnboardingGate() {
           )}
 
           {save.isError && (
-            <p role="alert" className="font-pixel text-[13px] text-red-600 mt-3">
+            <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400 mt-3">
               {save.error.message}
             </p>
           )}
@@ -126,7 +126,7 @@ export default function OnboardingGate() {
           <button
             type="submit"
             disabled={save.isPending}
-            className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full mt-5"
+            className="font-pixel text-[16px] flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] dark:bg-[#f2f2f2] dark:hover:bg-white transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white dark:text-[#1b1b1b] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full mt-5"
           >
             {save.isPending ? "saving..." : "let's go"}
           </button>

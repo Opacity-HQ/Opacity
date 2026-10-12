@@ -101,7 +101,7 @@ export default function MinimalPairRound({
   return (
     <div className="flex flex-col items-center justify-center w-full gap-6">
       <div className="flex flex-col items-center gap-3 text-center">
-        <p className="font-pixel text-[17px] sm:text-[21px] text-[#1d1d1d] max-w-[440px] leading-snug">
+        <p className="font-pixel text-[17px] sm:text-[21px] text-[#1d1d1d] dark:text-[#f2f2f2] max-w-[440px] leading-snug">
           {trial.prompt}
         </p>
         <div className="flex flex-row items-center gap-3">
@@ -109,7 +109,7 @@ export default function MinimalPairRound({
             onPlay={() => speak(trial.spokenText)}
             label="Play the word you need to match again"
           />
-          <span className="font-pixel text-[14px] text-[#5e5e5e] max-w-[180px] text-left">
+          <span className="font-pixel text-[14px] text-[#5e5e5e] dark:text-[#a3a3a3] max-w-[180px] text-left">
             tap to hear the word again, then match it below
           </span>
         </div>
@@ -155,31 +155,31 @@ export default function MinimalPairRound({
                 data-cuelume-release
                 className={cn(
                   "relative flex flex-1 flex-row items-center gap-3 rounded-[16px] border-2 px-4 py-3.5 transition-all duration-150",
-                  "bg-white border-[#e0e0e0] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] focus-visible:ring-offset-2",
+                  "bg-white dark:bg-[#141414] border-[#e0e0e0] dark:border-[#333333] hover:border-[#949494] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d1d1d] dark:focus-visible:ring-[#f2f2f2] focus-visible:ring-offset-2",
                   showCorrect &&
-                    "border-emerald-500 bg-emerald-50 text-emerald-900",
+                    "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200",
                   showWrong &&
                     (reducedMotion
-                      ? "border-[#e8c8c8] bg-[#f9f0f0] text-[#991b1b]"
-                      : "border-[#e8c8c8] bg-[#f9f0f0] text-[#991b1b] animate-[wiggle_0.4s_ease-in-out]"),
+                      ? "border-[#e8c8c8] dark:border-[#5c2b2b] bg-[#f9f0f0] dark:bg-[#2a1a1a] text-[#991b1b] dark:text-[#fca5a5]"
+                      : "border-[#e8c8c8] dark:border-[#5c2b2b] bg-[#f9f0f0] dark:bg-[#2a1a1a] text-[#991b1b] dark:text-[#fca5a5] animate-[wiggle_0.4s_ease-in-out]"),
                 )}
               >
                 <Shape className="w-5 h-5 shrink-0" aria-hidden="true" />
                 <span className="font-pixel text-[15px] sm:text-[17px]">
                   {isSupported && selected === null ? `Sound ${i + 1}` : word}
                 </span>
-                <span className="font-pixel text-[11px] text-[#4a4a4a] ml-auto">
+                <span className="font-pixel text-[11px] text-[#4a4a4a] dark:text-[#bdbdbd] ml-auto">
                   {i + 1}
                 </span>
                 {showCorrect && (
                   <Check
-                    className="w-4 h-4 text-emerald-600 shrink-0"
+                    className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0"
                     aria-hidden="true"
                   />
                 )}
                 {showWrong && (
                   <XCircle
-                    className="w-4 h-4 text-[#991b1b] shrink-0"
+                    className="w-4 h-4 text-[#991b1b] dark:text-[#fca5a5] shrink-0"
                     aria-hidden="true"
                   />
                 )}

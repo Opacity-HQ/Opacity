@@ -46,13 +46,13 @@ export default function QuestStats({
       className="flex flex-col items-center w-full gap-5 sm:gap-6 mt-2"
     >
       <div className="flex flex-col items-center gap-1 text-center">
-        <h2 className="font-pixel text-[24px] sm:text-[28px] text-[#1d1d1d]">your stats</h2>
-        <p className="font-sauce text-[14px] text-[#5e5e5e]">
+        <h2 className="font-pixel text-[24px] sm:text-[28px] text-[#1d1d1d] dark:text-[#f2f2f2]">your stats</h2>
+        <p className="font-sauce text-[14px] text-[#5e5e5e] dark:text-[#a3a3a3]">
           after {roundsPlayed} round{roundsPlayed !== 1 ? "s" : ""}
         </p>
       </div>
 
-      <div className="w-full max-w-[360px] bg-white border-[2px] border-[#efefef] rounded-[15px] overflow-hidden">
+      <div className="w-full max-w-[360px] bg-white dark:bg-[#141414] border-[2px] border-[#efefef] dark:border-[#262626] rounded-[15px] overflow-hidden">
         {rows.map(({ label, value, icon: Icon }, i) => (
           <motion.div
             key={label}
@@ -60,14 +60,14 @@ export default function QuestStats({
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.07 }}
             className={`flex flex-row items-center justify-between px-4 py-3 ${
-              i < rows.length - 1 ? "border-b-[1px] border-[#f2f2f2]" : ""
+              i < rows.length - 1 ? "border-b-[1px] border-[#f2f2f2] dark:border-[#262626]" : ""
             }`}
           >
             <div className="flex flex-row items-center gap-2">
-              <Icon className="w-4 h-4 text-[#5e5e5e]" strokeWidth={1.75} aria-hidden />
-              <span className="font-sauce text-[14px] text-[#5e5e5e]">{label}</span>
+              <Icon className="w-4 h-4 text-[#5e5e5e] dark:text-[#a3a3a3]" strokeWidth={1.75} aria-hidden />
+              <span className="font-sauce text-[14px] text-[#5e5e5e] dark:text-[#a3a3a3]">{label}</span>
             </div>
-            <span className="font-pixel text-[14px] sm:text-[15px] text-[#1d1d1d]">{value}</span>
+            <span className="font-pixel text-[14px] sm:text-[15px] text-[#1d1d1d] dark:text-[#f2f2f2]">{value}</span>
           </motion.div>
         ))}
       </div>
@@ -77,9 +77,9 @@ export default function QuestStats({
         id="memory-quest-continue"
         onClick={onContinue}
         disabled={loading}
-        className="button-shadow flex items-center justify-center bg-[#1b1b1b] hover:bg-[#323232] hover:translate-y-[-4px] transition-all duration-200 rounded-[20px] px-[24px] py-[10px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+        className="button-shadow flex items-center justify-center bg-[#1b1b1b] dark:bg-[#f2f2f2] hover:bg-[#323232] dark:hover:bg-white hover:translate-y-[-4px] transition-all duration-200 rounded-[20px] px-[24px] py-[10px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        <span className="font-pixel text-[17px] sm:text-[20px] text-white">
+        <span className="font-pixel text-[17px] sm:text-[20px] text-white dark:text-[#1b1b1b]">
           {loading ? "loading..." : "keep going"}
         </span>
       </button>

@@ -31,7 +31,7 @@ const MIN_RESULTS_LOADING_MS = 1800;
 const PAGE_CLASSES =
   "flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-10";
 const PRIMARY_BUTTON_CLASSES =
-  "font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer";
+  "font-pixel text-[16px] bg-[#1b1b1b] dark:bg-[#f2f2f2] hover:bg-[#323232] dark:hover:bg-white transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white dark:text-[#1b1b1b] cursor-pointer";
 
 export default function MemoryQuestPage() {
   // Server state (dashboard/children) lives entirely in TanStack Query —
@@ -165,7 +165,7 @@ export default function MemoryQuestPage() {
   if (dashboardQuery.isPending) {
     return (
       <div className={PAGE_CLASSES}>
-        <p className="font-pixel text-[18px] text-[#5e5e5e]">loading...</p>
+        <p className="font-pixel text-[18px] text-[#5e5e5e] dark:text-[#a3a3a3]">loading...</p>
       </div>
     );
   }
@@ -176,7 +176,7 @@ export default function MemoryQuestPage() {
     return (
       <div className={PAGE_CLASSES}>
         <div className="flex flex-col items-center gap-4 text-center px-4">
-          <p className="font-pixel text-[18px] text-[#1d1d1d]">
+          <p className="font-pixel text-[18px] text-[#1d1d1d] dark:text-[#f2f2f2]">
             {err.message || "Something went wrong."}
           </p>
           {isUnauthorized ? (
@@ -212,7 +212,7 @@ export default function MemoryQuestPage() {
     if (onboardingQuery.isPending || onboardingQuery.data?.needsOnboarding) {
       return (
         <div className={PAGE_CLASSES}>
-          <p className="font-pixel text-[18px] text-[#5e5e5e]">loading...</p>
+          <p className="font-pixel text-[18px] text-[#5e5e5e] dark:text-[#a3a3a3]">loading...</p>
         </div>
       );
     }
@@ -226,7 +226,7 @@ export default function MemoryQuestPage() {
   const child = children.find((c) => c.id === effectiveChildId);
   const skill = child?.skills.find((s) => s.skillKey === SKILL_KEY);
   const startError = startSessionMutation.isError ? (
-    <p role="alert" className="font-pixel text-[13px] text-red-600 text-center">
+    <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400 text-center">
       {startSessionMutation.error.message}
     </p>
   ) : null;
@@ -247,7 +247,7 @@ export default function MemoryQuestPage() {
               ]}
               note={
                 skill ? (
-                  <p className="font-sauce text-[13px] text-[#6b6b6b]">
+                  <p className="font-sauce text-[13px] text-[#6b6b6b] dark:text-[#a3a3a3]">
                     level {skill.difficultyLevel} · {skill.difficultyLevel + 2} items
                   </p>
                 ) : null

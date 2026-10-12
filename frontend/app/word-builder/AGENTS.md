@@ -51,3 +51,12 @@ Word Builder screens for **word decoding / spelling recall**. The child briefly 
 
 - **[complete/route.ts](../api/games/word-builder/complete/route.ts)**: `POST /api/games/word-builder/complete`
   - Session completion handler: pulls all recorded `game_trials` (excluding warmups, which have `is_correct = null`), computes `accuracy`, `meanRtMs`/`medianRtMs`, `rtCv`, reversal/transposition error rates, and `throughput`, and upserts `session_scores` (reversal rate stored in the shared `mirror_error_rate` column). Then updates `skill_states` with an exponential-moving-average `mastery`, a streak counter, and adaptive `nextDifficultyLevel` (tier 1-4, up on `accuracy >= 0.85` with a 2-session streak, down on `accuracy < 0.5`). Returns `{ accuracy, meanRtMs, mastery, nextDifficultyLevel, streak }`.
+
+---
+
+## Shared Building Blocks
+
+- **Intro screen**: `components/game-intro.tsx` (`GameIntro`) renders the intro card from `{ icon, title, description, steps }`; `BuilderIntro.tsx` only supplies the content.
+- **Results loading**: `components/results-loading.tsx` (`ResultsLoading`) shows the post-session loading and retry state while `/complete` resolves.
+- **Feedback**: `useGameFeedback.ts` is a thin rename of `useSharedGameFeedback` in `lib/game-feedback.ts`; sounds and haptics follow the Settings toggles (`lib/settings/store.ts`). Do not call `cuelume` / `web-haptics` directly.
+- **Child**: signed-in accounts get their child from the app-wide `OnboardingGate`; `ChildSetup.tsx` is shown to guests only.

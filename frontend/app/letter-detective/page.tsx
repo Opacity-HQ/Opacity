@@ -26,7 +26,7 @@ const FLUSH_BATCH_SIZE = 5;
 const MIN_RESULTS_LOADING_MS = 1800;
 
 const PRIMARY_BUTTON_CLASSES =
-  "font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer";
+  "font-pixel text-[16px] bg-[#1b1b1b] dark:bg-[#f2f2f2] hover:bg-[#323232] dark:hover:bg-white transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white dark:text-[#1b1b1b] cursor-pointer";
 
 export default function LetterDetectivePage() {
   // Server state (dashboard/children) lives entirely in TanStack Query —
@@ -160,7 +160,7 @@ export default function LetterDetectivePage() {
   if (dashboardQuery.isPending) {
     return (
       <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
-        <p className="font-pixel text-[18px] text-[#5e5e5e]">loading...</p>
+        <p className="font-pixel text-[18px] text-[#5e5e5e] dark:text-[#a3a3a3]">loading...</p>
       </div>
     );
   }
@@ -171,7 +171,7 @@ export default function LetterDetectivePage() {
     return (
       <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
         <div className="flex flex-col items-center gap-4 text-center px-4">
-          <p className="font-pixel text-[18px] text-[#1d1d1d]">
+          <p className="font-pixel text-[18px] text-[#1d1d1d] dark:text-[#f2f2f2]">
             {err.message || "Something went wrong."}
           </p>
           {isUnauthorized ? (
@@ -218,7 +218,7 @@ export default function LetterDetectivePage() {
             onStart={() => startCase(effectiveChildId)}
           />
           {startSessionMutation.isError && (
-            <p role="alert" className="font-pixel text-[13px] text-red-600">
+            <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400">
               {startSessionMutation.error.message}
             </p>
           )}
@@ -239,7 +239,7 @@ export default function LetterDetectivePage() {
       {phase === "playing" && !isFinishing && currentTrial && (
         <div className="flex flex-col items-center justify-center w-full gap-8">
           <div className="flex flex-col items-center gap-2.5">
-            <span className="font-pixel text-[14px] text-[#6b6b6b]">
+            <span className="font-pixel text-[14px] text-[#6b6b6b] dark:text-[#a3a3a3]">
               {trialCursor + 1}/{trials.length}
             </span>
             <div
@@ -253,7 +253,7 @@ export default function LetterDetectivePage() {
               {trials.map((t, i) => (
                 <span
                   key={t.index}
-                  className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d]" : "bg-[#e0e0e0]"}`}
+                  className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d] dark:bg-[#f2f2f2]" : "bg-[#e0e0e0] dark:bg-[#333333]"}`}
                 />
               ))}
             </div>
@@ -295,7 +295,7 @@ export default function LetterDetectivePage() {
         <div className="flex flex-col items-center gap-4">
           <CaseSolved accuracy={accuracyResult} onPlayAgain={resetToIntro} />
           {completeSessionMutation.isError && (
-            <p role="alert" className="font-pixel text-[13px] text-red-600">
+            <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400">
               {completeSessionMutation.error.message}
             </p>
           )}

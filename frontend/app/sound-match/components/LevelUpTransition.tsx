@@ -23,12 +23,12 @@ export default function LevelUpTransition({
   }, [onDone, reducedMotion]);
 
   const card = (
-    <div className="button-shadow flex flex-col items-center gap-3 rounded-[20px] border-2 border-[#1d1d1d] bg-white px-8 py-7 text-center">
-      <PartyPopper className="w-10 h-10 text-[#1d1d1d]" aria-hidden="true" />
-      <span className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d]">
+    <div className="button-shadow flex flex-col items-center gap-3 rounded-[20px] border-2 border-[#1d1d1d] dark:border-[#f2f2f2] bg-white dark:bg-[#141414] px-8 py-7 text-center">
+      <PartyPopper className="w-10 h-10 text-[#1d1d1d] dark:text-[#f2f2f2]" aria-hidden="true" />
+      <span className="font-pixel text-[22px] sm:text-[26px] text-[#1d1d1d] dark:text-[#f2f2f2]">
         Level Up!
       </span>
-      <span className="font-pixel text-[16px] text-[#5e5e5e]">
+      <span className="font-pixel text-[16px] text-[#5e5e5e] dark:text-[#a3a3a3]">
         Level {level}
       </span>
     </div>

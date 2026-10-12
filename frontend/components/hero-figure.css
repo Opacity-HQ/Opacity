@@ -1,0 +1,371 @@
+/* Homepage hero illustration. Everything is scoped under .hero-fig so the
+   generic names (.top, .side, .key, .bar ...) cannot leak into the rest of the app. */
+
+.hero-fig {
+  /* stroke tokens */
+  --hairline-plate: #ffffff; /* plate fill so overlapping lines stay legible */
+  --hairline-hi: #0e0f11; /* strongest: the b / d letters */
+  --hairline-edge: #565a61; /* object outlines */
+  --hairline-mid: #9a9ea5; /* keys, dots */
+  --fig-text: #1f1f1f; /* labels and captions, dark enough to read at small sizes on white */
+  --fig-accent: #14b8a6; /* the one live colour: teal in light mode, purple in dark */
+  --fig-accent-hi: color-mix(in srgb, var(--fig-accent) 72%, #fff);
+  --fig-accent-edge: color-mix(in srgb, var(--fig-accent) 60%, #000);
+  --fig-accent-text: var(--fig-accent-edge);
+  --halo-op: 0.2; /* soft halo behind the lit bar, kept low so it works on white */
+  --fig-font-label: var(--font-geist-pixel-square), ui-monospace, monospace;
+  --fig-font-body: var(--font-open-sauce), system-ui, sans-serif;
+}
+
+.dark .hero-fig {
+  --fig-accent: #9b6bff;
+  --hairline-plate: #1b1b1b;
+  --hairline-hi: #ffffff;
+  --hairline-edge: #b4b7bd;
+  --hairline-mid: #7c7f85;
+  --fig-text: #a3a3a3;
+  --fig-accent-edge: var(--fig-accent);
+  --fig-accent-text: var(--fig-accent);
+  --halo-op: 0.5;
+}
+
+.hero-fig svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.hero-fig svg * {
+  vector-effect: non-scaling-stroke;
+}
+
+.hero-fig polygon {
+  stroke: var(--hairline-edge);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+.hero-fig polygon.top {
+  fill: var(--hairline-plate);
+}
+.hero-fig polygon.side {
+  fill: color-mix(in srgb, var(--hairline-plate) 96%, var(--hairline-edge));
+}
+.hero-fig .key {
+  fill: none;
+  stroke: var(--hairline-mid);
+  stroke-width: 1;
+}
+.hero-fig .hinge {
+  stroke: var(--hairline-edge);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.hero-fig .node {
+  fill: var(--hairline-plate);
+  stroke: var(--hairline-edge);
+  stroke-width: 1.25;
+}
+.hero-fig .node-dot {
+  fill: var(--hairline-edge);
+  stroke: none;
+}
+.hero-fig .wire {
+  fill: none;
+  stroke: var(--hairline-edge);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hero-fig .pip {
+  fill: var(--hairline-mid);
+  stroke: none;
+}
+
+/* laptop screen */
+.hero-fig .scr-edge {
+  fill: none;
+  stroke: var(--hairline-edge);
+  stroke-width: 1.25;
+}
+.hero-fig .scr-glow {
+  fill: var(--fig-accent);
+  opacity: 0.2;
+  transition: opacity 0.3s;
+}
+.hero-fig .letters path,
+.hero-fig .letters circle {
+  fill: none;
+  stroke: var(--hairline-hi);
+  stroke-width: 3.6;
+  stroke-linecap: round;
+  transition: stroke-width 0.3s;
+}
+.hero-fig .gi {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.hero-fig .laptop:hover .scr-glow {
+  opacity: 0.34;
+}
+.hero-fig .laptop:hover .letters path,
+.hero-fig .laptop:hover .letters circle {
+  stroke-width: 4;
+}
+
+/* dashboard */
+.hero-fig .base {
+  stroke: var(--hairline-edge);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+.hero-fig .bar {
+  fill: none;
+  stroke: var(--hairline-edge);
+  stroke-width: 1.25;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.hero-fig .bar-hot {
+  fill: var(--fig-accent);
+  stroke: var(--fig-accent-edge);
+  stroke-width: 1.25;
+  transition: fill 0.3s;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.hero-fig .bar-halo {
+  fill: var(--fig-accent);
+  opacity: var(--halo-op);
+  transition: opacity 0.3s;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.hero-fig .monitor:hover .bar-hot {
+  fill: var(--fig-accent-hi);
+}
+.hero-fig .monitor:hover .bar-halo {
+  opacity: calc(var(--halo-op) * 1.7);
+}
+
+/* pulses: dash lengths use pathLength=1000, so they opt out of non-scaling-stroke.
+   The values below are the static lit segments used when motion is reduced. */
+.hero-fig svg .pulse {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: none;
+}
+.hero-fig .p1-tail,
+.hero-fig .p1-core,
+.hero-fig .p2-tail,
+.hero-fig .p2-core {
+  transition: opacity 0.25s;
+}
+.hero-fig .p1-tail {
+  stroke: var(--fig-accent);
+  stroke-width: 2.8;
+  stroke-dasharray: 200 1000;
+  stroke-dashoffset: -120;
+  opacity: 0.85;
+}
+.hero-fig .p1-core {
+  stroke: var(--fig-accent-hi);
+  stroke-width: 1.7;
+  stroke-dasharray: 50 1000;
+  stroke-dashoffset: -270;
+}
+.hero-fig .p2-tail {
+  stroke: var(--fig-accent);
+  stroke-width: 2;
+  stroke-dasharray: 90 1000;
+  stroke-dashoffset: 70;
+  opacity: 0.7;
+}
+.hero-fig .p2-core {
+  stroke: var(--fig-accent-hi);
+  stroke-width: 1.2;
+  stroke-dasharray: 22 1000;
+  stroke-dashoffset: 2;
+}
+.hero-fig .fire-tail {
+  stroke: var(--fig-accent);
+  stroke-width: 3.6;
+  stroke-dasharray: 260 1000;
+  stroke-dashoffset: 260;
+  opacity: 0.9;
+}
+.hero-fig .fire-core {
+  stroke: var(--fig-accent-hi);
+  stroke-width: 2.2;
+  stroke-dasharray: 70 1000;
+  stroke-dashoffset: 70;
+}
+.hero-fig svg.busy .p1-tail,
+.hero-fig svg.busy .p1-core,
+.hero-fig svg.busy .p2-tail,
+.hero-fig svg.busy .p2-core {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-reduce-motion]) .hero-fig .p1-tail {
+    animation: hf-p1t 5s linear infinite;
+  }
+  html:not([data-reduce-motion]) .hero-fig .p1-core {
+    animation: hf-p1c 5s linear infinite;
+  }
+  html:not([data-reduce-motion]) .hero-fig .p2-tail {
+    animation: hf-p2t 5s linear infinite;
+  }
+  html:not([data-reduce-motion]) .hero-fig .p2-core {
+    animation: hf-p2c 5s linear infinite;
+  }
+}
+@keyframes hf-p1t {
+  from { stroke-dashoffset: 200; }
+  to { stroke-dashoffset: -1190; }
+}
+@keyframes hf-p1c {
+  from { stroke-dashoffset: 50; }
+  to { stroke-dashoffset: -1340; }
+}
+@keyframes hf-p2t {
+  from { stroke-dashoffset: 390; }
+  to { stroke-dashoffset: -1000; }
+}
+@keyframes hf-p2c {
+  from { stroke-dashoffset: 322; }
+  to { stroke-dashoffset: -1068; }
+}
+
+/* play button: the laptop and its blocks */
+.hero-fig .play {
+  outline: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.hero-fig .focus-ring {
+  fill: none;
+  stroke: var(--fig-accent);
+  stroke-width: 2.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.hero-fig .play:focus-visible .focus-ring {
+  opacity: 1;
+}
+.hero-fig .hint {
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.hero-fig .hint.gone {
+  opacity: 0;
+}
+.hero-fig .hint-ring {
+  fill: none;
+  stroke: var(--hairline-hi);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hf-hint 1.9s ease-out infinite;
+}
+@keyframes hf-hint {
+  0% { transform: scale(0.97); opacity: 0.9; }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+html[data-reduce-motion] .hero-fig .hint-ring {
+  animation: none;
+  opacity: 0.7;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-fig .hint-ring {
+    animation: none;
+    opacity: 0.7;
+  }
+  .hero-fig .scr-glow,
+  .hero-fig .bar-hot,
+  .hero-fig .bar-halo,
+  .hero-fig .letters path,
+  .hero-fig .letters circle,
+  .hero-fig .lbl {
+    transition: none;
+  }
+}
+
+/* text: always lowercase */
+.hero-fig .lbl,
+.hero-fig .sub,
+.hero-fig .tag-txt,
+.hero-fig .scr-txt,
+.hero-fig .bar-lbl {
+  text-transform: lowercase;
+  user-select: none;
+  pointer-events: none;
+}
+.hero-fig .lbl {
+  font-family: var(--fig-font-label);
+  font-size: calc(var(--u, 0.75) * 13px);
+  letter-spacing: 0.02em;
+  fill: var(--fig-text);
+  transition: fill 0.25s;
+}
+.hero-fig .lbl.on {
+  fill: var(--fig-accent-text);
+}
+.hero-fig .sub {
+  font-family: var(--fig-font-body);
+  font-size: calc(var(--u, 0.75) * 11px);
+  fill: var(--fig-text);
+}
+.hero-fig .tag {
+  fill: var(--hairline-plate);
+  stroke: var(--fig-accent);
+  stroke-width: 1;
+}
+.hero-fig .tag-txt {
+  font-family: var(--fig-font-label);
+  font-size: calc(var(--u, 0.75) * 12px);
+  fill: var(--fig-accent-text);
+}
+.hero-fig .leader {
+  fill: none;
+  stroke: var(--fig-accent);
+  stroke-width: 1;
+}
+.hero-fig .leader-dot {
+  fill: var(--fig-accent);
+}
+.hero-fig .scr-txt {
+  font-family: var(--fig-font-body);
+  font-size: 5.4px;
+  fill: var(--hairline-hi);
+}
+.hero-fig .bar-lbl {
+  font-family: var(--fig-font-body);
+  font-size: 3.6px;
+  fill: var(--fig-text);
+}
+/* drop in order when space is tight: screen text, then bar labels.
+   The classes are set from the drawn width of the figure, not the viewport. */
+.hero-fig svg.lt400 .scr-txt {
+  display: none;
+}
+.hero-fig svg.lt560 .bar-lbl {
+  display: none;
+}
+
+.hero-fig-status {
+  margin: 6px 0 0;
+  min-height: 1.5em;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--fig-font-label);
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
+  /* plain page text colour, never the accent */
+  color: var(--foreground);
+}

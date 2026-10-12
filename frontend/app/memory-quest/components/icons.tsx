@@ -16,7 +16,7 @@ export const ALL_SYMBOLS = Object.keys(SYMBOL_ICONS);
 
 export function SymbolIcon({
   symbol,
-  className = "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d]",
+  className = "w-8 h-8 sm:w-10 sm:h-10 text-[#1d1d1d] dark:text-[#f2f2f2]",
 }: {
   symbol: string;
   className?: string;

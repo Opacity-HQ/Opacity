@@ -48,6 +48,24 @@
 	--radius-2xl: calc(var(--radius) * 1.8);
 	--radius-3xl: calc(var(--radius) * 2.2);
 	--radius-4xl: calc(var(--radius) * 2.6);
+	--color-chart-scale-pattern-color: var(--chart-scale-pattern-color);
+	--color-chart-scale-05: var(--chart-scale-05);
+	--color-chart-scale-04: var(--chart-scale-04);
+	--color-chart-scale-03: var(--chart-scale-03);
+	--color-chart-scale-02: var(--chart-scale-02);
+	--color-chart-scale-01: var(--chart-scale-01);
+	--color-chart-label: var(--chart-label);
+	--color-chart-marker-foreground: var(--chart-marker-foreground);
+	--color-chart-marker-border: var(--chart-marker-border);
+	--color-chart-marker-background: var(--chart-marker-background);
+	--color-chart-tooltip-muted: var(--chart-tooltip-muted);
+	--color-chart-tooltip-foreground: var(--chart-tooltip-foreground);
+	--color-chart-tooltip-background: var(--chart-tooltip-background);
+	--color-chart-grid: var(--chart-grid);
+	--color-chart-crosshair: var(--chart-crosshair);
+	--color-chart-foreground-muted: var(--chart-foreground-muted);
+	--color-chart-foreground: var(--chart-foreground);
+	--color-chart-background: var(--chart-background);
 }
 
 .button-shadow {
@@ -56,6 +74,15 @@
 		0 34px 21px 0 rgba(143, 143, 143, 0.05),
 		0 15px 15px 0 rgba(143, 143, 143, 0.09),
 		0 4px 8px 0 rgba(143, 143, 143, 0.10);
+}
+
+/* The light-mode shadow is a pale gray glow, which reads as a white halo on
+   dark surfaces. Swap it for a deep black drop shadow plus a faint edge. */
+.dark .button-shadow {
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
+		0 2px 4px 0 rgba(0, 0, 0, 0.5),
+		0 8px 16px -2px rgba(0, 0, 0, 0.6),
+		0 20px 32px -8px rgba(0, 0, 0, 0.7);
 }
 
 @keyframes wiggle {
@@ -71,8 +98,8 @@
   height: 2px;
   background: repeating-linear-gradient(
     to right,
-    #e7e7e7 0px,
-    #e7e7e7 15px,
+    var(--dash-color) 0px,
+    var(--dash-color) 15px,
     transparent 15px,
     transparent 24px
   );
@@ -95,6 +122,8 @@
 }
 
 :root {
+	color-scheme: light;
+	--dash-color: #e7e7e7;
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
 	--card: oklch(1 0 0);
@@ -127,9 +156,32 @@
 	--sidebar-accent-foreground: oklch(0.205 0 0);
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: oklch(0.708 0 0);
+	--chart-background: oklch(1 0 0);
+	--chart-foreground: oklch(0.145 0.004 285);
+	--chart-foreground-muted: oklch(0.55 0.014 260);
+	--chart-line-primary: var(--foreground);
+	--chart-line-secondary: var(--muted-foreground);
+	--chart-crosshair: oklch(0.55 0 0);
+	--chart-grid: oklch(0.9 0 0);
+	--chart-brush-border: var(--chart-grid);
+	--chart-tooltip-background: oklch(1 0 0);
+	--chart-tooltip-foreground: oklch(0.145 0 0);
+	--chart-tooltip-muted: oklch(0.5 0.01 260);
+	--chart-marker-background: oklch(0.97 0.005 260);
+	--chart-marker-border: oklch(0.85 0.01 260);
+	--chart-marker-foreground: oklch(0.3 0.01 260);
+	--chart-label: oklch(0.45 0.01 260);
+	--chart-scale-01: oklch(0.98 0.003 106);
+	--chart-scale-02: oklch(0.92 0.008 106);
+	--chart-scale-03: oklch(0.82 0.015 106);
+	--chart-scale-04: oklch(0.68 0.02 106);
+	--chart-scale-05: oklch(0.55 0.025 106);
+	--chart-scale-pattern-color: oklch(0.96 0.005 106);
 }
 
 .dark {
+	color-scheme: dark;
+	--dash-color: #2a2a2a;
 	--background: oklch(0.145 0 0);
 	--foreground: oklch(0.985 0 0);
 	--card: oklch(0.205 0 0);
@@ -145,6 +197,9 @@
 	--accent: oklch(0.269 0 0);
 	--accent-foreground: oklch(0.985 0 0);
 	--destructive: oklch(0.704 0.191 22.216);
+	--chart-tooltip-background: oklch(0.21 0.006 285 / 0.8);
+	--chart-tooltip-foreground: oklch(0.985 0 0);
+	--chart-tooltip-muted: oklch(0.65 0.01 260);
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
 	--ring: oklch(0.556 0 0);
@@ -161,6 +216,26 @@
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(1 0 0 / 10%);
 	--sidebar-ring: oklch(0.556 0 0);
+	--chart-background: oklch(0.145 0 0);
+	--chart-foreground: oklch(0.45 0 0);
+	--chart-foreground-muted: oklch(0.65 0.01 260);
+	--chart-crosshair: oklch(0.45 0 0);
+	--chart-grid: oklch(0.25 0 0);
+	--chart-brush-border: var(--chart-grid);
+	--chart-marker-background: oklch(0.25 0.01 260);
+	--chart-marker-border: oklch(0.4 0.01 260);
+	--chart-marker-foreground: oklch(0.9 0 0);
+	--chart-label: oklch(0.75 0.01 260);
+	--chart-scale-01: oklch(0.28 0.03 270);
+	--chart-scale-02: oklch(0.38 0.04 270);
+	--chart-scale-03: oklch(0.48 0.05 270);
+	--chart-scale-04: oklch(0.58 0.06 270);
+	--chart-scale-05: oklch(0.68 0.07 270);
+	--chart-scale-pattern-color: oklch(0.145 0 0);
+}
+
+.dark .dashed-border::before {
+  background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='1' y='1' width='calc(100% - 2px)' height='calc(100% - 2px)' rx='15' fill='none' stroke='%232a2a2a' stroke-width='2' stroke-dasharray='12 8'/%3E%3C/svg%3E");
 }
 
 @layer base {
@@ -173,4 +248,15 @@
   html {
     @apply font-sans;
 	}
+}
+
+/* Settings > Reduce motion: switches off CSS animation and transitions app-wide
+   (motion/react is handled separately through MotionConfig). */
+html[data-reduce-motion] *,
+html[data-reduce-motion] *::before,
+html[data-reduce-motion] *::after {
+	animation-duration: 0.001ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.001ms !important;
+	scroll-behavior: auto !important;
 }

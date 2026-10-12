@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { bind, play } from "cuelume";
-import { useWebHaptics } from "web-haptics/react";
+import { bind } from "cuelume";
+import { useSharedGameFeedback } from "@/lib/game-feedback";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { ApiError } from "@/lib/queries/api-error";
 import Signin from "@/components/signin";
@@ -23,13 +23,13 @@ const FLUSH_BATCH_SIZE = 5;
 const MIN_RESULTS_LOADING_MS = 1800;
 
 const PRIMARY_BUTTON_CLASSES =
-  "font-pixel text-[16px] bg-[#1b1b1b] hover:bg-[#323232] transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white cursor-pointer";
+  "font-pixel text-[16px] bg-[#1b1b1b] dark:bg-[#f2f2f2] hover:bg-[#323232] dark:hover:bg-white transition-all duration-200 rounded-[15px] px-[24px] py-[10px] text-white dark:text-[#1b1b1b] cursor-pointer";
 
 export default function WordBuilderPage() {
   // Server state (dashboard/children) lives entirely in TanStack Query —
   // per frontend/AGENTS.md, Zustand never duplicates it.
   const dashboardQuery = useDashboardQuery();
-  const { trigger } = useWebHaptics();
+  const feedback = useSharedGameFeedback();
 
   // Client-side active-session state lives in Zustand, scoped to this game.
   const storeChildId = useWordBuilderStore((s) => s.childId);
@@ -52,20 +52,6 @@ export default function WordBuilderPage() {
   useEffect(() => {
     bind();
   }, []);
-
-  const playCue = useCallback(
-    (sound: "select" | "success" | "error" | "close" | "loading") => {
-      play(sound);
-    },
-    [],
-  );
-
-  const triggerHaptic = useCallback(
-    (preset: "nudge" | "success" | "error") => {
-      trigger(preset);
-    },
-    [trigger],
-  );
 
   const bufferRef = useRef<TrialOutcome[]>([]);
   const pendingFlushesRef = useRef<Promise<unknown>[]>([]);
@@ -97,7 +83,7 @@ export default function WordBuilderPage() {
   }
 
   async function startRound(childId: string) {
-    playCue("loading");
+    feedback.onStart();
     try {
       const result = await startSessionMutation.mutateAsync({
         childId,
@@ -128,7 +114,7 @@ export default function WordBuilderPage() {
         completeSessionMutation.mutateAsync(sessionIdRef.current!),
         minDisplay,
       ]);
-      playCue("success");
+      feedback.onComplete();
       setSolved(result.accuracy);
       setIsFinishing(false);
     } catch {
@@ -161,7 +147,7 @@ export default function WordBuilderPage() {
   if (dashboardQuery.isPending) {
     return (
       <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
-        <p className="font-pixel text-[18px] text-[#5e5e5e]">loading...</p>
+        <p className="font-pixel text-[18px] text-[#5e5e5e] dark:text-[#a3a3a3]">loading...</p>
       </div>
     );
   }
@@ -172,7 +158,7 @@ export default function WordBuilderPage() {
     return (
       <div className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-8 sm:py-12">
         <div className="flex flex-col items-center gap-4 text-center px-4">
-          <p className="font-pixel text-[18px] text-[#1d1d1d]">
+          <p className="font-pixel text-[18px] text-[#1d1d1d] dark:text-[#f2f2f2]">
             {err.message || "Something went wrong."}
           </p>
           {isUnauthorized ? (
@@ -218,7 +204,7 @@ export default function WordBuilderPage() {
             onStart={() => startRound(effectiveChildId)}
           />
           {startSessionMutation.isError && (
-            <p role="alert" className="font-pixel text-[13px] text-red-600">
+            <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400">
               {startSessionMutation.error.message}
             </p>
           )}
@@ -241,7 +227,7 @@ export default function WordBuilderPage() {
           <div className="flex flex-col items-center gap-3">
             <p
               aria-hidden="true"
-              className="font-pixel text-[14px] text-[#5e5e5e]"
+              className="font-pixel text-[14px] text-[#5e5e5e] dark:text-[#a3a3a3]"
             >
               {trialCursor + 1}/{trials.length}
             </p>
@@ -256,7 +242,7 @@ export default function WordBuilderPage() {
               {trials.map((t, i) => (
                 <span
                   key={t.index}
-                  className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d]" : "bg-[#e0e0e0]"}`}
+                  className={`w-2 h-2 rounded-full ${i <= trialCursor ? "bg-[#1d1d1d] dark:bg-[#f2f2f2]" : "bg-[#e0e0e0] dark:bg-[#333333]"}`}
                 />
               ))}
             </div>
@@ -266,8 +252,7 @@ export default function WordBuilderPage() {
             key={currentTrial.index}
             trial={currentTrial}
             onAnswer={handleAnswer}
-            playCue={playCue}
-            triggerHaptic={triggerHaptic}
+            feedback={feedback}
           />
         </div>
       )}
@@ -276,7 +261,7 @@ export default function WordBuilderPage() {
         <div className="flex flex-col items-center gap-4">
           <BuilderComplete accuracy={accuracyResult} onPlayAgain={resetToIntro} />
           {completeSessionMutation.isError && (
-            <p role="alert" className="font-pixel text-[13px] text-red-600">
+            <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400">
               {completeSessionMutation.error.message}
             </p>
           )}

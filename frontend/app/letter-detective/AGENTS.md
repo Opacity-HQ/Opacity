@@ -57,3 +57,11 @@ Letter Detective is Opacity's reference implementation for visual discrimination
 ### Feature definition version
 
 `complete/route.ts` writes `raw_features.version = 2`: `mirror_error_rate` counts mirror errors only, and `raw_features.confusionErrorRate` counts mirror/rotation/visual-similarity errors together. Older v1 rows retain the combined definition in `mirror_error_rate`; recompute from recorded trials before mixing versions. Pure rate calculations live in `feature-statistics.ts`; regression tests are in `frontend/tests/letter-detective-features.test.mjs`.
+---
+
+## Shared Building Blocks
+
+- **Intro screen**: `components/game-intro.tsx` (`GameIntro`) renders the intro card from `{ icon, title, description, steps }`; `CaseIntro.tsx` only supplies the content.
+- **Results loading**: `components/results-loading.tsx` (`ResultsLoading`) shows the post-session loading and retry state while `/complete` resolves.
+- **Feedback**: `useGameFeedback.ts` is a thin rename of `useSharedGameFeedback` in `lib/game-feedback.ts`; sounds and haptics follow the Settings toggles (`lib/settings/store.ts`). Do not call `cuelume` / `web-haptics` directly.
+- **Child**: signed-in accounts get their child from the app-wide `OnboardingGate`; `ChildSetup.tsx` is shown to guests only.
