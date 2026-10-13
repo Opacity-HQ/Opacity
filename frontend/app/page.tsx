@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useAvatarEyeColor } from "@/lib/use-avatar-eye-color";
 import Link from "next/link";
 import Signin from "@/components/signin";
+import { InstallButton } from "@/components/install-button";
 import { Blobatar } from "@blobatar/react";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
 import { DiagonalBoxPattern } from "@/components/background-pattern/diagonal-box-pattern";
@@ -200,19 +201,22 @@ export default function Home() {
               className="inline-block align-middle -my-1 dark:invert"
             />
           </motion.div>
-          {isLoggedIn ? (
-            <Link href={gameCards[0].href} className="cursor-pointer">
-              {playButton}
-            </Link>
-          ) : (
-            <Signin
-              trigger={
-                <button type="button" className="cursor-pointer">
-                  {playButton}
-                </button>
-              }
-            />
-          )}
+          <div className="flex flex-row flex-wrap items-end gap-3">
+            {isLoggedIn ? (
+              <Link href={gameCards[0].href} className="cursor-pointer">
+                {playButton}
+              </Link>
+            ) : (
+              <Signin
+                trigger={
+                  <button type="button" className="cursor-pointer">
+                    {playButton}
+                  </button>
+                }
+              />
+            )}
+            <InstallButton />
+          </div>
         </motion.div>
 
         </section>
