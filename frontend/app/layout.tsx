@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistPixelSquare } from "geist/font/pixel";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -17,6 +17,21 @@ const openSauce = localFont({
 export const metadata: Metadata = {
   title: "Opacity",
   description: "Dyslexia screening tool for dyslexic users",
+  // Home-screen install on iOS. "default" keeps content below the status
+  // bar, so no safe-area padding is needed.
+  appleWebApp: {
+    capable: true,
+    title: "Opacity",
+    statusBarStyle: "default",
+  },
+};
+
+// Matches --background in globals.css for each scheme.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({
