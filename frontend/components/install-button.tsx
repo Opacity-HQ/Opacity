@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { motion } from "motion/react";
-import { Download, Share, SquarePlus } from "lucide-react";
+import { Download, EllipsisVertical, Share, SquarePlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-type InstallMode = "prompt" | "ios" | "hidden";
+type InstallMode = "prompt" | "ios" | "manual" | "hidden";
 
 // beforeinstallprompt can fire before the page hydrates, so it is captured
 // at module load (this file loads with the home page's JS) rather than in an
@@ -57,7 +57,9 @@ function getMode(): InstallMode {
   if (deferredPrompt) return "prompt";
   // iOS has no install API — every iOS browser installs via Share → Add to Home Screen.
   if (isIOS()) return "ios";
-  return "hidden";
+  // No native prompt (yet): Chrome withholds it until its engagement checks
+  // pass, and other browsers never send one. Fall back to menu instructions.
+  return "manual";
 }
 
 function subscribe(listener: () => void) {
@@ -65,21 +67,21 @@ function subscribe(listener: () => void) {
   return () => listeners.delete(listener);
 }
 
-// Shown next to "lets play" on the home page. Hidden when the app is already
-// installed or the browser can't install it (e.g. Firefox desktop).
+// Shown next to "lets play" on the home page; hidden only inside the
+// installed app. Uses the native prompt when the browser offers one,
+// otherwise opens step-by-step instructions.
 export function InstallButton({ className }: { className?: string }) {
   const mode = useSyncExternalStore(subscribe, getMode, () => "hidden" as const);
-  const [iosHelpOpen, setIosHelpOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   if (mode === "hidden") return null;
 
   async function handleClick() {
-    if (mode === "ios") {
-      setIosHelpOpen(true);
+    const prompt = deferredPrompt;
+    if (mode !== "prompt" || !prompt) {
+      setHelpOpen(true);
       return;
     }
-    const prompt = deferredPrompt;
-    if (!prompt) return;
     await prompt.prompt();
     await prompt.userChoice;
     // A prompt can only be used once; Chrome fires a fresh event if it's offered again.
@@ -102,27 +104,48 @@ export function InstallButton({ className }: { className?: string }) {
         </div>
       </motion.button>
 
-      <Dialog open={iosHelpOpen} onOpenChange={setIosHelpOpen}>
+      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent className="w-[380px] max-w-[calc(100%-2rem)] p-5 sm:p-6 gap-0">
           <DialogTitle className="font-pixel text-[24px] sm:text-[28px] text-[#1d1d1d] dark:text-[#f2f2f2] leading-tight">
             install opacity
           </DialogTitle>
           <DialogDescription className="font-pixel text-[14px] text-[#5e5e5e] dark:text-[#a3a3a3] leading-[18px] mt-2">
-            Add Opacity to your home screen to open it like an app.
+            {mode === "ios"
+              ? "Add Opacity to your home screen to open it like an app."
+              : "Install Opacity from your browser menu to open it like an app."}
           </DialogDescription>
           <ol className="flex flex-col gap-3 mt-5 font-pixel text-[15px] text-[#1d1d1d] dark:text-[#f2f2f2]">
-            <li className="flex flex-row items-center gap-2">
-              <span className="text-[#5e5e5e] dark:text-[#a3a3a3]">1.</span>
-              Tap
-              <Share className="size-[18px]" aria-label="Share" />
-              in the browser bar
-            </li>
-            <li className="flex flex-row items-center gap-2">
-              <span className="text-[#5e5e5e] dark:text-[#a3a3a3]">2.</span>
-              Choose
-              <SquarePlus className="size-[18px]" aria-hidden />
-              Add to Home Screen
-            </li>
+            {mode === "ios" ? (
+              <>
+                <li className="flex flex-row items-center gap-2">
+                  <span className="text-[#5e5e5e] dark:text-[#a3a3a3]">1.</span>
+                  Tap
+                  <Share className="size-[18px]" aria-label="Share" />
+                  in the browser bar
+                </li>
+                <li className="flex flex-row items-center gap-2">
+                  <span className="text-[#5e5e5e] dark:text-[#a3a3a3]">2.</span>
+                  Choose
+                  <SquarePlus className="size-[18px]" aria-hidden />
+                  Add to Home Screen
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="flex flex-row items-center gap-2">
+                  <span className="text-[#5e5e5e] dark:text-[#a3a3a3]">1.</span>
+                  Open the browser menu
+                  <EllipsisVertical className="size-[18px]" aria-label="menu" />
+                </li>
+                <li className="flex flex-row items-start gap-2">
+                  <span className="text-[#5e5e5e] dark:text-[#a3a3a3]">2.</span>
+                  Choose &quot;Install app&quot; or &quot;Add to Home screen&quot;
+                </li>
+                <li className="flex flex-row items-start gap-2 text-[#5e5e5e] dark:text-[#a3a3a3] text-[13px]">
+                  Not there? Open this site in Chrome or Edge.
+                </li>
+              </>
+            )}
           </ol>
         </DialogContent>
       </Dialog>
