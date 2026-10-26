@@ -16,7 +16,6 @@ import {
   useChangePasswordMutation,
   useDeleteAccountMutation,
   useDeleteChildMutation,
-  useDeleteClinicalProfileMutation,
   useSignOutEverywhereMutation,
   useSignOutMutation,
   useUpdateChildMutation,
@@ -216,7 +215,6 @@ export function AccountSection({
   const changePassword = useChangePasswordMutation();
   const signOut = useSignOutMutation();
   const signOutEverywhere = useSignOutEverywhereMutation();
-  const deleteClinical = useDeleteClinicalProfileMutation();
   const deleteChild = useDeleteChildMutation();
   const deleteAccount = useDeleteAccountMutation();
 
@@ -410,17 +408,8 @@ export function AccountSection({
         {child ? (
           <>
             <DangerAction
-              title={`Clear ${child.displayName}'s clinical profile`}
-              description="Removes everything entered under clinical profile. Game results are kept."
-              word="CLEAR"
-              actionLabel="clear clinical profile"
-              pending={deleteClinical.isPending}
-              error={deleteClinical.isError}
-              onConfirm={() => deleteClinical.mutate(child.id)}
-            />
-            <DangerAction
               title={`Delete ${child.displayName}`}
-              description="Permanently removes this child, all game results, reports and the clinical profile."
+              description="Permanently removes this child, all game results and reports."
               word="DELETE"
               actionLabel="delete child"
               pending={deleteChild.isPending}

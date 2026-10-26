@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
-import { ClinicalSection } from "./ClinicalSection";
 import { SettingsSection } from "./SettingsSection";
 import { AccountSection } from "./AccountSection";
 import { Choice } from "./fields";
@@ -64,8 +63,6 @@ export default function ProfileClient({
           onChange={(id) => id && setSelectedId(id)}
         />
       ) : null}
-
-      <ClinicalSection childId={child?.id ?? null} />
 
       <SettingsSection />
       <AccountSection email={email} isGuest={isGuest} child={child} />

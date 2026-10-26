@@ -36,19 +36,15 @@ Examples of dashboard-level API work:
 The profile page (`app/profile/`) uses these routes. All of them go through `requireUser` or `requireChildAccess`; none trusts a client-sent owner id.
 
 ```text
-frontend/app/api/profile/clinical/   GET, PUT, DELETE
 frontend/app/api/profile/child/      PATCH, DELETE
 frontend/app/api/profile/account/    DELETE
 ```
 
-- `GET /api/profile/clinical?childId=` returns `{ profile, updatedAt }`. The profile always has every section, with empty defaults for anything not filled in (`normalizeClinicalProfile`).
-- `PUT /api/profile/clinical { childId, section, value }` replaces exactly one section (`reading`, `family`, `vision`, `hearing`, `attention`, `language`, `handedness`, `notes`), validated by the zod schema for that section in `lib/profile/clinical.ts`. It calls the `save_clinical_section` Postgres function, which merges the section into the stored JSON in one statement, so two quick saves of different sections can't overwrite each other. Returns `{ profile }`.
-- `DELETE /api/profile/clinical?childId=` removes the child's whole clinical profile.
 - `PATCH /api/profile/child { childId, displayName, age }` edits a child. `age` is stored as `birth_year` (current year minus age; the database only allows 1990 or later). If it is the account's first child on a non-guest account, `profiles.display_name` is kept in step so the header greeting matches.
-- `DELETE /api/profile/child?childId=` deletes one child. `ON DELETE CASCADE` removes their sessions, trials, scores, skill states, reports and clinical profile.
+- `DELETE /api/profile/child?childId=` deletes one child. `ON DELETE CASCADE` removes their sessions, trials, scores, skill states and reports.
 - `DELETE /api/profile/account` permanently deletes the signed-in auth user, and with it every child and all of their data. This is the only profile route that uses the service-role client (`lib/supabase/admin.ts`), because removing an auth user can't be expressed under RLS.
 
-Only the child's owner may write the clinical profile or delete a child. The clinical profile is sensitive health data about a minor, so `child_clinical_profiles` has an owner-only RLS policy and deliberately no teacher policy: `requireChildAccess` lets a teacher resolve the child, but the table returns nothing to them and rejects their writes (`403`).
+Only the child's owner may edit or delete a child; the `owner_id` filter makes a teacher's request match zero rows (`403`).
 
 Device settings (text size, sound, volume, haptics, reduce motion, session length) are not in the database. They live in the persisted `useSettingsStore` (`lib/settings/store.ts`, localStorage) because they depend on the device, not the account, so there is no settings API.
 
