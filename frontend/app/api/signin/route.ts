@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { apiSuccess, apiError, toApiErrorResponse } from "@/lib/api/response";
+import { friendlyAuthMessage, isEmailTaken } from "@/lib/auth/auth-errors";
 
 // Account-entry endpoint: anonymous guest entry, fresh signup, and claiming
 // an existing anonymous session with an email/password all land here. See
@@ -11,8 +12,8 @@ const bodySchema = z.discriminatedUnion("mode", [
   z.object({ mode: z.literal("anonymous") }),
   z.object({
     mode: z.literal("email"),
-    email: z.string().email(),
-    password: z.string().min(8),
+    email: z.string().email("Enter a valid email address."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
   }),
 ]);
 
@@ -20,9 +21,11 @@ export async function POST(request: NextRequest) {
   try {
     const parsed = bodySchema.safeParse(await request.json());
     if (!parsed.success) {
+      // Say what is wrong ("Password must be at least 8 characters.") rather
+      // than a generic message the player can't act on.
       return apiError(
         "validation_failed",
-        "Invalid sign-in request.",
+        parsed.error.issues[0]?.message ?? "Invalid sign-in request.",
         parsed.error.flatten(),
       );
     }
@@ -37,25 +40,48 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = parsed.data;
 
+    // Where the confirmation email's link lands (see api/signin/callback).
+    const emailRedirectTo = `${request.nextUrl.origin}/api/signin/callback`;
+
+    // Already signed in as a guest -> this is a claim, not a fresh signup.
+    // Same user id, so the guest's children and progress carry over.
     const {
       data: { user: currentUser },
     } = await supabase.auth.getUser();
 
-    // Already signed in as a guest -> this is a claim, not a fresh signup.
-    // Same user id; is_anonymous flips to false once the new email is
-    // confirmed. Supabase keeps the current (still-anonymous) session active
-    // in the meantime rather than issuing a new one.
     if (currentUser?.is_anonymous) {
-      const { error } = await supabase.auth.updateUser({ email, password });
-      if (error) return apiError("validation_failed", error.message);
-      return apiSuccess({
-        userId: currentUser.id,
-        isAnonymous: true,
-        claimPending: true,
-      });
+      const { data, error } = await supabase.auth.updateUser(
+        { email, password },
+        { emailRedirectTo },
+      );
+      if (error) {
+        // An existing account's email: tell the client so it falls back to
+        // logging in (which replaces the guest session) instead of dead-ending.
+        if (isEmailTaken(error)) {
+          return apiError(
+            "validation_failed",
+            "An account with this email already exists.",
+            { reason: "email_already_registered" },
+          );
+        }
+        return apiError("validation_failed", friendlyAuthMessage(error));
+      }
+      // With email confirmation on, the new address is only pending and the
+      // guest session stays active until the link is clicked. With it off,
+      // the address is applied immediately and this is already a full account.
+      const pending = Boolean(data.user?.new_email);
+      return apiSuccess(
+        pending
+          ? { userId: currentUser.id, isAnonymous: true, claimPending: true }
+          : { userId: currentUser.id, isAnonymous: false },
+      );
     }
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo },
+    });
 
     // Duplicate signups can come back as an explicit error OR as a "faux"
     // success with an empty identities array, depending on the project's
@@ -73,7 +99,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (error) return apiError("validation_failed", error.message);
+    if (error) return apiError("validation_failed", friendlyAuthMessage(error));
 
     // signUp() only returns a session immediately when email confirmation is
     // off. With it on (Supabase's default), the account exists but there is

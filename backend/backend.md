@@ -36,19 +36,15 @@ Examples of dashboard-level API work:
 The profile page (`app/profile/`) uses these routes. All of them go through `requireUser` or `requireChildAccess`; none trusts a client-sent owner id.
 
 ```text
-frontend/app/api/profile/clinical/   GET, PUT, DELETE
 frontend/app/api/profile/child/      PATCH, DELETE
 frontend/app/api/profile/account/    DELETE
 ```
 
-- `GET /api/profile/clinical?childId=` returns `{ profile, updatedAt }`. The profile always has every section, with empty defaults for anything not filled in (`normalizeClinicalProfile`).
-- `PUT /api/profile/clinical { childId, section, value }` replaces exactly one section (`reading`, `family`, `vision`, `hearing`, `attention`, `language`, `handedness`, `notes`), validated by the zod schema for that section in `lib/profile/clinical.ts`. It calls the `save_clinical_section` Postgres function, which merges the section into the stored JSON in one statement, so two quick saves of different sections can't overwrite each other. Returns `{ profile }`.
-- `DELETE /api/profile/clinical?childId=` removes the child's whole clinical profile.
 - `PATCH /api/profile/child { childId, displayName, age }` edits a child. `age` is stored as `birth_year` (current year minus age; the database only allows 1990 or later). If it is the account's first child on a non-guest account, `profiles.display_name` is kept in step so the header greeting matches.
-- `DELETE /api/profile/child?childId=` deletes one child. `ON DELETE CASCADE` removes their sessions, trials, scores, skill states, reports and clinical profile.
+- `DELETE /api/profile/child?childId=` deletes one child. `ON DELETE CASCADE` removes their sessions, trials, scores, skill states and reports.
 - `DELETE /api/profile/account` permanently deletes the signed-in auth user, and with it every child and all of their data. This is the only profile route that uses the service-role client (`lib/supabase/admin.ts`), because removing an auth user can't be expressed under RLS.
 
-Only the child's owner may write the clinical profile or delete a child. The clinical profile is sensitive health data about a minor, so `child_clinical_profiles` has an owner-only RLS policy and deliberately no teacher policy: `requireChildAccess` lets a teacher resolve the child, but the table returns nothing to them and rejects their writes (`403`).
+Only the child's owner may edit or delete a child; the `owner_id` filter makes a teacher's request match zero rows (`403`).
 
 Device settings (text size, sound, volume, haptics, reduce motion, session length) are not in the database. They live in the persisted `useSettingsStore` (`lib/settings/store.ts`, localStorage) because they depend on the device, not the account, so there is no settings API.
 
@@ -62,6 +58,40 @@ frontend/app/api/login/
 ```
 
 Use `frontend/app/api/signin/` for sign-in or account-entry flows. Use `frontend/app/api/login/` for login-session flows. Keep auth route handlers in these folders and do not mix auth API code into dashboard or game API folders.
+
+### Sign-up, claim and confirmation contract
+
+`POST /api/signin` takes `{ mode: "anonymous" }` or `{ mode: "email", email, password }`. Passwords for new accounts must be 8+ characters; validation errors say so plainly ("Password must be at least 8 characters.") because the dialog shows `error.message` as-is. `lib/auth/auth-errors.ts` rewords the Supabase failures a person can actually hit (email rate limit, resend cooldown, weak password, invalid email) and detects "this email already has an account".
+
+- **New email, confirmation on (Supabase default):** returns `confirmationRequired: true` and no session. The dialog says to check email. Logging in before confirming returns `unauthorized` with `reason: "email_not_confirmed"`.
+- **New email, confirmation off:** `signUp` returns a session immediately (`confirmationRequired: false`) and the dialog finishes the sign-in.
+- **Existing email:** `422` with `details.reason: "email_already_registered"`, which the dialog turns into a login attempt.
+- **Guest claim** (a guest session is active): the same user gets the email and password, so their children carry over. With confirmation on the email is only pending, so the response is `claimPending: true` and the guest session stays active. With confirmation off it applies instantly and the response is `isAnonymous: false`. If the email already belongs to another account the reason is `email_already_registered`, so the dialog falls back to login (which replaces the guest session).
+- **Short passwords:** the dialog sends a password under 8 characters straight to `/api/login`, since it can only belong to an older account. If that fails it explains the 8-character rule for new accounts.
+
+`GET /api/signin/callback` is where the confirmation email's link lands (`emailRedirectTo`). It exchanges the one-time `?code=` for a session and redirects to `/dashboard`, where the onboarding gate takes over. If the email is opened in a different browser than the one that signed up, the exchange fails (the PKCE verifier is a cookie in the original browser); the address is still confirmed, so it redirects home with `?confirmed=1` and the person signs in normally.
+
+**Supabase dashboard settings the app depends on** (they are project settings, not code, and can break sign-up silently):
+
+- Authentication -> Providers -> *Allow anonymous sign-ins*: must be **on** for "play without login".
+- Authentication -> URL Configuration -> *Site URL*: the real deployed origin, not `http://localhost:3000`. Confirmation links are built from it.
+- Authentication -> URL Configuration -> *Redirect URLs*: add `<origin>/api/signin/callback` for every origin the app runs on (production, previews, `http://localhost:3000`). If it isn't listed Supabase ignores `emailRedirectTo` and falls back to the Site URL.
+- Authentication -> Providers -> Email -> *Confirm email*: on or off. The code supports both. With it on, the built-in mail sender is heavily rate limited, so configure a custom SMTP provider before real users sign up.
+
+#### Local auth testing
+
+Auth behaviour can't be tested against the hosted project without creating real accounts, so run Supabase locally (Docker required). From `backend/`:
+
+```bash
+npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor
+```
+
+This applies every migration in `supabase/migrations/` to a throwaway database, starts a real auth server, and catches confirmation emails in a local inbox at `http://127.0.0.1:54324`. `npx supabase status` prints the local URL and keys. Run the app against it by setting `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in the shell that runs `next dev` (process variables override `.env.local`), then run the scripts in `backend/tests/auth-e2e/`:
+
+- `signup-login.sh`, `guest-claim.sh`, `profile-actions.sh`: set `enable_confirmations = false` in `supabase/config.toml` under `[auth.email]` and restart the stack.
+- `email-confirmation.sh`: needs `enable_confirmations = true` (the committed default).
+
+Stop the stack with `npx supabase stop`.
 
 ### Onboarding contract
 

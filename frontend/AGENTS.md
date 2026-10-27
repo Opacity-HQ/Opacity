@@ -45,16 +45,16 @@ Use `npm run lint` for quick validation after edits. Use `npm run build` before 
 ## Directory Conventions
 
 - `app/` contains routes, layouts, loading states, global CSS, and font assets.
-- `app/api/` contains route handlers: `games/<game>/` (plan, start, trial, complete), `dashboard/`, `profile/{account,child,clinical}/`, and `signin/`, `login/`.
+- `app/api/` contains route handlers: `games/<game>/` (plan, start, trial, complete), `dashboard/`, `profile/{account,child}/`, and `signin/`, `login/`.
 - `app/dashboard/` is the progress dashboard (`components/DashboardView.tsx`, `charts.tsx`, and the pure view-model helpers in `transform.ts`).
-- `app/profile/` is the profile page: account, child, clinical-history and device-settings sections (`components/`).
+- `app/profile/` is the profile page: account, child and device-settings sections (`components/`).
 - `components/` contains reusable application components, including `game-layout.tsx`, `game-intro.tsx`, `results-loading.tsx`, `onboarding-gate.tsx`, `settings-applier.tsx`, `signin.tsx`, `theme-toggle.tsx`, `hero-figure.tsx`, and `shimmering-text.tsx`.
 - `components/ui/` contains shadcn/base-ui primitives. Keep these generic and reusable.
 - `components/charts/` is the shared chart kit (area, bar, radar, ring, gauge, heatmap, tooltip). Use it for any chart; do not add another chart library.
 - `components/hairline/` holds the isometric line-art figures (one per game) used by `hairline-figure.tsx` and the hero.
 - `lib/api/` has server helpers (`requireUser`, `requireChildAccess`, response helpers). `lib/supabase/` has the server, browser, and admin clients. `lib/db/types.ts` has the database types.
 - `lib/queries/` has the shared TanStack Query hooks and key factories (`dashboard`, `onboarding`, `profile`, `auth`), plus `fetchJson` and `ApiError`.
-- `lib/settings/store.ts` is the persisted device-preferences store; `lib/profile/clinical.ts` holds the zod schema for the clinical profile; `lib/game-feedback.ts` is the shared sound/haptic cue map.
+- `lib/settings/store.ts` is the persisted device-preferences store; `lib/game-feedback.ts` is the shared sound/haptic cue map.
 - `public/` contains static images and SVGs referenced from the app.
 
 Add new game routes under `app/<route-name>/` with `page.tsx`; include `layout.tsx` and `loading.tsx` when the route needs its own shell or loading treatment.
@@ -149,7 +149,7 @@ npm run build
 
 - **Device settings** (text size, sound, volume, haptics, reduce motion, session length) live in the persisted `useSettingsStore` (`lib/settings/store.ts`, localStorage key `opacity-settings`). `SettingsApplier` pushes them into cuelume and `<html>`; haptics are gated in `lib/game-feedback.ts`. Theme is owned by `next-themes`. Honor these settings in new game UI.
 - **Onboarding**: `OnboardingGate` (mounted in `app/providers.tsx`) blocks a confirmed user's first session until the child profile exists. Per-game `ChildSetup` forms are only the fallback for guests.
-- **Profile page** (`app/profile/`): account deletion, child edit/delete, and the optional clinical profile (`child_clinical_profiles`, owner-only RLS, validated by `lib/profile/clinical.ts`). Every API route must go through `requireUser` or `requireChildAccess`.
+- **Profile page** (`app/profile/`): account deletion and child edit/delete. Every API route must go through `requireUser` or `requireChildAccess`.
 
 ## TypeScript And React
 
