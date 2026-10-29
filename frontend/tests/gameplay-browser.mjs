@@ -82,7 +82,8 @@ try {
   const games = contract.games.filter(game => !process.env.GAMEPLAY_TEST_GAME || game.id === process.env.GAMEPLAY_TEST_GAME);
   for (let i=0; i<games.length; i++) {
     const game = games[i];
-    await send('Page.navigate',{url:base+'/'+game.id});
+    if (i === 0) await send('Page.navigate',{url:base+'/'+game.id});
+    else await click(`document.querySelector('[data-gameplay-result] a[href="/${game.id}"]')`);
     await waitFor(`location.pathname === ${JSON.stringify('/'+game.id)} && document.readyState === 'complete'`);
     await click("[...document.querySelectorAll('button')].find(b=>/start game|start case|open case|start matching|start building/i.test(b.textContent))", i%2===0);
     if (game.id === 'memory-quest') {
