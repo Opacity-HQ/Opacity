@@ -174,6 +174,8 @@ to shared only when multiple routes genuinely need it"), not done unilaterally.
 
 ## Shared Building Blocks
 
+- **Experimental classification**: after the awaited completion request succeeds, `page.tsx` mounts shared `components/gameplay-prediction.tsx` below the result card. It reads `/api/experimental/gameplay` through TanStack Query using the current child and completed session ID. One full game is enough for a simulated Dyslexia / No dyslexia result with confidence; more completed games update it. The API withholds stale results if this session is unavailable. Replay unmounts the panel. See `ml/gameplay/README.md` for the synthetic model and development flag.
+
 - **Intro screen**: `components/game-intro.tsx` (`GameIntro`) renders the intro card from `{ icon, title, description, steps }`; `SoundMatchIntro.tsx` only supplies the content.
 - **Results loading**: `components/results-loading.tsx` (`ResultsLoading`) shows the post-session loading and retry state while `/complete` resolves.
 - **Feedback**: `useGameFeedback.ts` is a thin rename of `useSharedGameFeedback` in `lib/game-feedback.ts`; sounds and haptics follow the Settings toggles (`lib/settings/store.ts`). Do not call `cuelume` / `web-haptics` directly.

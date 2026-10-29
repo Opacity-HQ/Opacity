@@ -156,4 +156,11 @@ Get keys from the Supabase dashboard: Project Settings → API. Ask Saket for or
 
 ## ML integration status
 
+An additional synthetic gameplay prototype now runs in Next.js through
+`/api/experimental/gameplay?childId=...`, using `requireChildAccess` and the
+RLS-scoped client to read saved sessions and scores. The dashboard displays
+explicitly simulated binary classes and confidence after any full game is complete. Each game's completion screen requires its just-completed session to be included via the optional `sessionId` query parameter. It does
+not write `screening_reports` or use the Rello model. See
+[gameplay prototype](../ml/gameplay/README.md).
+
 The external-data baseline is under `ml/research/rello/`. The preliminary Python service is under `ml/service/`, reached from the signed-in `/api/research/rello` route and `/research/rello` demo page. See [service setup](../ml/service/README.md). It accepts explicit Rello counts and does not classify Opacity sessions or generate child reports. Completion handlers write typed score columns plus game-specific `raw_features`, not the Rello feature vector. See [FEATURE_ALIGNMENT.md](../ml/FEATURE_ALIGNMENT.md). Apply `20261009150000_allow_memory_quest_error_types.sql` to accept the Memory Quest taxonomy before live persistence testing.

@@ -1,0 +1,13 @@
+{
+  "schema_version": "opacity-gameplay-v2",
+  "minimum_games": 1,
+  "assessment_window_days": 7,
+  "metrics": ["accuracy", "log_mean_rt_ms", "rt_cv", "difficulty_level"],
+  "games": [
+    {"id": "letter-detective", "name": "Letter Detective", "score_version": 2, "plan_version": 1, "count_field": "trialsScored", "max_difficulty": 4},
+    {"id": "sound-match", "name": "Sound Match", "score_version": 1, "plan_version": 1, "count_field": "trialsScored", "max_difficulty": 4},
+    {"id": "word-builder", "name": "Word Builder", "score_version": 1, "plan_version": 1, "count_field": "trialsScored", "max_difficulty": 4},
+    {"id": "memory-quest", "name": "Memory Quest", "score_version": 1, "plan_version": 1, "count_field": "roundsScored", "max_difficulty": 20},
+    {"id": "rapid-match", "name": "Rapid Match", "score_version": 1, "plan_version": 1, "count_field": "trialsScored", "max_difficulty": 4}
+  ]
+}

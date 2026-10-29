@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useDashboardQuery } from "@/lib/queries/dashboard";
+import GameplayPrediction from "@/components/gameplay-prediction";
 import {
   AccuracyByGame,
   AccuracyTrend,
@@ -55,7 +56,7 @@ function Card({
   );
 }
 
-export default function DashboardView() {
+export default function DashboardView({ gameplayPrototype = false }: { gameplayPrototype?: boolean }) {
   const { data, isPending, isError } = useDashboardQuery();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -116,8 +117,16 @@ export default function DashboardView() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1" title="Screening result">
+      {gameplayPrototype && (
+        <GameplayPrediction
+          key={child.id}
+          childId={child.id}
+          sessionRevision={child.history.map((session) => `${session.sessionId}:${session.completedAt}`).join("|")}
+        />
+      )}
+
+      <div className={`grid grid-cols-1 gap-4 sm:gap-6 ${gameplayPrototype ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+        {!gameplayPrototype && <Card className="md:col-span-1" title="Screening result">
           {report ? (
             <>
               <p className="text-2xl font-semibold text-[#1d1d1d] dark:text-[#f2f2f2]">
@@ -135,7 +144,7 @@ export default function DashboardView() {
           <p className="mt-3 text-xs text-muted-foreground">
             This is a screening, not a diagnosis.
           </p>
-        </Card>
+        </Card>}
         <Card center title="Overall mastery">
           <MasteryGauge child={child} />
         </Card>

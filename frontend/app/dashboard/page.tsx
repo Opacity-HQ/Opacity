@@ -1,7 +1,11 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import DashboardView from "./components/DashboardView";
+import { gameplayPrototypeEnabled } from "@/lib/gameplay/config";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  // Evaluate the server flag at request time, including when it changes after build.
+  await connection();
   return (
     <>
       {process.env.OPACITY_RESEARCH_DEMO_ENABLED === "true" && (
@@ -14,7 +18,7 @@ export default function DashboardPage() {
           </Link>
         </div>
       )}
-      <DashboardView />
+      <DashboardView gameplayPrototype={gameplayPrototypeEnabled()} />
     </>
   );
 }
