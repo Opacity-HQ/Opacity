@@ -35,6 +35,9 @@ function getMobileServerSnapshot() {
   return false
 }
 
+// Matches the minimum enforced by POST /api/signin for new accounts.
+const MIN_NEW_PASSWORD_LENGTH = 8
+
 function isEmailAlreadyRegistered(err: unknown) {
   return (
     err instanceof ApiError &&
@@ -111,6 +114,26 @@ export default function Signin({
   const submitEmailPassword = async () => {
     setError(null)
     setInfo(null)
+
+    // New passwords must be 8+ characters, so a shorter one can only belong to
+    // an existing account. Go straight to login: trying signup first would be
+    // rejected before login is ever attempted and lock those users out.
+    if (password.length < MIN_NEW_PASSWORD_LENGTH) {
+      try {
+        await loginMutation.mutateAsync({ email, password })
+        handleAuthSuccess()
+      } catch (loginErr) {
+        const unauthorized =
+          loginErr instanceof ApiError && loginErr.code === "unauthorized"
+        setError(
+          unauthorized
+            ? `Incorrect email or password. A new account needs a password of at least ${MIN_NEW_PASSWORD_LENGTH} characters.`
+            : errorMessage(loginErr, "Something went wrong. Please try again.")
+        )
+      }
+      return
+    }
+
     try {
       const result = await signinMutation.mutateAsync({
         mode: "email",
@@ -221,7 +244,7 @@ export default function Signin({
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
+                  placeholder="Password (8+ characters)"
                   className="font-pixel h-[40px] w-full rounded-[13px] !text-[16px] !px-[15px] !placeholder:text-[16px] !placeholder:text-[#aeaeae] !leading-0 !placeholder:leading-0 bg-white dark:bg-[#1a1a1a] border-[1px] border-[#e0e0e0] dark:border-[#333333] focus:border-[#949494] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none !ring-0 !outline-none"
                   required
                 />

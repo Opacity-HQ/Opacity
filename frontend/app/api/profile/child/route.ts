@@ -64,7 +64,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 // Deletes one child and, through ON DELETE CASCADE, everything hanging off it
-// (sessions, trials, scores, reports, clinical profile). Only the owner can
+// (sessions, trials, scores, reports). Only the owner can
 // delete: the owner_id filter makes a teacher's request match zero rows.
 export async function DELETE(request: NextRequest) {
   try {
