@@ -1,4 +1,5 @@
 "use client";
+import GameplayPrediction from "@/components/gameplay-prediction";
 
 import { useEffect, useRef, useState } from "react";
 import { bind } from "cuelume";
@@ -317,6 +318,7 @@ export default function MemoryQuestPage() {
                 startSitting(effectiveChildId);
               }}
             />
+            {sessionId && <GameplayPrediction childId={effectiveChildId} sessionRevision={sessionId} completedSessionId={sessionId} />}
             {startError}
           </div>
         )}

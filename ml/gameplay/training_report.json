@@ -1,0 +1,13 @@
+{
+  "scope": "synthetic generator holdout only; not clinical or real-world accuracy",
+  "participant_overlap": 0,
+  "training_rows": 1920,
+  "evaluation_rows": 480,
+  "synthetic_accuracy": 0.9041666666666667,
+  "synthetic_roc_auc": 0.9587336396546923,
+  "versions": {
+    "numpy": "2.3.5",
+    "scikit-learn": "1.8.0"
+  },
+  "artifact_sha256": "67bf4959635906fdc529181a4bb6426edbf303efb5dc98909471ce99dbbbc286"
+}

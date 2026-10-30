@@ -1,4 +1,5 @@
 "use client";
+import GameplayPrediction from "@/components/gameplay-prediction";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { bind } from "cuelume";
@@ -258,8 +259,9 @@ export default function WordBuilderPage() {
       )}
 
       {phase === "solved" && (
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex w-full flex-col items-center gap-4">
           <BuilderComplete accuracy={accuracyResult} onPlayAgain={resetToIntro} />
+          {sessionId && <GameplayPrediction childId={effectiveChildId} sessionRevision={sessionId} completedSessionId={sessionId} />}
           {completeSessionMutation.isError && (
             <p role="alert" className="font-pixel text-[13px] text-red-600 dark:text-red-400">
               {completeSessionMutation.error.message}

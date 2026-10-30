@@ -55,6 +55,7 @@ Use `npm run lint` for quick validation after edits. Use `npm run build` before 
 - `lib/api/` has server helpers (`requireUser`, `requireChildAccess`, response helpers). `lib/supabase/` has the server, browser, and admin clients. `lib/db/types.ts` has the database types.
 - `lib/queries/` has the shared TanStack Query hooks and key factories (`dashboard`, `onboarding`, `profile`, `auth`), plus `fetchJson` and `ApiError`.
 - `lib/settings/store.ts` is the persisted device-preferences store; `lib/game-feedback.ts` is the shared sound/haptic cue map.
+- `lib/gameplay/` holds the versioned synthetic gameplay ML contract, exported model and inference helpers. `/api/experimental/gameplay` reads RLS-authorized saved scores, and `lib/queries/gameplay.ts` feeds shared `components/gameplay-prediction.tsx` on all five game completion screens and the dashboard. One completed game is enough; completion screens pass `completedSessionId` to prevent stale predictions. Confidence refers to the displayed simulated class. This prototype is enabled by default only in development; `OPACITY_GAMEPLAY_PROTOTYPE_ENABLED` explicitly controls it. Keep its outputs separate from screening reports. See `../ml/gameplay/README.md`.
 - `public/` contains static images and SVGs referenced from the app.
 
 Add new game routes under `app/<route-name>/` with `page.tsx`; include `layout.tsx` and `loading.tsx` when the route needs its own shell or loading treatment.

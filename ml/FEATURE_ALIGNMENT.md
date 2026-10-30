@@ -34,6 +34,17 @@ For actual Opacity training, record pseudonymous participant identity, session/g
 
 Independent reference labels are not stored by the current game APIs. Do not use mastery, adaptive difficulty, XP, risk bands or the benchmark's own predictions as dyslexia ground truth. Keep assessment labels outside the predictor vector. Separate age, language and device analyses are needed before defining any product threshold.
 
+## Synthetic gameplay prototype — 2026-10-13
+
+Every game completion screen and the dashboard have an optional experimental gameplay classifier, separate
+from Rello. Its 25 features include 20 measurements from the latest complete sitting in each of the
+five games within seven days, plus five game-availability flags. At least one valid complete game is required; missing games are imputed and the synthetic model was trained with varying game availability. It validates plan/score versions and scored counts
+before inference. A logistic model learns invented synthetic labels and exposes
+explicitly simulated binary outputs; it provides no evidence of dyslexia
+detection and writes no screening reports. Confidence is the model probability of the displayed simulated class, not clinical probability. Completion screens require the just-finished session to be present before showing a result. The dashboard includes the team's
+existing charts and a new experimental panel, rather than the earlier placeholder.
+See [gameplay/README.md](gameplay/README.md) for the current contract and runbook.
+
 ## Remaining verification limits
 
 Database migration execution, RLS behavior and authenticated end-to-end game persistence need a configured Supabase instance. A source checkout cannot establish what migrations or schema changes are already applied in the deployed project. This review does not validate clinical performance or claim complete application testing.
